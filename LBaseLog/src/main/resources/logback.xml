@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="GBK"?>
+<!-- if debug set to true, context info always print
+ otherwise the contex info will print when error occour -->
+<configuration scan="true" scanPeriod="60 seconds" debug="false"> 
+<!--    <statusListener class="com.jgps.Listener.LogbackListener" />  -->
+    <property file="${user.dir}/resources/game.properties" />
+    <Property name="Log.path" value="E:/temp/Log/xy_logs"/>
+    <contextName>Game_Default</contextName>
+     <include resource="mongolog.xml"/>
+    <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">   
+       <Encoding>UTF-8</Encoding>   
+        <layout class="ch.qos.logback.classic.PatternLayout">   
+            <pattern>%d{HH:mm:ss-SSS} | [%thread] | %-5level | %logger{40} | %msg%n</pattern>  
+        </layout>   
+        <filter class="ch.qos.logback.classic.filter.ThresholdFilter">  
+            <level>WARN</level>  
+        </filter> 
+    </appender>
+
+  <!--所有日志文件-->
+    <appender name="AllLog" class="ch.qos.logback.core.rolling.RollingFileAppender"> 
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <fileNamePattern>${Log.path}/all-%d{yyyy-MM-dd}.log</fileNamePattern> 
+            <maxHistory>30</maxHistory> 
+        </rollingPolicy> 
+        <encoder> 
+            <pattern>%d{HH:mm:ss-SSS} | [%thread] | %-5level | %logger{40} | %msg%n</pattern> 
+        </encoder> 
+    </appender>
+
+    <logger name="LOGIN" level="INFO" addtivity="false">
+        <appender-ref ref="LOGIN" />
+    </logger>
+    
+    <root level="DEBUG"> 
+        <appender-ref ref="AllLog" />
+        <appender-ref ref="STDOUT" />
+    </root> 
+    
+    <logger name="org.hibernate" level="ERROR" />  
+    <logger name="org.logicalcobwebs" level="DEBUG" />  
+    <logger name="org.springframework" level="DEBUG" />  
+    <logger name="com.opensymphony" level="DEBUG" />  
+    <logger name="org.apache" level="DEBUG" /> 
+    <logger name="com.google" level="DEBUG" /> 
+    <logger name="com.googlecode" level="DEBUG" /> 
+    <logger name="net.rubyeye" level="DEBUG" />
+    <logger name="org.quartz" level="ERROR" /> 
+    
+</configuration>

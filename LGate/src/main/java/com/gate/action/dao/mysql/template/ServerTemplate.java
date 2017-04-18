@@ -1,0 +1,8 @@
+package com.gate.action.dao.mysql.template;
+
+/**
+ * Created by Administrator on 2017/4/15.
+ */
+public class ServerTemplate {
+    public final static String GET_SERVER_BY_GROUP = "select * from server where group = ?";
+}

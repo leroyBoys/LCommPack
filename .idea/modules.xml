@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ProjectModuleManager">
+    <modules>
+      <module fileurl="file://$PROJECT_DIR$/LBaseLog/LBaseLog.iml" filepath="$PROJECT_DIR$/LBaseLog/LBaseLog.iml" />
+      <module fileurl="file://$PROJECT_DIR$/LBaseTool/LBaseTool.iml" filepath="$PROJECT_DIR$/LBaseTool/LBaseTool.iml" />
+      <module fileurl="file://$PROJECT_DIR$/LChat/LChat.iml" filepath="$PROJECT_DIR$/LChat/LChat.iml" />
+      <module fileurl="file://$PROJECT_DIR$/LCommPack.iml" filepath="$PROJECT_DIR$/LCommPack.iml" />
+      <module fileurl="file://$PROJECT_DIR$/LDBConnection/LDBConnection.iml" filepath="$PROJECT_DIR$/LDBConnection/LDBConnection.iml" />
+      <module fileurl="file://$PROJECT_DIR$/LGate/LGate.iml" filepath="$PROJECT_DIR$/LGate/LGate.iml" />
+      <module fileurl="file://$PROJECT_DIR$/LSocket/LSocket.iml" filepath="$PROJECT_DIR$/LSocket/LSocket.iml" />
+    </modules>
+  </component>
+</project>
