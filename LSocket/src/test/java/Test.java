@@ -38,7 +38,7 @@ public class Test {
        // System.out.println("===>"+Arrays.toString(bytes));
 
         List<byte[]> bysList = new ArrayList<>();
-        String path = "D:\\Dev\\Dev\\data.log";
+        String path = "D:\\data.log";
 
         bysList.add(bytes);
         Tools.writeBytes(path,bysList);

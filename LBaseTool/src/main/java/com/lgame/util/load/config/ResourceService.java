@@ -6,6 +6,7 @@
 package com.lgame.util.load.config;
 
 import com.lgame.util.PrintTool;
+import com.lgame.util.file.FileTool;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -15,10 +16,29 @@ import java.util.concurrent.ConcurrentHashMap;
  *
  */
 public class ResourceService {
-
-    private ConcurrentHashMap<Class, Storage> storages = new ConcurrentHashMap(50);
+    private static ResourceService resourceService = null;
+    private ConcurrentHashMap<Class, Storage> storages = new ConcurrentHashMap(20);
     //  private String resourceLocation = "/usr/game/xml/";//+ File.separator//基础数据文件路径
     private String resourceLocation = "D:\\xml\\";//+ File.separator//基础数据文件路径
+    private ResourceService(){}
+    public static ResourceService getInstance(String xmlPath){
+        if(resourceService != null){
+            return resourceService;
+        }
+
+        synchronized (ResourceService.class){
+            if(resourceService != null){
+                return resourceService;
+            }
+
+            xmlPath = xmlPath == null? FileTool.getRootPath()+"xml":xmlPath;
+            resourceService = new ResourceService();
+            resourceService.resourceLocation = xmlPath;
+            resourceService.reloadAll();
+        }
+        return resourceService;
+    }
+
 
     private void initializeStorage(Class clazz) {
         Storage storage = (Storage) this.storages.get(clazz);

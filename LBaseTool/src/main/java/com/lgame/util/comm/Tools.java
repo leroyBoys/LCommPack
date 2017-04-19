@@ -5,6 +5,7 @@
  */
 package com.lgame.util.comm;
 
+import com.lgame.util.encry.DesTool;
 import com.lgame.util.encry.Endecrypt;
 import com.sun.corba.se.impl.legacy.connection.DefaultSocketFactory;
 
@@ -57,7 +58,7 @@ public class Tools {
         return str.replaceAll(reg, "");
     }
 
-    private final static String key = "2.：WSJks@12#$)#";
+    private final static String key = "adxe3912";
 
     public static void writeBytes(String path,List<byte[]> byts) throws IOException {
         File file = new File(path);
@@ -66,7 +67,7 @@ public class Tools {
         }
         FileOutputStream out = new FileOutputStream(file, true);
         for (int i = 0; i < byts.size(); i++) {
-            byte[] oldbytes = Endecrypt.getInstance().get3DESEncrypt(byts.get(i),key);
+            byte[] oldbytes = DesTool.encrypt(byts.get(i),key);
 
             int oldLength = oldbytes.length;
             byte[] newCapacity = FormatDataTool.getByteJoin(FormatDataTool.intToByteArray(oldLength),oldbytes);
@@ -112,7 +113,7 @@ public class Tools {
 
                 byte[] data = Arrays.copyOfRange(oldBuf,4,4+length);
                 //System.out.println("====data===>"+Arrays.toString(data));
-                byts.add(Endecrypt.getInstance().get3DESDecrypt(data,key));
+                byts.add(DesTool.decrypt(data, key));
 
                 oldBuf = Arrays.copyOfRange(oldBuf,4+length,oldBuf.length);
               //  System.out.println("====remaim===>"+Arrays.toString(oldBuf));
