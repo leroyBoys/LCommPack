@@ -5,6 +5,13 @@
  */
 package com.lgame.util.comm;
 
+import com.lgame.util.encry.Endecrypt;
+import com.sun.corba.se.impl.legacy.connection.DefaultSocketFactory;
+
+import java.io.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Random;
 
 /**
@@ -50,15 +57,74 @@ public class Tools {
         return str.replaceAll(reg, "");
     }
 
-    public static void outBytes(byte[] aa) {
-        if (aa == null || aa.length == 0) {
-            System.out.println("==空");
-            return;
+    private final static String key = "2.：WSJks@12#$)#";
+
+    public static void writeBytes(String path,List<byte[]> byts) throws IOException {
+        File file = new File(path);
+        if (!file.exists()) {
+            file.createNewFile();
         }
-        System.out.println("==字节流开始");
-        for (byte a : aa) {
-            System.out.println(a);
+        FileOutputStream out = new FileOutputStream(file, true);
+        for (int i = 0; i < byts.size(); i++) {
+            byte[] oldbytes = Endecrypt.getInstance().get3DESEncrypt(byts.get(i),key);
+
+            int oldLength = oldbytes.length;
+            byte[] newCapacity = FormatDataTool.getByteJoin(FormatDataTool.intToByteArray(oldLength),oldbytes);
+            out.write(newCapacity);
         }
-         System.out.println("==字节流结束");
+        out.close();
     }
+
+    public static List<byte[]> readBytes(String path) throws IOException {
+        File file = new File(path);
+        if (!file.exists() || file.isDirectory()) {
+            throw new FileNotFoundException();
+        }
+
+        List<byte[]> byts = new ArrayList<>(10);
+        FileInputStream fis = new FileInputStream(file);
+        byte[] buf = new byte[1024];
+        byte[] oldBuf = null;
+
+        boolean isOver = false;
+        while ((fis.read(buf)) != -1) {
+            if(oldBuf != null){
+                oldBuf = FormatDataTool.getByteJoin(oldBuf,buf);
+            }else {
+                oldBuf = buf;
+            }
+
+         //   System.out.println("===============================================================>");
+            while (true){
+              //  System.out.println("=======>"+Arrays.toString(oldBuf));
+                byte[] temLength = Arrays.copyOf(oldBuf,4);
+               // System.out.println("====temLength===>"+Arrays.toString(temLength));
+                int length = FormatDataTool.byteArrayToInt(temLength);
+             //   System.out.println("====ength===>"+length);
+                if(length == 0){
+                    isOver = true;
+                    break;
+                }
+
+                if(oldBuf.length - 4<length){
+                    break;
+                }
+
+                byte[] data = Arrays.copyOfRange(oldBuf,4,4+length);
+                //System.out.println("====data===>"+Arrays.toString(data));
+                byts.add(Endecrypt.getInstance().get3DESDecrypt(data,key));
+
+                oldBuf = Arrays.copyOfRange(oldBuf,4+length,oldBuf.length);
+              //  System.out.println("====remaim===>"+Arrays.toString(oldBuf));
+            }
+
+            if(isOver){
+                break;
+            }
+            buf = new byte[1024];//重新生成，避免和上次读取的数据重复
+        }
+
+        return byts;
+    }
+
 }
