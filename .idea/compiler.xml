@@ -9,6 +9,7 @@
         <module name="LBaseLog" />
         <module name="LBaseTool" />
         <module name="LChat" />
+        <module name="LConfigLoad" />
         <module name="LDBConnection" />
         <module name="LGate" />
         <module name="LSocket" />
@@ -18,6 +19,7 @@
       <module name="LBaseLog" target="1.7" />
       <module name="LBaseTool" target="1.7" />
       <module name="LChat" target="1.7" />
+      <module name="LConfigLoad" target="1.7" />
       <module name="LDBConnection" target="1.7" />
       <module name="LGate" target="1.7" />
       <module name="LSocket" target="1.7" />

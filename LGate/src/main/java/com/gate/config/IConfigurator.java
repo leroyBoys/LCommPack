@@ -1,6 +1,5 @@
 package com.gate.config;
 
-import com.lsocket.config.SocketConfig;
 
 /**
  * Created by leroy:656515489@qq.com

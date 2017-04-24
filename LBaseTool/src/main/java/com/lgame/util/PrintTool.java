@@ -38,6 +38,7 @@ public class PrintTool {
     }
 
     public static void error(String info,Exception e){
+        e.printStackTrace();
         System.out.println(info+":"+getException(e));
     }
 }

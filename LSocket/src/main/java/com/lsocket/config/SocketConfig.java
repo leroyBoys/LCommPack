@@ -6,7 +6,7 @@
 package com.lsocket.config;
 
 
-import com.lgame.util.load.Properties;
+import com.config.properties.Properties;
 
 /**
  * Server配置文件变量

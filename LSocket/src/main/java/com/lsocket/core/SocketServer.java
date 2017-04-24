@@ -72,22 +72,10 @@ public final class SocketServer<V extends Visitor> {
         }
     }
 
-/*
-
-    public SocketServer(ProtocolCodecFactory protocolCodecFactory, IoHandler ioHandler, IoFilter byteAttackFilter, IoFilter cmdAttackFilter) {
-     //   this(protocolCodecFactory, ioHandler);
-        this.cmdAttackFilter = cmdAttackFilter;
-        this.byteAttackFilter = byteAttackFilter;
-    }
-*/
-
     public void start()throws Exception {
         if (this.codecFactory == null) {
             throw new NullPointerException("ProtocolCodecFactory is null...");
         }
-    /*    if (this.ioHandler == null) {
-            throw new NullPointerException("IoHandler is null...");
-        }*/
         IoBuffer.setUseDirectBuffer(false);
         IoBuffer.setAllocator(new SimpleBufferAllocator());
         this.acceptor = new NioSocketAcceptor(processorCount);

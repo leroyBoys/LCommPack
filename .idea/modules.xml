@@ -6,6 +6,7 @@
       <module fileurl="file://$PROJECT_DIR$/LBaseTool/LBaseTool.iml" filepath="$PROJECT_DIR$/LBaseTool/LBaseTool.iml" />
       <module fileurl="file://$PROJECT_DIR$/LChat/LChat.iml" filepath="$PROJECT_DIR$/LChat/LChat.iml" />
       <module fileurl="file://$PROJECT_DIR$/LCommPack.iml" filepath="$PROJECT_DIR$/LCommPack.iml" />
+      <module fileurl="file://$PROJECT_DIR$/LConfigLoad/LConfigLoad.iml" filepath="$PROJECT_DIR$/LConfigLoad/LConfigLoad.iml" />
       <module fileurl="file://$PROJECT_DIR$/LDBConnection/LDBConnection.iml" filepath="$PROJECT_DIR$/LDBConnection/LDBConnection.iml" />
       <module fileurl="file://$PROJECT_DIR$/LGate/LGate.iml" filepath="$PROJECT_DIR$/LGate/LGate.iml" />
       <module fileurl="file://$PROJECT_DIR$/LSocket/LSocket.iml" filepath="$PROJECT_DIR$/LSocket/LSocket.iml" />

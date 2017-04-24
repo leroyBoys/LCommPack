@@ -9,6 +9,7 @@
         <option value="$PROJECT_DIR$/LGate/pom.xml" />
         <option value="$PROJECT_DIR$/LDBConnection/pom.xml" />
         <option value="$PROJECT_DIR$/LChat/pom.xml" />
+        <option value="$PROJECT_DIR$/LConfigLoad/pom.xml" />
       </list>
     </option>
   </component>
