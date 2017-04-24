@@ -23,4 +23,5 @@ public @interface Resource {
     String type() default "json";
 
     String sheetName() default "sheetName";
+    int dataFromLine() default 7;
 }

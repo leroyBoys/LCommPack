@@ -26,18 +26,15 @@ import java.util.List;
  *
  */
 public class ExcelReader implements ResourceReader{
-    Class loaderClass = ExcelLoader.class;
 
     public <E> Iterator<E> read(InputStream input, Class<E> clazz) {
         try {
-            Resource resource = (Resource) clazz.getAnnotation(Resource.class);
+            Resource resource = clazz.getAnnotation(Resource.class);
 
             String[][] dataOriginal = ExcelLoader.getInstance().loadConfig(input,
                     resource.sheetName());
-
-
             // 构建数据
-           return DefaultBuilder.getInstance().initBuild(dataOriginal,clazz);
+           return DefaultBuilder.getInstance().initBuild(dataOriginal,clazz,resource.dataFromLine());
         } catch (Exception e) {
             PrintTool.error("JsonReader读取基础数据:["+clazz.getSimpleName()+"] 文件异常!", e);
             throw new RuntimeException(e);

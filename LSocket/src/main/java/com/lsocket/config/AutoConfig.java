@@ -1,6 +1,7 @@
 package com.lsocket.config;
 
-import com.lgame.util.load.PropertiesHelper;
+
+import com.config.properties.PropertiesHelper;
 
 /**
  * Created by Administrator on 2017/4/15.

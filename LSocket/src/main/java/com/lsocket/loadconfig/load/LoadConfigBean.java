@@ -21,7 +21,7 @@ public class LoadConfigBean {
     private ResourceService resourceService;
 
     public void loadAll() {
-        resourceService = new ResourceServiceImpl();
+        resourceService = ResourceServiceImpl.getInstance("D:\\360极速浏览器下载\\棋牌_update\\qpgame\\t\\");
         loadActivity();
     }
 

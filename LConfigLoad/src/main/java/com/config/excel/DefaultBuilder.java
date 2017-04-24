@@ -1,9 +1,9 @@
 package com.config.excel;
 
 
+import com.config.properties.PropertyTransformer;
+import com.config.properties.PropertyTransformerFactory;
 import com.lgame.util.PrintTool;
-import com.lgame.util.load.PropertyTransformer;
-import com.lgame.util.load.PropertyTransformerFactory;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
@@ -19,13 +19,13 @@ public class DefaultBuilder implements IBuilder {
 
 
 	@Override
-	public <B> Iterator<B> initBuild(String[][] data, Class<B> beanClass) throws Exception {
+	public <B> Iterator<B> initBuild(String[][] data, Class<B> beanClass,int dataFromLine) throws Exception {
 
 		Field[] fieldMap = processProperties(beanClass,data[0]);
 		String[] row;
 		B b;
 		List<B> list = new LinkedList<>();
-		for (int i = 7; i < data.length; i++) {
+		for (int i = dataFromLine; i < data.length; i++) {
 			row = data[i];
 			b = beanClass.newInstance();
 			initBean(b,row,fieldMap);
@@ -68,21 +68,11 @@ public class DefaultBuilder implements IBuilder {
 					field.setAccessible(true);
 				}
 				bundleMaps.put(field.getName(),field);
-				//Object transformValue = transformerFieldValue(value, field, annotation);
-				/*try {
-					field.set(object, transformValue);
-				} catch (Exception e) {
-					e.printStackTrace();
-					if (annotation.required()) {
-						throw new IllegalArgumentException(String.format("Parse %s ERROR Exception", new Object[]{annotation.keyName()}));
-					}
-				}*/
 			}
 			Field[] ret = new Field[head.length];
 		    for(int i = 0;i<head.length;i++){
 				ret[i] = bundleMaps.get(head[i]);
 			}
-
 
 			return ret;
 	}
