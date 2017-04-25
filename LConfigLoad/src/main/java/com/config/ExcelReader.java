@@ -32,7 +32,7 @@ public class ExcelReader implements ResourceReader{
             Resource resource = clazz.getAnnotation(Resource.class);
 
             String[][] dataOriginal = ExcelLoader.getInstance().loadConfig(input,
-                    resource.sheetName());
+                    clazz.getSimpleName());
             // 构建数据
            return DefaultBuilder.getInstance().initBuild(dataOriginal,clazz,resource.dataFromLine());
         } catch (Exception e) {

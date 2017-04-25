@@ -21,7 +21,5 @@ public @interface Resource {
     String suffix() default "xml";
 
     String type() default "json";
-
-    String sheetName() default "sheetName";
-    int dataFromLine() default 7;
+    int dataFromLine() default 4;
 }
