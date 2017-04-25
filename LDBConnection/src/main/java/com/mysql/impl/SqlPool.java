@@ -1,6 +1,5 @@
 package com.mysql.impl;
 
-import com.alibaba.druid.util.JdbcUtils;
 import com.mysql.SqlDataSource;
 
 import java.sql.*;
@@ -150,6 +149,30 @@ public class SqlPool implements SqlDataSource {
                 }
 
                 rows.add(row);
+            }
+            return rows;
+        } catch (Exception e) {
+        } finally {
+            this.close(ps, cn, rs);
+        }
+        return null;
+    }
+
+    public <T extends DbFactory> List<T> ExecuteQuery(DbFactory<T> dbFactory,String cmd, Object... p) {
+        System.out.println("cm2d:" + cmd);
+        Connection cn = null;
+        PreparedStatement ps = null;
+        ResultSet rs = null;
+        try {
+            cn = getConnection();
+
+            ps = cn.prepareStatement(cmd);
+            SetParameter(ps, p);
+
+            rs =  ps.executeQuery();
+            List<T> rows = new ArrayList<>();
+            while (rs.next()){
+                rows.add(dbFactory.create(rs));
             }
             return rows;
         } catch (Exception e) {
