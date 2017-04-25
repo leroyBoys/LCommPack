@@ -8,23 +8,20 @@ package com.lsocket.core;
 import com.lsocket.codec.RequestDecoder;
 import com.lsocket.codec.ResponseEncoder;
 import com.lsocket.config.SocketConfig;
-import com.lsocket.control.HandlerListen;
 import com.lsocket.control.impl.CoreDispatcher;
 import com.lsocket.handler.SocketHanlder;
+import com.lsocket.listen.HeartListen;
 import com.lsocket.manager.NewSessionManager;
-import com.lsocket.module.BeanFactory;
 import com.lsocket.module.CommonCodecFactory;
-import com.lsocket.module.DefaultBeanFactory;
 import com.lsocket.module.Visitor;
 import com.lsocket.util.SocketConstant;
 import org.apache.mina.core.buffer.IoBuffer;
 import org.apache.mina.core.buffer.SimpleBufferAllocator;
 import org.apache.mina.core.filterchain.DefaultIoFilterChainBuilder;
 import org.apache.mina.core.filterchain.IoFilter;
+import org.apache.mina.core.session.IoSession;
 import org.apache.mina.filter.codec.ProtocolCodecFactory;
 import org.apache.mina.filter.codec.ProtocolCodecFilter;
-import org.apache.mina.filter.codec.ProtocolDecoder;
-import org.apache.mina.filter.codec.ProtocolEncoder;
 import org.apache.mina.filter.logging.MdcInjectionFilter;
 import org.apache.mina.transport.socket.DefaultSocketSessionConfig;
 import org.apache.mina.transport.socket.SocketAcceptor;
@@ -39,7 +36,7 @@ import java.net.InetSocketAddress;
  *
  * @author leroy
  */
-public final class SocketServer<V extends Visitor> {
+public abstract class SocketServer<V extends Visitor> {
 
     private static final Logger logger = LoggerFactory.getLogger(SocketConstant.logName);
     private SocketAcceptor acceptor;
@@ -51,28 +48,29 @@ public final class SocketServer<V extends Visitor> {
     private SocketConfig confg;
     private CoreDispatcher coreDispatcher;
     private NewSessionManager<V> newSessionManager = new NewSessionManager<>();
-    private BeanFactory beanFactory = new DefaultBeanFactory();
+    private HeartListen heartListen;
 
-    public SocketServer(ResponseEncoder encoder, RequestDecoder decoder, CoreDispatcher coreDispatcher, SocketConfig confg, BeanFactory beanFactory,HandlerListen handlerListen) {
+
+    public SocketServer(CoreDispatcher coreDispatcher) {
         this.coreDispatcher = coreDispatcher;
-        decoder.init(handlerListen);
-        this.codecFactory = new CommonCodecFactory(encoder, decoder);
-        this.processorCount = confg.getServerNioProcess();
-        if(beanFactory != null){
-            this.beanFactory = beanFactory;
-        }
+        RequestDecoder decoder = initRequestDecoder();
+        decoder.init(this);
+        this.codecFactory = new CommonCodecFactory(initResponseEncoder(), decoder);
+        this.confg = initConfig();
+        this.heartListen = initHeartListen();
     }
 
-    public SocketServer(ResponseEncoder encoder, RequestDecoder decoder, CoreDispatcher coreDispatcher, BeanFactory beanFactory,HandlerListen handlerListen) {
-        this.coreDispatcher = coreDispatcher;
-        decoder.init(handlerListen);
-        this.codecFactory = new CommonCodecFactory(encoder, decoder);
-        if(beanFactory != null){
-            this.beanFactory = beanFactory;
-        }
-    }
+    public abstract V createVistor(IoSession session, SocketServer socketServer, long timeOutTime);
 
-    public void start()throws Exception {
+    public abstract ResponseEncoder initResponseEncoder();
+
+    public abstract RequestDecoder initRequestDecoder();
+
+    public abstract HeartListen initHeartListen();
+
+    public abstract SocketConfig initConfig();
+
+    public final void start()throws Exception {
         if (this.codecFactory == null) {
             throw new NullPointerException("ProtocolCodecFactory is null...");
         }
@@ -97,9 +95,12 @@ public final class SocketServer<V extends Visitor> {
         this.address = new InetSocketAddress(confg.getSocketPort());
         this.acceptor.bind(this.address);
         logger.info("Listening on " + this.address.getHostName() + ":" + this.address.getPort());
+        started();
     }
 
-    public SocketSessionConfig getSessionConfig() {
+    public void started(){}
+
+    public final SocketSessionConfig getSessionConfig() {
         SocketSessionConfig sessionConfig = new DefaultSocketSessionConfig();
         sessionConfig.setSoLinger(0);
         sessionConfig.setKeepAlive(true);
@@ -166,15 +167,11 @@ public final class SocketServer<V extends Visitor> {
         this.cmdAttackFilter = floodCmdAttackFilter;
     }
 
+    public HeartListen getHeartListen() {
+        return heartListen;
+    }
+
     public CoreDispatcher getCoreDispatcher() {
         return coreDispatcher;
-    }
-
-    public BeanFactory<V> getBeanFactory() {
-        return beanFactory;
-    }
-
-    public void setConfg(SocketConfig confg) {
-        this.confg = confg;
     }
 }

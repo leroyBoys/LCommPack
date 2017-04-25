@@ -3,22 +3,18 @@ package com.gate.manager;
 import com.gate.codec.RequestDecoderLocal;
 import com.gate.codec.ResponseEncoderLocal;
 import com.logger.log.SystemLogger;
-import com.lsocket.control.HandlerListen;
 import com.lsocket.core.ClientServer;
+import com.lsocket.listen.HandlerListen;
 import com.lsocket.util.DefaultSocketPackage;
+import com.module.GameServer;
+import com.mysql.impl.DbFactory;
 import org.apache.mina.core.session.IoSession;
-
-import java.io.IOException;
 
 /**
  * Created by leroy:656515489@qq.com
  * 2017/4/6.
  */
-public class ServerConnection implements Runnable {
-    private int id;
-    private String name;
-    private String ip;
-    private int port;
+public class ServerConnection extends GameServer implements Runnable,DbFactory {
     private volatile ServerStatus serverStatus = ServerStatus.closed;
     private int heartPerTime = 1000;//心跳间隔毫秒
     private final static int timeOutTime = 5*60*1000;//超时时间
@@ -26,16 +22,17 @@ public class ServerConnection implements Runnable {
     private ServerMonitor serverMonitor = new ServerMonitor();
     private ClientServer clientServer;
     private volatile boolean isRun = false;
+    public ServerConnection(){}
 
-    public ServerConnection(int id,String name,String ip,int port){
-        this.id = id;
-        this.name = name;
-        this.ip = ip;
-        this.port = port;
-        clientServer = new ClientServer(ip,port,2000,new ResponseEncoderLocal(),new RequestDecoderLocal(),serverMonitor);
+    public void initClientServer(){
+        if(clientServer != null){
+            return;
+        }
+        clientServer = new ClientServer(this.getIp(),this.getPort(),2000,new ResponseEncoderLocal(),new RequestDecoderLocal(),serverMonitor);
     }
 
     public void check(long curTime){
+        this.initClientServer();
         if(isRun){
             return;
         }
@@ -76,10 +73,6 @@ public class ServerConnection implements Runnable {
         }
     }
 
-    public int getId() {
-        return id;
-    }
-
     public void send(Object obj){
         serverMonitor.session.write(obj);
     }
@@ -97,11 +90,11 @@ public class ServerConnection implements Runnable {
             if(clientServer.getSession() != null){
                 serverMonitor.session = clientServer.getSession();
                 serverStatus = ServerStatus.notFull;
-                SystemLogger.info(this.getClass(),"ip:"+ip+" port:"+port+" connected suc!");
+                SystemLogger.info(this.getClass(),"ip:"+this.getIp()+" port:"+this.getPort()+" connected suc!");
             }else {
                 errorNum++;
                 if(errorNum/20 == 1){
-                    SystemLogger.info(this.getClass(),"ip:"+ip+" port:"+port+" connected fail!");
+                    SystemLogger.info(this.getClass(),"ip:"+this.getIp()+" port:"+this.getPort()+" connected fail!");
                 }
             }
         } catch (Exception e) {
@@ -134,10 +127,6 @@ public class ServerConnection implements Runnable {
             lastHeartTime = TimeCacheManager.getInstance().getCurTime();
         }
 
-        @Override
-        public boolean checkHeart() {
-            return false;
-        }
     }
 
     enum ServerStatus{

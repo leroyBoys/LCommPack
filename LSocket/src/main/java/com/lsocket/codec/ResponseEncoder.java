@@ -1,6 +1,5 @@
 package com.lsocket.codec;
 
-import com.lsocket.control.HandlerListen;
 import org.apache.mina.core.session.IoSession;
 import org.apache.mina.filter.codec.ProtocolEncoderAdapter;
 import org.apache.mina.filter.codec.ProtocolEncoderOutput;

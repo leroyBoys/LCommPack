@@ -36,7 +36,7 @@ public class SocketHanlder<V extends Visitor,Req extends Request> extends IoHand
         logger.info("sessionCreated");
 
         long curTime = System.currentTimeMillis();
-        V vistor = socketServer.getBeanFactory().createVistor(ioSession,socketServer,curTime+SocketConstant.NewSessionIdleTime);
+        V vistor = socketServer.createVistor(ioSession,socketServer,curTime+SocketConstant.NewSessionIdleTime);
         if(isOpenBlack && AddressManager.getIntstance().isBlack(vistor)){
             inputClosed(ioSession);
             return;

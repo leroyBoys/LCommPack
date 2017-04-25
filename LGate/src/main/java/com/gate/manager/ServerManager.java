@@ -23,6 +23,7 @@ public class ServerManager implements Runnable {
     }
 
     public void init(List<ServerConnection> servers){
+        serverPool.clear();
         for(ServerConnection serverConnection:servers){
             serverPool.put(serverConnection.getId(),serverConnection);
             serverConnection.check(0);

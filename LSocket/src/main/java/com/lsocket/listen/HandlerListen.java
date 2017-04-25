@@ -1,4 +1,4 @@
-package com.lsocket.control;
+package com.lsocket.listen;
 
 /**
  * Created by leroy:656515489@qq.com
@@ -7,6 +7,4 @@ package com.lsocket.control;
 public interface HandlerListen {
     public void sendSuc();
     public void receiveMsg();
-
-    public boolean checkHeart();
 }

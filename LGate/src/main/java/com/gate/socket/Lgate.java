@@ -2,15 +2,20 @@ package com.gate.socket;
 
 import com.gate.codec.RequestDecoderRemote;
 import com.gate.codec.ResponseEncoderRemote;
-import com.gate.config.GateConfig;
-import com.gate.config.IConfigurator;
 import com.gate.control.CoreDispatcherRmote;
+import com.gate.listen.GateHeartLinste;
+import com.gate.manager.DBServiceManager;
 import com.gate.manager.ServerManager;
+import com.gate.util.GateVisitor;
 import com.gate.util.TaskScheduler;
-import com.gate.util.VistorBeanFactory;
-import com.lsocket.control.HandlerListen;
+import com.lgame.util.file.PropertiesTool;
+import com.lsocket.codec.RequestDecoder;
+import com.lsocket.codec.ResponseEncoder;
+import com.lsocket.config.SocketConfig;
 import com.lsocket.core.SocketServer;
+import com.lsocket.listen.HeartListen;
 import com.lsocket.module.Visitor;
+import org.apache.mina.core.session.IoSession;
 
 import java.util.concurrent.TimeUnit;
 
@@ -18,49 +23,44 @@ import java.util.concurrent.TimeUnit;
  * Created by leroy:656515489@qq.com
  * 2017/4/6.
  */
-public class Lgate {
+public class Lgate extends SocketServer<Visitor>{
     private TaskScheduler taskScheduler;
-    private volatile boolean initialized;
-    private volatile boolean started;
-    private final SocketServer<Visitor> socketServer;
     private ServerManager serverManager;
-    private IConfigurator gateConfig;
-    private HandlerListen handlerListen;
 
     private Lgate(){
-        this.initialized = false;
-        this.started = false;
-        this.gateConfig = new GateConfig();
+        super(new CoreDispatcherRmote());
         this.serverManager = ServerManager.getIntance();
-        handlerListen = null;
-        socketServer = new SocketServer(new ResponseEncoderRemote(),new RequestDecoderRemote(),new CoreDispatcherRmote(),new VistorBeanFactory(),handlerListen);
         this.taskScheduler = new TaskScheduler(1);
+        DBServiceManager.getInstance().init(PropertiesTool.loadProperty("server.properties"));
     }
 
-    public void start() throws Exception {
-        if(!this.initialized) {
-            this.initialize();
-        }
-        gateConfig.loadConfiguration();
-        configureServer();
-        startServer();
+    @Override
+    public Visitor createVistor(IoSession session, SocketServer socketServer, long timeOutTime) {
+        return new GateVisitor(socketServer,session,timeOutTime);
     }
 
-    private void initialize() {
+    @Override
+    public ResponseEncoder initResponseEncoder() {
+        return new ResponseEncoderRemote();
     }
 
-    private void configureServer() {
-        this.taskScheduler.resizeThreadPool(gateConfig.getSocketConfig().getSchedulerThreadPoolSize());
-        socketServer.setConfg(gateConfig.getSocketConfig());
+    @Override
+    public RequestDecoder initRequestDecoder() {
+        return new RequestDecoderRemote();
     }
 
-    private void startServer() throws Exception {
-        if(started){
-            return;
-        }
-        socketServer.start();
+    @Override
+    public HeartListen initHeartListen() {
+        return new GateHeartLinste();
+    }
 
+    @Override
+    public SocketConfig initConfig() {
+        return SocketConfig.getInstance();
+    }
+
+
+    public void started() {
         taskScheduler.scheduleAtFixedRate(serverManager, 20, 20, TimeUnit.SECONDS);
-        started = true;
     }
 }

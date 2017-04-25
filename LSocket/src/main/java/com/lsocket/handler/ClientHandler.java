@@ -1,6 +1,6 @@
 package com.lsocket.handler;
 
-import com.lsocket.control.HandlerListen;
+import com.lsocket.listen.HandlerListen;
 import org.apache.mina.core.service.IoHandlerAdapter;
 import org.apache.mina.core.session.IoSession;
 

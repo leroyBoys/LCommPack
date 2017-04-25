@@ -20,17 +20,16 @@ public class ServerService {
     }
 
     public List<ServerConnection> getServerByGroup(int group){
-        LinkedList<Map<String, Object>> ret = this.sqlPool.ExecuteQuery(ServerTemplate.GET_SERVER_BY_GROUP,group);
-        if(ret == null){
+        List<ServerConnection> ret = this.sqlPool.ExecuteQuery(new ServerConnection(),ServerTemplate.GET_SERVER_BY_GROUP,group);
+        return ret;
+    }
+
+    public ServerConnection getServerById(int gameId){
+        List<ServerConnection> servers = this.sqlPool.ExecuteQuery(new ServerConnection(),ServerTemplate.GET_SERVER_BY_ID,gameId);
+        if(servers == null || servers.isEmpty()){
             return null;
         }
 
-        List<ServerConnection> servers = new LinkedList<>();
-        for(Map<String, Object> serverMap:ret){
-            servers.add(new ServerConnection((Integer) serverMap.get("id"),serverMap.get("name").toString(),
-                    serverMap.get("ip").toString(),(Integer) serverMap.get("port")));
-        }
-
-        return servers;
+        return servers.get(0);
     }
 }

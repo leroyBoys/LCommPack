@@ -1,8 +1,7 @@
 package com.lsocket.codec;
 
-import com.google.protobuf.InvalidProtocolBufferException;
 import com.logger.log.SystemLogger;
-import com.lsocket.control.HandlerListen;
+import com.lsocket.core.SocketServer;
 import com.lsocket.util.DefaultSocketPackage;
 import com.lsocket.util.ReceiveData;
 import org.apache.mina.core.buffer.IoBuffer;
@@ -17,9 +16,9 @@ import java.io.IOException;
  * 2017/4/6.
  */
 public abstract class RequestDecoder extends CumulativeProtocolDecoder {
-    protected HandlerListen handlerListen;
-    public void init(HandlerListen handlerListen){
-        this.handlerListen = handlerListen;
+    protected SocketServer socketServer;
+    public void init(SocketServer socketServer){
+        this.socketServer = socketServer;
     }
 
     protected boolean doDecode(IoSession session, IoBuffer input, ProtocolDecoderOutput protocolDecoderOutput) throws Exception {
@@ -28,7 +27,7 @@ public abstract class RequestDecoder extends CumulativeProtocolDecoder {
             session.closeNow();
             return false;//父类接收新数据
         }else if(receiveData.isHeart()){
-            if(!handlerListen.checkHeart()){//是否合法
+            if(socketServer.getHeartListen() != null && !socketServer.getHeartListen().checkHeart(session)){//是否合法
                 session.closeNow();
                 return false;//父类接收新数据
             }else {
