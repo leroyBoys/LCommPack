@@ -158,7 +158,7 @@ public class SqlPool implements SqlDataSource {
         return null;
     }
 
-    public <T extends DbFactory> List<T> ExecuteQuery(DbFactory<T> dbFactory,String cmd, Object... p) {
+    public <T extends DbFactory> List<T> ExecuteQuery(T dbFactory,String cmd, Object... p) {
         System.out.println("cm2d:" + cmd);
         Connection cn = null;
         PreparedStatement ps = null;
@@ -172,7 +172,8 @@ public class SqlPool implements SqlDataSource {
             rs =  ps.executeQuery();
             List<T> rows = new ArrayList<>();
             while (rs.next()){
-                rows.add(dbFactory.create(rs));
+                T t = dbFactory.create(rs);
+                rows.add(t);
             }
             return rows;
         } catch (Exception e) {
