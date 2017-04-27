@@ -2,6 +2,8 @@ package com.gate.action.dao.mysql;
 
 import com.gate.action.dao.mysql.template.ServerTemplate;
 import com.gate.manager.ServerConnection;
+import com.module.GameServer;
+import com.module.ServerGroup;
 import com.mysql.SqlDataSource;
 import com.mysql.impl.SqlPool;
 
@@ -24,12 +26,20 @@ public class ServerService {
         return ret;
     }
 
-    public ServerConnection getServerById(int gameId){
-        List<ServerConnection> servers = this.sqlPool.ExecuteQuery(new ServerConnection(),ServerTemplate.GET_SERVER_BY_ID,gameId);
-        if(servers == null || servers.isEmpty()){
+    public GameServer getServerById(int gameId){
+        GameServer server = this.sqlPool.ExecuteQueryOne(new GameServer(),ServerTemplate.GET_SERVER_BY_ID,gameId);
+        if(server == null){
             return null;
         }
 
-        return servers.get(0);
+        return server;
+    }
+
+    public ServerGroup getServerGroup(int groupNum){
+        ServerGroup serverGroup = this.sqlPool.ExecuteQueryOne(new ServerGroup(),ServerTemplate.GET_SERVERGROUP,groupNum);
+        if(serverGroup == null){
+            return null;
+        }
+        return serverGroup;
     }
 }

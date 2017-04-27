@@ -15,7 +15,7 @@ import org.apache.mina.core.session.IoSession;
  * 2017/4/6.
  */
 public class ServerConnection extends GameServer implements Runnable,DbFactory {
-    private volatile ServerStatus serverStatus = ServerStatus.closed;
+    private volatile ServerStatus runStatus = ServerStatus.closed;
     private int heartPerTime = 1000;//心跳间隔毫秒
     private final static int timeOutTime = 5*60*1000;//超时时间
 
@@ -42,7 +42,7 @@ public class ServerConnection extends GameServer implements Runnable,DbFactory {
     }
 
     private void checkConnected(){
-        if(serverStatus != ServerStatus.closed){
+        if(runStatus != ServerStatus.closed){
             return;
         }
 
@@ -53,10 +53,13 @@ public class ServerConnection extends GameServer implements Runnable,DbFactory {
         new Thread(this).run();
     }
 
+    public ServerStatus getRunStatus() {
+        return runStatus;
+    }
 
     private void heart(long curTime){
         long dif = curTime - serverMonitor.lastHeartTime;
-        if(serverStatus == ServerStatus.closed || dif < heartPerTime){
+        if(runStatus == ServerStatus.closed || dif < heartPerTime){
             return;
         }
         try {
@@ -89,7 +92,7 @@ public class ServerConnection extends GameServer implements Runnable,DbFactory {
             clientServer.start();
             if(clientServer.getSession() != null){
                 serverMonitor.session = clientServer.getSession();
-                serverStatus = ServerStatus.notFull;
+                runStatus = ServerStatus.notFull;
                 SystemLogger.info(this.getClass(),"ip:"+this.getIp()+" port:"+this.getPort()+" connected suc!");
             }else {
                 errorNum++;
@@ -130,6 +133,6 @@ public class ServerConnection extends GameServer implements Runnable,DbFactory {
     }
 
     enum ServerStatus{
-        closed,notFull,full
+        closed,notFull,full,waitRestart
     }
 }

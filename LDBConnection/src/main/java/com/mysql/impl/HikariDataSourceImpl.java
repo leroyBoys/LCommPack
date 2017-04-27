@@ -20,19 +20,15 @@ public class HikariDataSourceImpl implements SqlDataSource{
      * 默认配置文件名字：hikari_db.properties
      */
     protected HikariDataSourceImpl(){
-        init(null);
+        init(PropertiesTool.loadProperty("hikari_db.properties"));
     }
 
-    protected HikariDataSourceImpl(String propertieFileName){
-        init(propertieFileName);
+    protected HikariDataSourceImpl(Properties properties){
+        init(properties);
     }
 
-    private void init(String propertieFileName){
-        if(propertieFileName == null || propertieFileName.trim().isEmpty()){
-            propertieFileName = "hikari_db.properties";
-        }
+    private void init(Properties properties){
 
-        Properties properties = PropertiesTool.loadProperty(propertieFileName);
         try {
             dds = new HikariDataSource(new HikariConfig(properties));
         } catch (Exception e) {

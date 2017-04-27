@@ -1,8 +1,6 @@
 package com.gate.manager;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * Created by leroy:656515489@qq.com
@@ -12,6 +10,8 @@ public class ServerManager implements Runnable {
     private final static ServerManager serverManager = new ServerManager();
     private volatile boolean isRun = false;
     private Map<Integer,ServerConnection> serverPool = new HashMap<>();
+    private LinkedList<ServerConnection> canUseServer = new LinkedList<>();
+    private Set<ServerConnection> canUseServerSet = new HashSet<>();
 
     private ServerManager(){}
     public static ServerManager getIntance(){
@@ -30,6 +30,22 @@ public class ServerManager implements Runnable {
         }
     }
 
+    public ServerConnection getCanUseServer(){
+        while (!canUseServer.isEmpty()){
+            if(canUseServer.getFirst().getRunStatus() == ServerConnection.ServerStatus.notFull){
+                return canUseServer.getFirst();
+            }
+
+            synchronized (canUseServer){
+                if(canUseServer.getFirst().getRunStatus() == ServerConnection.ServerStatus.notFull){
+                    return canUseServer.getFirst();
+                }
+                canUseServer.removeFirst();
+            }
+        }
+        return null;
+    }
+
 
     public void run() {
         if(isRun){
@@ -46,6 +62,39 @@ public class ServerManager implements Runnable {
     }
 
     private void tick(){
+        for(ServerConnection serverConnection:serverPool.values()){
+            serverConnection.check(0);
 
+            if(serverConnection.getRunStatus() == ServerConnection.ServerStatus.notFull){
+                if(canUseServerSet.contains(serverConnection)){
+                   continue;
+                }
+                synchronized (canUseServer){
+                    if(canUseServerSet.contains(serverConnection)){
+                        continue;
+                    }
+                    canUseServer.addLast(serverConnection);
+                    canUseServerSet.add(serverConnection);
+                }
+            }else {
+                if(!canUseServerSet.contains(serverConnection)){
+                    continue;
+                }
+
+                synchronized (canUseServer){
+                    if(!canUseServerSet.contains(serverConnection)){
+                        continue;
+                    }
+                    Iterator<ServerConnection> iterators = canUseServer.iterator();
+                    while (iterators.hasNext()){
+                        if(iterators.next().getId() == serverConnection.getId()){
+                            iterators.remove();
+                            break;
+                        }
+                    }
+                    canUseServerSet.remove(serverConnection);
+                }
+            }
+        }
     }
 }

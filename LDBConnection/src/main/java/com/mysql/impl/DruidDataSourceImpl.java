@@ -20,19 +20,15 @@ public class DruidDataSourceImpl implements SqlDataSource{
      * 默认配置文件名字：druid_db.properties
      */
     protected DruidDataSourceImpl(){
-        init(null);
+        init(PropertiesTool.loadProperty("druid_db.properties"));
     }
 
-    protected DruidDataSourceImpl(String propertieFileName){
-        init(propertieFileName);
+    protected DruidDataSourceImpl(Properties properties){
+        init(properties);
     }
 
-    private void init(String propertieFileName){
-        if(propertieFileName == null || propertieFileName.trim().isEmpty()){
-            propertieFileName = "druid_db.properties";
-        }
+    private void init(Properties properties){
 
-        Properties properties = PropertiesTool.loadProperty(propertieFileName);
         try {
             dds = (DruidDataSource) DruidDataSourceFactory
                     .createDataSource(properties);

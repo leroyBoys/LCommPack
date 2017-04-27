@@ -4,6 +4,7 @@ import com.gate.codec.RequestDecoderRemote;
 import com.gate.codec.ResponseEncoderRemote;
 import com.gate.control.CoreDispatcherRmote;
 import com.gate.listen.GateHeartLinste;
+import com.gate.manager.CoreServiceManager;
 import com.gate.manager.DBServiceManager;
 import com.gate.manager.ServerManager;
 import com.gate.util.GateVisitor;
@@ -24,14 +25,16 @@ import java.util.concurrent.TimeUnit;
  * 2017/4/6.
  */
 public class Lgate extends SocketServer<Visitor>{
-    private TaskScheduler taskScheduler;
-    private ServerManager serverManager;
+    public final static Lgate lgate = new Lgate();
 
     private Lgate(){
         super(new CoreDispatcherRmote());
-        this.serverManager = ServerManager.getIntance();
-        this.taskScheduler = new TaskScheduler(1);
-        DBServiceManager.getInstance().init(PropertiesTool.loadProperty("server.properties"));
+        DBServiceManager.getInstance(PropertiesTool.loadProperty("server.properties")).load();
+        CoreServiceManager.getIntance().load();
+    }
+
+    public static Lgate getIntance(){
+        return lgate;
     }
 
     @Override
@@ -59,8 +62,4 @@ public class Lgate extends SocketServer<Visitor>{
         return SocketConfig.getInstance();
     }
 
-
-    public void started() {
-        taskScheduler.scheduleAtFixedRate(serverManager, 20, 20, TimeUnit.SECONDS);
-    }
 }

@@ -13,12 +13,22 @@ public class SqlPool implements SqlDataSource {
     private SqlDataSource pool;
     private DataSourceType sourceType = DataSourceType.Druid;
 
-    public SqlPool(){
-        initPool(null);
+    public SqlPool(Properties properties){
+        initPool(properties);
     }
 
-    public SqlPool(String propertieFileName){
-        initPool(propertieFileName);
+    private void initPool(Properties properties){
+        switch (sourceType){
+            case Druid:
+                pool = new DruidDataSourceImpl(properties);
+                break;
+            case Hikari:
+                pool = new HikariDataSourceImpl(properties);
+                break;
+            default:
+                pool = new DruidDataSourceImpl(properties);
+                break;
+        }
     }
 
     public SqlPool(DataSourceType sourceType){
@@ -26,23 +36,9 @@ public class SqlPool implements SqlDataSource {
         initPool(null);
     }
 
-    public SqlPool(DataSourceType sourceType,String propertieFileName){
+    public SqlPool(DataSourceType sourceType,Properties properties){
         this.sourceType = sourceType;
-        initPool(propertieFileName);
-    }
-
-    private void initPool(String propertieFileName){
-        switch (sourceType){
-            case Druid:
-                pool = new DruidDataSourceImpl(propertieFileName);
-                break;
-            case Hikari:
-                pool = new HikariDataSourceImpl(propertieFileName);
-                break;
-            default:
-                pool = new DruidDataSourceImpl(propertieFileName);
-                    break;
-        }
+        initPool(properties);
     }
 
     @Override
@@ -176,6 +172,29 @@ public class SqlPool implements SqlDataSource {
                 rows.add(t);
             }
             return rows;
+        } catch (Exception e) {
+        } finally {
+            this.close(ps, cn, rs);
+        }
+        return null;
+    }
+
+    public <T extends DbFactory> T ExecuteQueryOne(T dbFactory,String cmd, Object... p) {
+        System.out.println("cm2d:" + cmd);
+        Connection cn = null;
+        PreparedStatement ps = null;
+        ResultSet rs = null;
+        try {
+            cn = getConnection();
+
+            ps = cn.prepareStatement(cmd);
+            SetParameter(ps, p);
+
+            rs =  ps.executeQuery();
+            if (!rs.next()){
+                return null;
+            }
+            return dbFactory.create(rs);
         } catch (Exception e) {
         } finally {
             this.close(ps, cn, rs);
