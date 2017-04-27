@@ -1,6 +1,6 @@
 package com.gate.config;
 
-import com.lgame.util.load.Properties;
+import com.config.properties.Properties;
 import com.lsocket.config.AutoConfig;
 
 /**

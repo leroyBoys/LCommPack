@@ -29,7 +29,7 @@ public class ThreadTestDemo {
         final String sql = "DELETE from `tbl_player` where id = ?";
         final String sql2 = "insert into `tbl_player`(id,d_time) values (?,?)";
       //  final SqlPool sqlPool = new SqlPool(SqlPool.DataSourceType.Hikari);
-       final SqlPool sqlPool = new SqlPool();
+       final SqlPool sqlPool = new SqlPool(SqlPool.DataSourceType.Druid);
         runTest(threads, new MainThread() {
             @Override
             public void run(final Integer id) {
