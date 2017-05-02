@@ -9,7 +9,6 @@
         <module name="LBaseLog" />
         <module name="LBaseTool" />
         <module name="LChat" />
-        <module name="LConfigLoad" />
         <module name="LDBConnection" />
         <module name="LGate" />
         <module name="LSocket" />

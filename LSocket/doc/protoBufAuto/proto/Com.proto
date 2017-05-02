@@ -1,0 +1,29 @@
+option java_package = "com.module.net"; 
+option java_outer_classname = "Com"; 
+ 
+message NetOprateData{ 
+ /** 类型 */
+  required int32 otype = 1; 
+  optional int32 uid = 2; 
+  optional int32 dval = 3; 
+  optional int32 flag = 4; 
+  repeated int32 dlist = 5; 
+  repeated NetKVData kvData = 6; 
+}
+
+message NetKVData{ 
+  optional int32 k = 1; 
+  /** value */
+  optional int32 v = 2; 
+  /** list */
+  repeated int32 dlist = 3; 
+}
+
+message NetResponse{ 
+  optional int32 status = 1; 
+  /** 关联 */
+  repeated NetOprateData operateDatas = 2; 
+  /** 状态 */
+  required int32 retStatus = 3; 
+  optional int32 step = 4; 
+}

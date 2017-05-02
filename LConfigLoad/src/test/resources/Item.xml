@@ -1,6 +1,0 @@
-[{"id":"10100","name":"喇叭","description":"发送全服广播","type":"2","useType":"1"},{"id":"14001","name":"攒劲卡转换后的道具","description":"可以再比赛中使用，使用后该场比赛初始积分翻倍","turn_item_Time":"2","type":"2","useType":"1"}]
-
-
-
-
-<!--{"id":道具id,"name":道具名字,"description":道具描述,"turn_item":转换后的道具,"turn_item_Time":转换后道具时间（分钟）,"type":道具类型（1表示货币，2表示普通道具，3表示实物兑换券）,"useType":"使用类型（1是不能使用，2是使用，3是跳转）","skip":"跳转（UI的id_页签）"}-->

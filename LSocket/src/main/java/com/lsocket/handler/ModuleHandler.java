@@ -16,17 +16,15 @@ public abstract class ModuleHandler<V extends Visitor,Req extends Request,Res ex
 
     private static final Logger logger = LoggerFactory.getLogger(ModuleHandler.class);
 
-    protected CoreDispatcher dispatcher;
-
     protected abstract Integer getModule();
 
     protected abstract void inititialize();
-    private ModuleHandler(){}
 
-    public ModuleHandler(CoreDispatcher dispatcher){
-        this.dispatcher = dispatcher;
+    protected abstract CoreDispatcher getDispatcher();
+
+    public ModuleHandler(){
         int mod = getModule();
-        this.dispatcher.put(mod, this);
+        this.getDispatcher().put(mod, this);
         inititialize();
     }
 

@@ -1,6 +1,6 @@
 package test;
 
-import com.lgame.util.xml.JaxbUtil;
+import com.lgame.util.load.xml.JaxbUtil;
 
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
