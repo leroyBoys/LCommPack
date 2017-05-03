@@ -138,4 +138,29 @@ namespace proto.Com
       { return global::ProtoBuf.Extensible.GetExtensionObject(ref extensionObject, createIfMissing); }
   }
   
+  [global::System.Serializable, global::ProtoBuf.ProtoContract(Name=@"NetLoginConfirm")]
+  public partial class NetLoginConfirm : global::ProtoBuf.IExtensible
+  {
+    public NetLoginConfirm() {}
+    
+    private int _uid;
+    [global::ProtoBuf.ProtoMember(1, IsRequired = true, Name=@"uid", DataFormat = global::ProtoBuf.DataFormat.TwosComplement)]
+    public int uid
+    {
+      get { return _uid; }
+      set { _uid = value; }
+    }
+    private string _sn = "";
+    [global::ProtoBuf.ProtoMember(2, IsRequired = false, Name=@"sn", DataFormat = global::ProtoBuf.DataFormat.Default)]
+    [global::System.ComponentModel.DefaultValue("")]
+    public string sn
+    {
+      get { return _sn; }
+      set { _sn = value; }
+    }
+    private global::ProtoBuf.IExtension extensionObject;
+    global::ProtoBuf.IExtension global::ProtoBuf.IExtensible.GetExtensionObject(bool createIfMissing)
+      { return global::ProtoBuf.Extensible.GetExtensionObject(ref extensionObject, createIfMissing); }
+  }
+  
 }

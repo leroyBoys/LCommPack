@@ -21,6 +21,14 @@ public class Request extends Message implements Serializable {
         return request;
     }
 
+    public static Request valueOf(int m_cmd,Object data,int seq) {
+        Request request = new Request();
+        request.setM_cmd(m_cmd);
+        request.setObj(data);
+        request.setSeq(seq);
+        return request;
+    }
+
     public String getUrlTag() {
         return urlTag;
     }

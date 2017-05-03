@@ -6,7 +6,6 @@ import com.logger.log.SystemLogger;
 import com.lsocket.codec.RequestDecoder;
 import com.lsocket.handler.CmdModule;
 import com.lsocket.manager.CMDManager;
-import com.lsocket.message.Request;
 import com.lsocket.module.Visitor;
 import com.lsocket.util.DefaultSocketPackage;
 import com.lsocket.util.ReceiveData;
@@ -56,11 +55,15 @@ public class RequestDecoderRemote extends RequestDecoder {
         }
         //
 
-        NetParent.NetCommond netCommond = NetParent.NetCommond.parseFrom(receiveData.getData());
-        if(receiveData.getCompreType() != 0){
-            out.write(cmdModule.getRequset(ZipTool.uncompressBytes(receiveData.getData()),cmd_m,netCommond.getSeq()));
-        }else {
-            out.write(cmdModule.getRequset(receiveData.getData(),cmd_m,netCommond.getSeq()));
+        try{
+            NetParent.NetCommond netCommond = NetParent.NetCommond.parseFrom(receiveData.getData());
+            if(receiveData.getCompreType() != 0){
+                out.write(cmdModule.getRequset(ZipTool.uncompressBytes(receiveData.getData()),cmd_m,netCommond.getSeq()));
+            }else {
+                out.write(cmdModule.getRequset(receiveData.getData(),cmd_m,netCommond.getSeq()));
+            }
+        }catch (Exception e){
+            e.printStackTrace();
         }
     }
 }

@@ -27,3 +27,10 @@ message NetResponse{
   required int32 retStatus = 3; 
   optional int32 step = 4; 
 }
+
+/** 登录后的第一请求 */
+message NetLoginConfirm{ 
+  required int32 uid = 1;
+  optional string sn = 2; 
+}
+

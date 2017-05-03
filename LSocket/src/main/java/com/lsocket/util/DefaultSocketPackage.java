@@ -140,6 +140,8 @@ public class DefaultSocketPackage {
                 return receiveData;
             }
 
+            input.reset();
+
             int compreType = header>>PackageType.encryType&3;
             if(compreType > 3 || compreType < 0){
                 receiveData.close();
