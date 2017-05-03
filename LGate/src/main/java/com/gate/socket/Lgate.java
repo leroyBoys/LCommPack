@@ -41,8 +41,8 @@ public class Lgate extends SocketServer<Visitor>{
     }
 
     @Override
-    public Visitor createVistor(IoSession session, SocketServer socketServer, long timeOutTime) {
-        return new GateVisitor(socketServer,session,timeOutTime);
+    public Visitor createVistor(IoSession session, long timeOutTime) {
+        return new GateVisitor(this,session,timeOutTime);
     }
 
     @Override

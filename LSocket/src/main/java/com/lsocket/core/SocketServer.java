@@ -67,7 +67,7 @@ public abstract class SocketServer<V extends Visitor> {
         this.heartListen = initHeartListen();
     }
 
-    public abstract V createVistor(IoSession session, SocketServer socketServer, long timeOutTime);
+    public abstract V createVistor(IoSession session, long timeOutTime);
 
     public abstract ResponseEncoder initResponseEncoder();
 
