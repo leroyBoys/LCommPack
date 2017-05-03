@@ -30,7 +30,7 @@ public class PrintTool {
     }
 
     public static void error(String info){
-        System.out.println(info);
+        System.err.println(info);
     }
 
     public static void error(Object... info){

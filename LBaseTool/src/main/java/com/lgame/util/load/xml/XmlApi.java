@@ -43,8 +43,7 @@ public class XmlApi {
      * @return
      */
     public static <T> T readObjectFromXml(Class<T> cls,String pathName){
-        JaxbUtil resultBinder = new JaxbUtil(cls,
-        JaxbUtil.CollectionWrapper.class);
+        JaxbUtil resultBinder = new JaxbUtil(cls,JaxbUtil.CollectionWrapper.class);
         return resultBinder.fromXml(FileTool.read(new File(pathName)));
     }
 

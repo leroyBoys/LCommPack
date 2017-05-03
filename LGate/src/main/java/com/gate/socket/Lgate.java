@@ -15,9 +15,12 @@ import com.lsocket.codec.ResponseEncoder;
 import com.lsocket.config.SocketConfig;
 import com.lsocket.core.SocketServer;
 import com.lsocket.listen.HeartListen;
+import com.lsocket.module.ModuleDispaterInstance;
 import com.lsocket.module.Visitor;
 import org.apache.mina.core.session.IoSession;
 
+import java.util.LinkedList;
+import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -29,8 +32,8 @@ public class Lgate extends SocketServer<Visitor>{
 
     private Lgate(){
         super(new CoreDispatcherRmote());
-        DBServiceManager.getInstance(PropertiesTool.loadProperty("server.properties")).load();
-        CoreServiceManager.getIntance().load();
+       // DBServiceManager.getInstance(PropertiesTool.loadProperty("server.properties")).load();
+        //CoreServiceManager.getIntance().load();
     }
 
     public static Lgate getIntance(){
@@ -60,6 +63,15 @@ public class Lgate extends SocketServer<Visitor>{
     @Override
     public SocketConfig initConfig() {
         return SocketConfig.getInstance();
+    }
+
+    @Override
+    public ModuleDispaterInstance getInnerModuleDispaterConfig() {
+        ModuleDispaterInstance ins = new ModuleDispaterInstance();
+        List<ModuleDispaterInstance.Obj> objs = new LinkedList<>();
+        objs.add(new ModuleDispaterInstance.Obj("com.gate.action.handler"));
+        ins.setObjList(objs);
+        return ins;
     }
 
 }

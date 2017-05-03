@@ -5,6 +5,11 @@
  */
 package com.lsocket.core;
 
+import com.lgame.util.PrintTool;
+import com.lgame.util.file.FileTool;
+import com.lgame.util.file.PropertiesTool;
+import com.lgame.util.load.properties.PropertiesHelper;
+import com.lgame.util.load.xml.XmlApi;
 import com.lsocket.codec.RequestDecoder;
 import com.lsocket.codec.ResponseEncoder;
 import com.lsocket.config.SocketConfig;
@@ -13,6 +18,7 @@ import com.lsocket.handler.SocketHanlder;
 import com.lsocket.listen.HeartListen;
 import com.lsocket.manager.NewSessionManager;
 import com.lsocket.module.CommonCodecFactory;
+import com.lsocket.module.ModuleDispaterInstance;
 import com.lsocket.module.Visitor;
 import com.lsocket.util.SocketConstant;
 import org.apache.mina.core.buffer.IoBuffer;
@@ -30,6 +36,7 @@ import org.apache.mina.transport.socket.nio.NioSocketAcceptor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.File;
 import java.net.InetSocketAddress;
 
 /**
@@ -95,6 +102,8 @@ public abstract class SocketServer<V extends Visitor> {
         this.address = new InetSocketAddress(confg.getSocketPort());
         this.acceptor.bind(this.address);
         logger.info("Listening on " + this.address.getHostName() + ":" + this.address.getPort());
+
+        this.initModuleHanderConfig();
         started();
     }
 
@@ -130,6 +139,29 @@ public abstract class SocketServer<V extends Visitor> {
             }
         }*/
     }
+
+    private void initModuleHanderConfig(){
+        ModuleDispaterInstance instances = this.getInnerModuleDispaterConfig();
+        if(instances != null){
+            instances.load();
+        }
+
+        File file = null;
+        file = new File(FileTool.ROOTPATH+"dispater.xml");
+        if(!file.exists()){
+            file = new File(FileTool.ROOTPATH+"config/dispater.xml");
+
+            if(!file.exists()){
+                PrintTool.error("cant find dispater.xml");
+                return;
+            }
+        }
+
+        instances = XmlApi.readObjectFromXml(ModuleDispaterInstance.class, file.getAbsolutePath());
+        instances.load();
+    }
+
+    public abstract ModuleDispaterInstance getInnerModuleDispaterConfig();
 
     public ProtocolCodecFactory getProtocolCodecFactory() {
         return this.codecFactory;

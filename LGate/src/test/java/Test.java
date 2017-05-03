@@ -1,7 +1,10 @@
 import com.gate.config.ServerSetting;
 import com.lgame.util.json.JsonTool;
+import com.lsocket.handler.ModuleHandler;
 import com.lsocket.util.DefaultSocketPackage;
 import org.apache.mina.core.buffer.IoBuffer;
+
+import java.util.List;
 
 /**
  * Created by leroy:656515489@qq.com
@@ -10,7 +13,15 @@ import org.apache.mina.core.buffer.IoBuffer;
 public class Test {
     public static void main(String[] args) throws InterruptedException {
 
-        ServerSetting serverSetting = new ServerSetting();
+        List<Class> lsd =  ClassUtils.getAllImplClassesByInterface(ModuleHandler.class);
+        if(lsd == null|| lsd.isEmpty()){
+            System.out.println("=====is empty");
+           return;
+        }
+        for(Class c:lsd){
+            System.out.println(c.getName());
+        }
+      /*  ServerSetting serverSetting = new ServerSetting();
         System.out.println(JsonTool.getJsonFromBean(serverSetting));
 
         IoBuffer ioBuffer = null;
@@ -22,7 +33,7 @@ public class Test {
         DefaultSocketPackage.detransMsg(ioBuffer);
 
         ioBuffer = DefaultSocketPackage.transformByteArray(bytes,3,(byte)111,(byte)111);
-        DefaultSocketPackage.detransMsg(ioBuffer);
+        DefaultSocketPackage.detransMsg(ioBuffer);*/
 
     }
 }

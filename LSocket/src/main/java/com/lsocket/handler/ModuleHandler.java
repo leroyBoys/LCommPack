@@ -16,11 +16,11 @@ public abstract class ModuleHandler<V extends Visitor,Req extends Request,Res ex
 
     private static final Logger logger = LoggerFactory.getLogger(ModuleHandler.class);
 
-    protected abstract Integer getModule();
+    public abstract int getModule();
 
     protected abstract void inititialize();
 
-    protected abstract CoreDispatcher getDispatcher();
+    public abstract CoreDispatcher getDispatcher();
 
     public ModuleHandler(){
         int mod = getModule();

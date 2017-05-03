@@ -21,14 +21,16 @@ public class Test {
      * @param args
      */
     public static void main(String[] args) {
-        XmlLoad xmlLoad = new XmlLoad(path);
+
+       // create();
+       /* XmlLoad xmlLoad = new XmlLoad(path);
         Element element = xmlLoad.searchSingleNode("/root/cmd[@value>2]",xmlLoad.getRoot());
         if(element != null){
             element.setAttribute("news222222222222","22");
         }else {
             System.out.println("===>notfind");
         }
-        xmlLoad.save();
+        xmlLoad.save();*/
     }
 
 

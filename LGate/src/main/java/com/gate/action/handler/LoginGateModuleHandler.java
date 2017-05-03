@@ -1,4 +1,4 @@
-package com.gate.action;
+package com.gate.action.handler;
 
 import com.gate.socket.Lgate;
 import com.lsocket.control.impl.CoreDispatcher;
@@ -11,8 +11,8 @@ import com.lsocket.handler.ModuleHandler;
 public class LoginGateModuleHandler extends ModuleHandler {
 
     @Override
-    protected Integer getModule() {
-        return null;
+    public int getModule() {
+        return 0;
     }
 
     @Override
@@ -21,7 +21,7 @@ public class LoginGateModuleHandler extends ModuleHandler {
     }
 
     @Override
-    protected CoreDispatcher getDispatcher() {
+    public CoreDispatcher getDispatcher() {
         return Lgate.getIntance().getCoreDispatcher();
     }
 }
