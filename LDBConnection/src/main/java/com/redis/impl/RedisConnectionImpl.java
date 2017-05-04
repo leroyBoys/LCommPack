@@ -25,13 +25,4 @@ public class RedisConnectionImpl extends RedisConnection {
        super(url);
     }
 
-    @Override
-    public String get(String key) {
-        return super.get(key);
-    }
-
-    @Override
-    protected String set(String key, String v) {
-        return super.set(key, v);
-    }
 }
