@@ -6,6 +6,8 @@
 package com.lsocket.message;
 
 import java.io.Serializable;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  *
@@ -16,6 +18,7 @@ public class Message implements Serializable {
     private byte[] value;
     private Object obj;
     private int seq = 0;
+    private Map<Object,Object> attributeMap = new HashMap<>();
 
     public byte[] getValue() {
         return value;
@@ -52,4 +55,16 @@ public class Message implements Serializable {
 //    public String toString() {
 //        return "[module=" + this.module + ", cmd=" + this.cmd + ", messageType=" + this.messageType + ", sn=" + this.sn + ", value=" + this.value + "]";
 //    }
+
+    public void addAttribute(Object key,Object value){
+        attributeMap.put(key,value);
+    }
+
+    public void removeAttribute(Object key){
+        attributeMap.remove(key);
+    }
+
+    public Object getAttribute(Object key){
+        return attributeMap.get(key);
+    }
 }

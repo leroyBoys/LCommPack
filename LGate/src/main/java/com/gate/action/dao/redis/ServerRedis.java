@@ -1,6 +1,6 @@
 package com.gate.action.dao.redis;
 
-import com.redis.RedisConnectionManager;
+import com.redis.impl.RedisConnectionManager;
 
 /**
  * Created by Administrator on 2017/4/15.
