@@ -62,4 +62,8 @@ public class Response extends Message implements Serializable {
     public String toString() {
         return "Response" + super.toString();
     }
+
+    public int getStatus() {
+        return status;
+    }
 }
