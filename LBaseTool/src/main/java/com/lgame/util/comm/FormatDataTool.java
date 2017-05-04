@@ -7,11 +7,14 @@ package com.lgame.util.comm;
  */
 
 
+import java.nio.ByteBuffer;
+
 /**
  *
  * @author leroy_boy
  */
 public class FormatDataTool {
+    private static ByteBuffer buffer = ByteBuffer.allocate(8);
 
     public static int toInt(Object num) {
         if (num == null) {
@@ -49,6 +52,18 @@ public class FormatDataTool {
                 (byte) ((a >> 8) & 0xFF),
                 (byte) (a & 0xFF)
         };
+    }
+
+    //byte 数组与 long 的相互转换
+    public static byte[] longToBytes(long x) {
+        buffer.putLong(0, x);
+        return buffer.array();
+    }
+
+    public static long bytesToLong(byte[] bytes) {
+        buffer.put(bytes, 0, bytes.length);
+        buffer.flip();//need flip
+        return buffer.getLong();
     }
 
 }
