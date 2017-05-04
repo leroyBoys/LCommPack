@@ -13,8 +13,8 @@ import java.util.Set;
  * Created by leroy:656515489@qq.com
  * 2017/4/11.
  */
-public class RedisConnection {
-    private static JedisPool jedisPool;
+public  class RedisConnection {
+    private JedisPool jedisPool;
 
     /**
      *
@@ -23,14 +23,14 @@ public class RedisConnection {
      * @param maxTotal
      * @param maxIdel
      */
-    public RedisConnection(String url,int timeout,int maxTotal,int maxIdel){
+    protected RedisConnection(String url, int timeout, int maxTotal, int maxIdel){
         init(url,timeout,maxTotal,maxIdel);
     }
 
     /**
      * @param url:redis://user:pwd@119.254.166.136:6379/0
      */
-    public RedisConnection(String url){
+    protected RedisConnection(String url){
         init(url,5000,3000,1500);
     }
 
@@ -61,7 +61,7 @@ public class RedisConnection {
          * @param keys 一个key  也可以使 string 数组
          * @return 返回删除成功的个数
          */
-        public Long del(String... keys) {
+        protected Long del(String... keys) {
             Jedis jedis = null;
             try {
                 jedis = jedisPool.getResource();
@@ -80,7 +80,7 @@ public class RedisConnection {
          * @param str
          * @return 成功返回 添加后value的长度 失败 返回 添加的 value 的长度  异常返回0L
          */
-        public Long append(String key, String str) {
+        protected Long append(String key, String str) {
             Jedis jedis = null;
             Long res = null;
             try {
@@ -100,7 +100,7 @@ public class RedisConnection {
          * @param key
          * @return true OR false
          */
-        public Boolean exists(String key) {
+        protected Boolean exists(String key) {
             Jedis jedis = null;
             try {
                 jedis = jedisPool.getResource();
@@ -119,7 +119,7 @@ public class RedisConnection {
          * @param value
          * @return 成功返回1 如果存在 和 发生异常 返回 0
          */
-        public Long setnx(String key, String value) {
+        protected Long setnx(String key, String value) {
             Jedis jedis = null;
             try {
                 jedis = jedisPool.getResource();
@@ -139,7 +139,7 @@ public class RedisConnection {
          * @param seconds 单位:秒
          * @return 成功返回OK 失败和异常返回null
          */
-        public String setex(String key, String value, int seconds) {
+        protected String setex(String key, String value, int seconds) {
             Jedis jedis = null;
             String res = null;
             try {
@@ -167,7 +167,7 @@ public class RedisConnection {
          * @param offset 下标位置
          * @return 返回替换后  value 的长度
          */
-        public Long setrange(String key, String str, int offset) {
+        protected Long setrange(String key, String str, int offset) {
             Jedis jedis = null;
             try {
                 jedis = jedisPool.getResource();
@@ -185,7 +185,7 @@ public class RedisConnection {
          * @param keys string数组 也可以是一个key
          * @return 成功返回value的集合, 失败返回null的集合 ,异常返回空
          */
-        public List<String> mget(String... keys) {
+        protected List<String> mget(String... keys) {
             Jedis jedis = null;
             List<String> values = null;
             try {
@@ -207,7 +207,7 @@ public class RedisConnection {
          * @return 成功返回OK 失败 异常 返回 null
          *
          */
-        public String mset(String... keysvalues) {
+        protected String mset(String... keysvalues) {
             Jedis jedis = null;
             String res = null;
             try {
@@ -228,7 +228,7 @@ public class RedisConnection {
          * @param keysvalues
          * @return 成功返回1 失败返回0
          */
-        public Long msetnx(String... keysvalues) {
+        protected Long msetnx(String... keysvalues) {
             Jedis jedis = null;
             Long res = 0L;
             try {
@@ -248,7 +248,7 @@ public class RedisConnection {
          * @param value
          * @return 旧值 如果key不存在 则返回null
          */
-        public String getset(String key, String value) {
+        protected String getset(String key, String value) {
             Jedis jedis = null;
             String res = null;
             try {
@@ -269,7 +269,7 @@ public class RedisConnection {
          * @param endOffset
          * @return 如果没有返回null
          */
-        public String getrange(String key, int startOffset, int endOffset) {
+        protected String getrange(String key, int startOffset, int endOffset) {
             Jedis jedis = null;
             String res = null;
             try {
@@ -288,7 +288,7 @@ public class RedisConnection {
          * @param key
          * @return 加值后的结果
          */
-        public Long incr(String key) {
+        protected Long incr(String key) {
             Jedis jedis = null;
             Long res = null;
             try {
@@ -308,7 +308,7 @@ public class RedisConnection {
          * @param integer
          * @return
          */
-        public Long incrBy(String key, Long integer) {
+        protected Long incrBy(String key, Long integer) {
             Jedis jedis = null;
             Long res = null;
             try {
@@ -327,7 +327,7 @@ public class RedisConnection {
          * @param key
          * @return
          */
-        public Long decr(String key) {
+        protected Long decr(String key) {
             Jedis jedis = null;
             Long res = null;
             try {
@@ -347,7 +347,7 @@ public class RedisConnection {
          * @param integer
          * @return
          */
-        public Long decrBy(String key, Long integer) {
+        protected Long decrBy(String key, Long integer) {
             Jedis jedis = null;
             Long res = null;
             try {
@@ -366,7 +366,7 @@ public class RedisConnection {
          * @param key
          * @return 失败返回null
          */
-        public Long serlen(String key) {
+        protected Long serlen(String key) {
             Jedis jedis = null;
             Long res = null;
             try {
@@ -387,7 +387,7 @@ public class RedisConnection {
          * @param value
          * @return 如果存在返回0 异常返回null
          */
-        public Long hset(String key, String field, String value) {
+        protected Long hset(String key, String field, String value) {
             Jedis jedis = null;
             Long res = null;
             try {
@@ -408,7 +408,7 @@ public class RedisConnection {
          * @param value
          * @return
          */
-        public Long hsetnx(String key, String field, String value) {
+        protected Long hsetnx(String key, String field, String value) {
             Jedis jedis = null;
             Long res = null;
             try {
@@ -428,7 +428,7 @@ public class RedisConnection {
          * @param hash
          * @return 返回OK 异常返回null
          */
-        public String hmset(String key, Map<String, String> hash) {
+        protected String hmset(String key, Map<String, String> hash) {
             Jedis jedis = null;
             String res = null;
             try {
@@ -448,7 +448,7 @@ public class RedisConnection {
          * @param field
          * @return 没有返回null
          */
-        public String hget(String key, String field) {
+        protected String hget(String key, String field) {
             Jedis jedis = null;
             String res = null;
             try {
@@ -468,7 +468,7 @@ public class RedisConnection {
          * @param fields 可以使 一个String 也可以是 String数组
          * @return
          */
-        public List<String> hmget(String key, String... fields) {
+        protected List<String> hmget(String key, String... fields) {
             Jedis jedis = null;
             List<String> res = null;
             try {
@@ -489,7 +489,7 @@ public class RedisConnection {
          * @param value
          * @return
          */
-        public Long hincrby(String key, String field, Long value) {
+        protected Long hincrby(String key, String field, Long value) {
             Jedis jedis = null;
             Long res = null;
             try {
@@ -509,7 +509,7 @@ public class RedisConnection {
          * @param field
          * @return
          */
-        public Boolean hexists(String key, String field) {
+        protected Boolean hexists(String key, String field) {
             Jedis jedis = null;
             Boolean res = false;
             try {
@@ -528,7 +528,7 @@ public class RedisConnection {
          * @param key
          * @return
          */
-        public Long hlen(String key) {
+        protected Long hlen(String key) {
             Jedis jedis = null;
             Long res = null;
             try {
@@ -549,7 +549,7 @@ public class RedisConnection {
          * @param fields 可以是 一个 field 也可以是 一个数组
          * @return
          */
-        public Long hdel(String key, String... fields) {
+        protected Long hdel(String key, String... fields) {
             Jedis jedis = null;
             Long res = null;
             try {
@@ -568,7 +568,7 @@ public class RedisConnection {
          * @param key
          * @return
          */
-        public Set<String> hkeys(String key) {
+        protected Set<String> hkeys(String key) {
             Jedis jedis = null;
             Set<String> res = null;
             try {
@@ -587,7 +587,7 @@ public class RedisConnection {
          * @param key
          * @return
          */
-        public List<String> hvals(String key) {
+        protected List<String> hvals(String key) {
             Jedis jedis = null;
             List<String> res = null;
             try {
@@ -606,7 +606,7 @@ public class RedisConnection {
          * @param key
          * @return
          */
-        public Map<String, String> hgetall(String key) {
+        protected Map<String, String> hgetall(String key) {
             Jedis jedis = null;
             Map<String, String> res = null;
             try {
@@ -626,7 +626,7 @@ public class RedisConnection {
          * @param strs 可以使一个string 也可以使string数组
          * @return 返回list的value个数
          */
-        public Long lpush(String key, String... strs) {
+        protected Long lpush(String key, String... strs) {
             Jedis jedis = null;
             Long res = null;
             try {
@@ -646,7 +646,7 @@ public class RedisConnection {
          * @param strs 可以使一个string 也可以使string数组
          * @return 返回list的value个数
          */
-        public Long rpush(String key, String... strs) {
+        protected Long rpush(String key, String... strs) {
             Jedis jedis = null;
             Long res = null;
             try {
@@ -668,7 +668,7 @@ public class RedisConnection {
              * @param value 添加的value
              * @return
             */
-            public Long linsert(String key, BinaryClient.LIST_POSITION where, String pivot, String value) {
+            protected Long linsert(String key, BinaryClient.LIST_POSITION where, String pivot, String value) {
                 Jedis jedis = null;
                 Long res = null;
                 try {
@@ -690,7 +690,7 @@ public class RedisConnection {
          * @param value
          * @return 成功返回OK
          */
-        public String lset(String key, Long index, String value) {
+        protected String lset(String key, Long index, String value) {
             Jedis jedis = null;
             String res = null;
             try {
@@ -711,7 +711,7 @@ public class RedisConnection {
          * @param value
          * @return 返回被删除的个数
          */
-        public Long lrem(String key, long count, String value) {
+        protected Long lrem(String key, long count, String value) {
             Jedis jedis = null;
             Long res = null;
             try {
@@ -732,7 +732,7 @@ public class RedisConnection {
          * @param end
          * @return 成功返回OK
          */
-        public String ltrim(String key, long start, long end) {
+        protected String ltrim(String key, long start, long end) {
             Jedis jedis = null;
             String res = null;
             try {
@@ -751,7 +751,7 @@ public class RedisConnection {
          * @param key
          * @return
          */
-        public String lpop(String key) {
+        protected String lpop(String key) {
             Jedis jedis = null;
             String res = null;
             try {
@@ -770,7 +770,7 @@ public class RedisConnection {
          * @param key
          * @return
          */
-        public String rpop(String key) {
+        protected String rpop(String key) {
             Jedis jedis = null;
             String res = null;
             try {
@@ -791,7 +791,7 @@ public class RedisConnection {
          * @param dstkey
          * @return
          */
-        public String rpoplpush(String srckey, String dstkey) {
+        protected String rpoplpush(String srckey, String dstkey) {
             Jedis jedis = null;
             String res = null;
             try {
@@ -811,7 +811,7 @@ public class RedisConnection {
          * @param index
          * @return 如果没有返回null
          */
-        public String lindex(String key, long index) {
+        protected String lindex(String key, long index) {
             Jedis jedis = null;
             String res = null;
             try {
@@ -830,7 +830,7 @@ public class RedisConnection {
          * @param key
          * @return
          */
-        public Long llen(String key) {
+        protected Long llen(String key) {
             Jedis jedis = null;
             Long res = null;
             try {
@@ -852,7 +852,7 @@ public class RedisConnection {
          * @param end
          * @return
          */
-        public List<String> lrange(String key, long start, long end) {
+        protected List<String> lrange(String key, long start, long end) {
             Jedis jedis = null;
             List<String> res = null;
             try {
@@ -872,7 +872,7 @@ public class RedisConnection {
          * @param members 可以是一个String 也可以是一个String数组
          * @return 添加成功的个数
          */
-        public Long sadd(String key, String... members) {
+        protected Long sadd(String key, String... members) {
             Jedis jedis = null;
             Long res = null;
             try {
@@ -892,7 +892,7 @@ public class RedisConnection {
          * @param members 可以是一个String 也可以是一个String数组
          * @return 删除的个数
          */
-        public Long srem(String key, String... members) {
+        protected Long srem(String key, String... members) {
             Jedis jedis = null;
             Long res = null;
             try {
@@ -911,7 +911,7 @@ public class RedisConnection {
          * @param key
          * @return
          */
-        public String spop(String key) {
+        protected String spop(String key) {
             Jedis jedis = null;
             String res = null;
             try {
@@ -931,7 +931,7 @@ public class RedisConnection {
          * @param keys 可以使一个string 则返回set中所有的value 也可以是string数组
          * @return
          */
-        public Set<String> sdiff(String... keys) {
+        protected Set<String> sdiff(String... keys) {
             Jedis jedis = null;
             Set<String> res = null;
             try {
@@ -952,7 +952,7 @@ public class RedisConnection {
          * @param keys 可以使一个string 则返回set中所有的value 也可以是string数组
          * @return
          */
-        public Long sdiffstore(String dstkey, String... keys) {
+        protected Long sdiffstore(String dstkey, String... keys) {
             Jedis jedis = null;
             Long res = null;
             try {
@@ -971,7 +971,7 @@ public class RedisConnection {
          * @param keys 可以使一个string 也可以是一个string数组
          * @return
          */
-        public Set<String> sinter(String... keys) {
+        protected Set<String> sinter(String... keys) {
             Jedis jedis = null;
             Set<String> res = null;
             try {
@@ -991,7 +991,7 @@ public class RedisConnection {
          * @param keys 可以使一个string 也可以是一个string数组
          * @return
          */
-        public Long sinterstore(String dstkey, String... keys) {
+        protected Long sinterstore(String dstkey, String... keys) {
             Jedis jedis = null;
             Long res = null;
             try {
@@ -1010,7 +1010,7 @@ public class RedisConnection {
          * @param keys 可以使一个string 也可以是一个string数组
          * @return
          */
-        public Set<String> sunion(String... keys) {
+        protected Set<String> sunion(String... keys) {
             Jedis jedis = null;
             Set<String> res = null;
             try {
@@ -1030,7 +1030,7 @@ public class RedisConnection {
          * @param keys 可以使一个string 也可以是一个string数组
          * @return
          */
-        public Long sunionstore(String dstkey, String... keys) {
+        protected Long sunionstore(String dstkey, String... keys) {
             Jedis jedis = null;
             Long res = null;
             try {
@@ -1051,7 +1051,7 @@ public class RedisConnection {
          * @param member set中的value
          * @return
          */
-        public Long smove(String srckey, String dstkey, String member) {
+        protected Long smove(String srckey, String dstkey, String member) {
             Jedis jedis = null;
             Long res = null;
             try {
@@ -1070,7 +1070,7 @@ public class RedisConnection {
          * @param key
          * @return
          */
-        public Long scard(String key) {
+        protected Long scard(String key) {
             Jedis jedis = null;
             Long res = null;
             try {
@@ -1090,7 +1090,7 @@ public class RedisConnection {
          * @param member
          * @return
          */
-        public Boolean sismember(String key, String member) {
+        protected Boolean sismember(String key, String member) {
             Jedis jedis = null;
             Boolean res = null;
             try {
@@ -1109,7 +1109,7 @@ public class RedisConnection {
          * @param key
          * @return
          */
-        public String srandmember(String key) {
+        protected String srandmember(String key) {
             Jedis jedis = null;
             String res = null;
             try {
@@ -1128,7 +1128,7 @@ public class RedisConnection {
          * @param key
          * @return
          */
-        public Set<String> smembers(String key) {
+        protected Set<String> smembers(String key) {
             Jedis jedis = null;
             Set<String> res = null;
             try {
@@ -1149,7 +1149,7 @@ public class RedisConnection {
          * @param scoreMembers
          * @return
          */
-        public Long zadd(String key, Map<String, Double> scoreMembers) {
+        protected Long zadd(String key, Map<String, Double> scoreMembers) {
             Jedis jedis = null;
             Long res = null;
             try {
@@ -1171,7 +1171,7 @@ public class RedisConnection {
          * @param member
          * @return
          */
-        public Long zadd(String key, double score, String member) {
+        protected Long zadd(String key, double score, String member) {
             Jedis jedis = null;
             Long res = null;
             try {
@@ -1191,7 +1191,7 @@ public class RedisConnection {
          * @param members 可以使一个string 也可以是一个string数组
          * @return
          */
-        public Long zrem(String key, String... members) {
+        protected Long zrem(String key, String... members) {
             Jedis jedis = null;
             Long res = null;
             try {
@@ -1212,7 +1212,7 @@ public class RedisConnection {
          * @param member
          * @return
          */
-        public Double zincrby(String key, double score, String member) {
+        protected Double zincrby(String key, double score, String member) {
             Jedis jedis = null;
             Double res = null;
             try {
@@ -1233,7 +1233,7 @@ public class RedisConnection {
          * @param member
          * @return
          */
-        public Long zrank(String key, String member) {
+        protected Long zrank(String key, String member) {
             Jedis jedis = null;
             Long res = null;
             try {
@@ -1254,7 +1254,7 @@ public class RedisConnection {
          * @param member
          * @return
          */
-        public Long zrevrank(String key, String member) {
+        protected Long zrevrank(String key, String member) {
             Jedis jedis = null;
             Long res = null;
             try {
@@ -1277,7 +1277,7 @@ public class RedisConnection {
          * @param end
          * @return
          */
-        public Set<String> zrevrange(String key, long start, long end) {
+        protected Set<String> zrevrange(String key, long start, long end) {
             Jedis jedis = null;
             Set<String> res = null;
             try {
@@ -1298,7 +1298,7 @@ public class RedisConnection {
          * @param min
          * @return
          */
-        public Set<String> zrangebyscore(String key, String max, String min) {
+        protected Set<String> zrangebyscore(String key, String max, String min) {
             Jedis jedis = null;
             Set<String> res = null;
             try {
@@ -1319,7 +1319,7 @@ public class RedisConnection {
          * @param min
          * @return
          */
-        public Set<String> zrangeByScore(String key, double max, double min) {
+        protected Set<String> zrangeByScore(String key, double max, double min) {
             Jedis jedis = null;
             Set<String> res = null;
             try {
@@ -1340,7 +1340,7 @@ public class RedisConnection {
          * @param max
          * @return
          */
-        public Long zcount(String key, String min, String max) {
+        protected Long zcount(String key, String min, String max) {
             Jedis jedis = null;
             Long res = null;
             try {
@@ -1359,7 +1359,7 @@ public class RedisConnection {
          * @param key
          * @return
          */
-        public Long zcard(String key) {
+        protected Long zcard(String key) {
             Jedis jedis = null;
             Long res = null;
             try {
@@ -1379,7 +1379,7 @@ public class RedisConnection {
          * @param member
          * @return
          */
-        public Double zscore(String key, String member) {
+        protected Double zscore(String key, String member) {
             Jedis jedis = null;
             Double res = null;
             try {
@@ -1400,7 +1400,7 @@ public class RedisConnection {
          * @param end
          * @return
          */
-        public Long zremrangeByRank(String key, long start, long end) {
+        protected Long zremrangeByRank(String key, long start, long end) {
             Jedis jedis = null;
             Long res = null;
             try {
@@ -1421,7 +1421,7 @@ public class RedisConnection {
          * @param end
          * @return
          */
-        public Long zremrangeByScore(String key, double start, double end) {
+        protected Long zremrangeByScore(String key, double start, double end) {
             Jedis jedis = null;
             Long res = null;
             try {
@@ -1435,6 +1435,57 @@ public class RedisConnection {
             return res;
         }
 
+        protected String get(String key) {
+            Jedis jedis = null;
+            try {
+                jedis = jedisPool.getResource();
+                return jedis.get(key);
+            } catch (Exception e) {
+                logException(e);
+            } finally {
+                returnResource(jedisPool, jedis);
+            }
+            return null;
+        }
+
+        protected String set(String key,String v) {
+            Jedis jedis = null;
+            try {
+                jedis = jedisPool.getResource();
+                return jedis.set(key,v);
+            } catch (Exception e) {
+                logException(e);
+            } finally {
+                returnResource(jedisPool, jedis);
+            }
+            return null;
+        }
+
+        protected byte[] get(byte[] key) {
+            Jedis jedis = null;
+            try {
+                jedis = jedisPool.getResource();
+                return jedis.get(key);
+            } catch (Exception e) {
+                logException(e);
+            } finally {
+                returnResource(jedisPool, jedis);
+            }
+            return null;
+        }
+
+        protected String set(byte[] key,byte[] v) {
+            Jedis jedis = null;
+            try {
+                jedis = jedisPool.getResource();
+                return jedis.set(key,v);
+            } catch (Exception e) {
+                logException(e);
+            } finally {
+                returnResource(jedisPool, jedis);
+            }
+            return null;
+        }
         /**
          * <p>返回满足pattern表达式的所有key</p>
          * <p>keys(*)</p>
@@ -1442,7 +1493,7 @@ public class RedisConnection {
          * @param pattern
          * @return
          */
-        public Set<String> keys(String pattern) {
+        protected Set<String> keys(String pattern) {
             Jedis jedis = null;
             Set<String> res = null;
             try {
@@ -1461,7 +1512,7 @@ public class RedisConnection {
          * @param key
          * @return
          */
-        public String type(String key) {
+        protected String type(String key) {
             Jedis jedis = null;
             String res = null;
             try {
@@ -1480,7 +1531,7 @@ public class RedisConnection {
          *
          * @param pool
          */
-        public static void returnResource(JedisPool pool, Jedis jedis) {
+        protected static void returnResource(JedisPool pool, Jedis jedis) {
             if(jedis != null){
                 jedis.close();
             }

@@ -1,6 +1,7 @@
-package com.redis;
+package com.redis.impl;
 
 import com.lgame.util.comm.RandomTool;
+import com.redis.RedisConnection;
 
 import java.util.Properties;
 
@@ -39,7 +40,7 @@ public class RedisConnectionManager {
         if(config.getProperty("maxIdel") != null){
             maxIdel = Integer.valueOf(config.getProperty("maxIdel"));
         }
-        return new RedisConnection(config.getProperty("url"),timeOut,maxTotal,maxIdel);
+        return new RedisConnectionImpl(config.getProperty("url"),timeOut,maxTotal,maxIdel);
     }
 
     public RedisConnection getMaster() {
