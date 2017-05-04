@@ -39,5 +39,11 @@ public class CMDManager {
         return cmdMaps.get(getCmd_M(module,cmd));
     }
 
+    public static int getCmd(int cmd_m){
+        return cmd_m&0xFF;
+    }
 
+    public static int getModule(int cmd_m){
+        return cmd_m>>8&0xFFFFF;
+    }
 }

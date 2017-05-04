@@ -41,4 +41,35 @@ namespace proto.DB
       { return global::ProtoBuf.Extensible.GetExtensionObject(ref extensionObject, createIfMissing); }
   }
   
+  [global::System.Serializable, global::ProtoBuf.ProtoContract(Name=@"UK")]
+  public partial class UK : global::ProtoBuf.IExtensible
+  {
+    public UK() {}
+    
+    private int _uid;
+    [global::ProtoBuf.ProtoMember(1, IsRequired = true, Name=@"uid", DataFormat = global::ProtoBuf.DataFormat.TwosComplement)]
+    public int uid
+    {
+      get { return _uid; }
+      set { _uid = value; }
+    }
+    private string _ip_port;
+    [global::ProtoBuf.ProtoMember(2, IsRequired = true, Name=@"ip_port", DataFormat = global::ProtoBuf.DataFormat.Default)]
+    public string ip_port
+    {
+      get { return _ip_port; }
+      set { _ip_port = value; }
+    }
+    private string _key;
+    [global::ProtoBuf.ProtoMember(3, IsRequired = true, Name=@"key", DataFormat = global::ProtoBuf.DataFormat.Default)]
+    public string key
+    {
+      get { return _key; }
+      set { _key = value; }
+    }
+    private global::ProtoBuf.IExtension extensionObject;
+    global::ProtoBuf.IExtension global::ProtoBuf.IExtensible.GetExtensionObject(bool createIfMissing)
+      { return global::ProtoBuf.Extensible.GetExtensionObject(ref extensionObject, createIfMissing); }
+  }
+  
 }

@@ -6,3 +6,11 @@ message DBServer {
   required int32 group = 2; 
   required string name = 3; 
 } 
+
+/** 玩家秘钥 */
+message UK{ 
+  required int32 uid = 1; 
+  required string ip_port = 2; 
+  /** 秘钥 */
+  required string key = 3; 
+} 
