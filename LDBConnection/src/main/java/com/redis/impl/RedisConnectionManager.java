@@ -9,8 +9,8 @@ import java.util.Properties;
  * Created by Administrator on 2017/4/15.
  */
 public class RedisConnectionManager {
-    private RedisConnection master;
-    private RedisConnection[] slaves;
+    private RedisConnectionImpl master;
+    private RedisConnectionImpl[] slaves;
 
     public RedisConnectionManager(Properties masterConfig, Properties... slavesConfig){
         master = getRedisConnection(masterConfig);
@@ -18,13 +18,13 @@ public class RedisConnectionManager {
             return;
         }
 
-        slaves = new RedisConnection[slavesConfig.length];
+        slaves = new RedisConnectionImpl[slavesConfig.length];
         for(int i=0;i<slavesConfig.length;i++){
             slaves[i] = getRedisConnection(slavesConfig[i]);
         }
     }
 
-    private RedisConnection getRedisConnection(Properties config){
+    private RedisConnectionImpl getRedisConnection(Properties config){
         int timeOut = 5000;
         int maxTotal = 3000;
         int maxIdel = 1500;
@@ -43,11 +43,11 @@ public class RedisConnectionManager {
         return new RedisConnectionImpl(config.getProperty("url"),timeOut,maxTotal,maxIdel);
     }
 
-    public RedisConnection getMaster() {
+    public RedisConnectionImpl getMaster() {
         return master;
     }
 
-    public RedisConnection getRandomSlave() {
+    public RedisConnectionImpl getRandomSlave() {
         if(slaves == null){
             return master;
         }
@@ -59,7 +59,7 @@ public class RedisConnectionManager {
         return slaves[RandomTool.Next(slaves.length)];
     }
 
-    public RedisConnection[] getSlaves() {
+    public RedisConnectionImpl[] getSlaves() {
         return slaves;
     }
 }

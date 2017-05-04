@@ -1,13 +1,6 @@
 package com.redis.impl;
 
 import com.redis.RedisConnection;
-import redis.clients.jedis.BinaryClient;
-import redis.clients.jedis.Jedis;
-import redis.clients.jedis.JedisPool;
-
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
 
 /**
  * Created by leroy:656515489@qq.com
