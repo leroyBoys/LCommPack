@@ -10,7 +10,7 @@ package com.logger.type;
  * @author penn.ma <penn.pk.ma@gmail.com>
  */
 public enum LogType {
-
+    Error("Error"),
     /**
      * 登陆日志
      */
