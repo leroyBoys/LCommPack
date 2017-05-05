@@ -38,6 +38,12 @@
             <artifactId>LBaseTool</artifactId>
             <version>1.0</version>
         </dependency>
+
+        <dependency>
+            <groupId>com.rhcloud.mongodb</groupId>
+            <artifactId>mongo-api</artifactId>
+            <version>0.2.1</version>
+        </dependency>
     </dependencies>
 
 </project>
