@@ -7,7 +7,7 @@ import java.sql.ResultSet;
 /**
  * Created by Administrator on 2017/4/26.
  */
-public class GameServer implements DbFactory {
+public class GameServer extends DbFactory {
     public final static GameServer instance = new GameServer();
 
     private int id;
@@ -121,8 +121,8 @@ public class GameServer implements DbFactory {
     }
 
     @Override
-    public GameServer create(ResultSet rs) throws Exception{
-        GameServer gameServer = new GameServer();
+    public GameServer create(ResultSet rs) throws Exception {
+        GameServer gameServer = createNew();
         gameServer.setId(rs.getInt("id"));
         gameServer.setG_v_id(rs.getInt("g_v_id"));
         gameServer.setGroupNum(rs.getInt("group_num"));
@@ -136,6 +136,11 @@ public class GameServer implements DbFactory {
         gameServer.setZoneName(rs.getString("zone_name"));
         gameServer.setZoneIcon(rs.getString("zone_icon"));
         return gameServer;
+    }
+
+    @Override
+    protected GameServer createNew() {
+        return new GameServer();
     }
 
     public enum ServerType{

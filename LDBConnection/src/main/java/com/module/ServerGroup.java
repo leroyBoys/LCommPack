@@ -7,7 +7,7 @@ import java.sql.ResultSet;
 /**
  * Created by Administrator on 2017/4/26.
  */
-public class ServerGroup implements DbFactory {
+public class ServerGroup extends DbFactory {
     public final static ServerGroup instance = new ServerGroup();
     private int group;
     private String sqlUrl;
@@ -75,7 +75,7 @@ public class ServerGroup implements DbFactory {
 
     @Override
     public ServerGroup create(ResultSet rs) throws Exception {
-        ServerGroup serverGroup = new ServerGroup();
+        ServerGroup serverGroup = createNew();
         serverGroup.setGroup(rs.getInt("group"));
         serverGroup.setSqlUrl(rs.getString("sqlurl"));
         serverGroup.setSqlPwd(rs.getString("sql_pwd"));
@@ -84,5 +84,10 @@ public class ServerGroup implements DbFactory {
         serverGroup.setRedisUserName(rs.getString("redis_user_name"));
         serverGroup.setRedisPwd(rs.getString("redis_pwd"));
         return serverGroup;
+    }
+
+    @Override
+    protected ServerGroup createNew() {
+        return new ServerGroup();
     }
 }
