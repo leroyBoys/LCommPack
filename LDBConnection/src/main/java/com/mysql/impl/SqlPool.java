@@ -156,6 +156,35 @@ public class SqlPool implements SqlDataSource {
         return null;
     }
 
+    /**
+     * 只返回一个值
+     * @param cmd
+     * @param p
+     * @return
+     */
+    public Object ExecuteQueryOnlyValue(String cmd, Object... p) {
+        System.out.println("cmd:" + cmd);
+        Connection cn = null;
+        PreparedStatement ps = null;
+        ResultSet rs = null;
+        try {
+            cn = getConnection();
+
+            ps = cn.prepareStatement(cmd);
+            SetParameter(ps, p);
+
+            rs =  ps.executeQuery();
+            while (rs.next()){
+                return rs.getObject(1);
+            }
+            return null;
+        } catch (Exception e) {
+        } finally {
+            this.close(ps, cn, rs);
+        }
+        return null;
+    }
+
     public <T extends DbFactory> List<T> ExecuteQuery(T dbFactory,String cmd, Object... p) {
         System.out.println("cm2d:" + cmd);
 
@@ -186,6 +215,14 @@ public class SqlPool implements SqlDataSource {
         return ExecuteQuery(DbFactoryCache.getInstance().getDbFactory(dbClass),cmd,p);
     }
 
+    /**
+     * 只返回一个对象
+     * @param dbFactory
+     * @param cmd
+     * @param p
+     * @param <T>
+     * @return
+     */
     public <T extends DbFactory> T ExecuteQueryOne(T dbFactory,String cmd, Object... p) {
         System.out.println("cm2d:" + cmd);
         Connection cn = null;
