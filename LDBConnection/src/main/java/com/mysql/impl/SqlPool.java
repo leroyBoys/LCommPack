@@ -1,9 +1,11 @@
 package com.mysql.impl;
 
+import com.mysql.DbFactoryCache;
 import com.mysql.SqlDataSource;
 
 import java.sql.*;
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * Created by leroy:656515489@qq.com
@@ -156,6 +158,7 @@ public class SqlPool implements SqlDataSource {
 
     public <T extends DbFactory> List<T> ExecuteQuery(T dbFactory,String cmd, Object... p) {
         System.out.println("cm2d:" + cmd);
+
         Connection cn = null;
         PreparedStatement ps = null;
         ResultSet rs = null;
@@ -177,6 +180,10 @@ public class SqlPool implements SqlDataSource {
             this.close(ps, cn, rs);
         }
         return null;
+    }
+
+    public <T extends DbFactory> List<T> ExecuteQuery(Class<T> dbClass,String cmd, Object... p) {
+        return ExecuteQuery(DbFactoryCache.getInstance().getDbFactory(dbClass),cmd,p);
     }
 
     public <T extends DbFactory> T ExecuteQueryOne(T dbFactory,String cmd, Object... p) {

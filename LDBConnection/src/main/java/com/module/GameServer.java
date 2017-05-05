@@ -8,6 +8,8 @@ import java.sql.ResultSet;
  * Created by Administrator on 2017/4/26.
  */
 public class GameServer implements DbFactory {
+    public final static GameServer instance = new GameServer();
+
     private int id;
     private int g_v_id;
     private String zoneName;

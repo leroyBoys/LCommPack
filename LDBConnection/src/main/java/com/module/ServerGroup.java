@@ -8,6 +8,7 @@ import java.sql.ResultSet;
  * Created by Administrator on 2017/4/26.
  */
 public class ServerGroup implements DbFactory {
+    public final static GameServer instance = new GameServer();
     private int group;
     private String sqlUrl;
     private String redisUrl;
