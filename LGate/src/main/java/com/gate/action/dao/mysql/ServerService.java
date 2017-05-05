@@ -27,7 +27,7 @@ public class ServerService {
     }
 
     public GameServer getServerById(int gameId){
-        GameServer server = this.sqlPool.ExecuteQueryOne(new GameServer(),ServerTemplate.GET_SERVER_BY_ID,gameId);
+        GameServer server = this.sqlPool.ExecuteQueryOne(GameServer.instance,ServerTemplate.GET_SERVER_BY_ID,gameId);
         if(server == null){
             return null;
         }
@@ -36,7 +36,7 @@ public class ServerService {
     }
 
     public ServerGroup getServerGroup(int groupNum){
-        ServerGroup serverGroup = this.sqlPool.ExecuteQueryOne(new ServerGroup(),ServerTemplate.GET_SERVERGROUP,groupNum);
+        ServerGroup serverGroup = this.sqlPool.ExecuteQueryOne(ServerGroup.instance,ServerTemplate.GET_SERVERGROUP,groupNum);
         if(serverGroup == null){
             return null;
         }

@@ -14,7 +14,7 @@ import org.apache.mina.core.session.IoSession;
  * Created by leroy:656515489@qq.com
  * 2017/4/6.
  */
-public class ServerConnection extends GameServer implements Runnable,DbFactory {
+public class ServerConnection extends GameServer implements Runnable {
     private volatile ServerStatus runStatus = ServerStatus.closed;
     private int heartPerTime = 1000;//心跳间隔毫秒
     private final static int timeOutTime = 5*60*1000;//超时时间
@@ -74,6 +74,11 @@ public class ServerConnection extends GameServer implements Runnable,DbFactory {
         } finally {
             isRun = false;
         }
+    }
+
+    @Override
+    protected ServerConnection createNew() {
+        return new ServerConnection();
     }
 
     public void send(Object obj){
