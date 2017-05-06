@@ -1,5 +1,6 @@
 package com.mysql.impl;
 
+import com.mysql.DbCallBack;
 import com.mysql.DbFactoryCache;
 import com.mysql.SqlDataSource;
 
@@ -178,6 +179,25 @@ public class SqlPool implements SqlDataSource {
                 return rs.getObject(1);
             }
             return null;
+        } catch (Exception e) {
+        } finally {
+            this.close(ps, cn, rs);
+        }
+        return null;
+    }
+
+    public <T> T ExecuteQuery(String sql, DbCallBack<T> callBack) {
+        System.out.println("cmd:" + sql);
+        Connection cn = null;
+        PreparedStatement ps = null;
+        ResultSet rs = null;
+        try {
+            cn = getConnection();
+
+            ps = cn.prepareStatement(sql);
+
+            rs =  ps.executeQuery();
+           return callBack.doInPreparedStatement(rs);
         } catch (Exception e) {
         } finally {
             this.close(ps, cn, rs);
