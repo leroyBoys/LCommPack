@@ -73,3 +73,7 @@ message NetMjUserResult {
   optional int32 winType = 3;
   optional int32 score = 4;
 } 
+
+message RQEnterRoom {
+  optional NetUserData user = 1;
+}
