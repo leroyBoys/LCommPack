@@ -15,15 +15,15 @@ public class Request extends Message implements Serializable {
 
     private static final long serialVersionUID = 9175311565869855991L;
 
-    public static Request valueOf(int m_cmd) {
+    public static Request valueOf(int module,int cmd) {
         Request request = new Request();
-        request.setM_cmd(m_cmd);
+        request.setModule(module);
+        request.setCmd(cmd);
         return request;
     }
 
-    public static Request valueOf(int m_cmd,Object data,int seq) {
-        Request request = new Request();
-        request.setM_cmd(m_cmd);
+    public static Request valueOf(int module,int cmd, com.google.protobuf.Message data, int seq) {
+        Request request = valueOf(module,cmd);
         request.setObj(data);
         request.setSeq(seq);
         return request;

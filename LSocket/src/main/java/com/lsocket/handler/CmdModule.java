@@ -10,13 +10,7 @@ import com.lsocket.module.Visitor;
  */
 public abstract class CmdModule<V extends Visitor,Req extends Request,Res extends Response>{
 
-    public boolean isRequireOnline(){
-        return true;
-    }
-
-    public HttpRequestType requetType(){
-        return HttpRequestType.all;
-    }
+    public abstract ModuleCmd getModuleCmd();
 
     public abstract void invoke(V vistor, Req request,Res response);
 
@@ -24,5 +18,5 @@ public abstract class CmdModule<V extends Visitor,Req extends Request,Res extend
         vistor.sendMsg(resesponse);
     }
 
-    public abstract Req getRequset(byte[] bytes,int cmd_m,int sq) throws Exception;
+    public abstract Req getRequset(byte[] bytes,int module,int cmd,int sq) throws Exception;
 }

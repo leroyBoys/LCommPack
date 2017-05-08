@@ -1,0 +1,12 @@
+option java_package = "com.module.net"; 
+option java_outer_classname = "NetParentOld"; 
+ 
+message NetCommond { 
+  optional string sn = 1; 
+  optional int32 cmd = 2;
+  optional int32 status = 3;
+  optional int32 time = 4;
+  optional bytes obj = 5; 
+  optional int32 uid = 6; 
+  optional int32 seq = 7;
+}

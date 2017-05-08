@@ -10,7 +10,6 @@ import com.lsocket.message.Request;
 import com.lsocket.message.Response;
 import com.lsocket.module.SocketSystemCode;
 import com.lsocket.module.Visitor;
-import com.lsocket.util.SocketConstant;
 import org.apache.mina.core.session.IdleStatus;
 
 import java.util.HashMap;
@@ -23,7 +22,7 @@ public abstract class CoreDispatcher<V extends Visitor,M extends Request> implem
     protected final Map<Integer, ModuleHandler> moduleHandlers = new HashMap(5);
 
     public Response createResponse(M requset){
-        return Response.defaultResponse(requset.getM_cmd(),requset.getSeq());
+        return Response.defaultResponse(requset.getModule(),requset.getCmd(),requset.getSeq());
     }
 
     @Override
@@ -31,7 +30,8 @@ public abstract class CoreDispatcher<V extends Visitor,M extends Request> implem
 
         try {
             Response response = createResponse(request);
-            CMDManager.getIntance().getCmdModule(request.getM_cmd()).invoke(vistor,request,response);
+            int cmd_c = CMDManager.getCmd_M(request.getModule(),request.getCmd());
+            CMDManager.getIntance().getCmdModule(cmd_c).invoke(vistor,request,response);
         }catch (Exception ex){
             SystemLogger.error(this.getClass(),ex);
             vistor.sendError(SocketSystemCode.CONNECTIONS_TOO_MORE);

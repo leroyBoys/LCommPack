@@ -13,10 +13,10 @@ import java.util.Map;
  *
  */
 public class Message implements Serializable {
-    /**  module+cmd */
-    private int m_cmd;
+    private int module;
+    private int cmd;
     private byte[] value;
-    private Object obj;
+    private com.google.protobuf.Message obj;
     private int seq = 0;
     private Map<Object,Object> attributeMap = new HashMap<>();
 
@@ -28,21 +28,21 @@ public class Message implements Serializable {
         this.value = value;
     }
 
-    public Object getObj() {
+    public com.google.protobuf.Message getObj() {
         return obj;
     }
 
-    public void setObj(Object obj) {
+    public void setObj(com.google.protobuf.Message obj) {
         this.obj = obj;
        
     }
 
-    public int getM_cmd() {
-        return m_cmd;
+    public int getModule() {
+        return module;
     }
 
-    public void setM_cmd(int m_cmd) {
-        this.m_cmd = m_cmd;
+    public int getCmd() {
+        return cmd;
     }
 
     public int getSeq() {
@@ -53,6 +53,14 @@ public class Message implements Serializable {
         this.seq = seq;
     }
 //    public String toString() {
+
+    public void setModule(int module) {
+        this.module = module;
+    }
+
+    public void setCmd(int cmd) {
+        this.cmd = cmd;
+    }
 //        return "[module=" + this.module + ", cmd=" + this.cmd + ", messageType=" + this.messageType + ", sn=" + this.sn + ", value=" + this.value + "]";
 //    }
 

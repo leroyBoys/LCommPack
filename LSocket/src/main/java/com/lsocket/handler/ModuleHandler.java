@@ -29,8 +29,8 @@ public abstract class ModuleHandler<V extends Visitor,Req extends Request,Res ex
     }
 
     //注册指令和执行体到模块中
-    public void putInvoker(int cmd, CmdModule invoker) {
-        CMDManager.getIntance().put(this.getModule(),cmd,invoker);
+    public void putInvoker(CmdModule invoker) {
+        CMDManager.getIntance().put(this.getModule(),invoker.getModuleCmd().getValue(),invoker);
     }
 
     public void session_ide(V vister, IdleStatus idleStatus) {

@@ -22,27 +22,28 @@ public class Response extends Message implements Serializable {
         return response;
     }
 
-    public static Response defaultResponse(int m_cmd, int sq, byte[] value) {
-        Response response = new Response();
-        response.setM_cmd(m_cmd);
+    public static Response defaultResponse(int module,int cmd, int sq, byte[] value) {
+        Response response = defaultResponse(module,cmd,sq);
         response.setValue(value);
-        response.setSeq(sq);
-
         return response;
     }
 
-    public static Response defaultResponse(int m_cmd, int sq, Object obj) {
-        Response response = new Response();
-        response.setM_cmd(m_cmd);
+    public static Response defaultResponse(int module,int cmd, int sq, com.google.protobuf.Message obj) {
+        Response response = defaultResponse(module,cmd,sq);
         response.setObj(obj);
+        return response;
+    }
+
+    public static Response defaultResponse(int module,int cmd, int sq) {
+        Response response = defaultResponse(module,cmd);
         response.setSeq(sq);
         return response;
     }
 
-    public static Response defaultResponse(int m_cmd, int sq) {
+    public static Response defaultResponse(int module,int cmd) {
         Response response = new Response();
-        response.setM_cmd(m_cmd);
-        response.setSeq(sq);
+        response.setModule(module);
+        response.setCmd(cmd);
         return response;
     }
 
