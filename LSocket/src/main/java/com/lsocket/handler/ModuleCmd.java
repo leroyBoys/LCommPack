@@ -8,7 +8,7 @@ import com.lsocket.module.HttpRequestType;
  */
 public interface ModuleCmd {
     public int getValue();
-    public int getCmd_c();
+    public int getModule();
     public boolean isRequireOnline();
     public HttpRequestType getRequetType();
 }
