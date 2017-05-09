@@ -413,4 +413,66 @@ namespace proto.NetGame
       { return global::ProtoBuf.Extensible.GetExtensionObject(ref extensionObject, createIfMissing); }
   }
   
+  [global::System.Serializable, global::ProtoBuf.ProtoContract(Name=@"RQExit")]
+  public partial class RQExit : global::ProtoBuf.IExtensible
+  {
+    public RQExit() {}
+    
+    private int _uid = default(int);
+    [global::ProtoBuf.ProtoMember(1, IsRequired = false, Name=@"uid", DataFormat = global::ProtoBuf.DataFormat.TwosComplement)]
+    [global::System.ComponentModel.DefaultValue(default(int))]
+    public int uid
+    {
+      get { return _uid; }
+      set { _uid = value; }
+    }
+    private global::ProtoBuf.IExtension extensionObject;
+    global::ProtoBuf.IExtension global::ProtoBuf.IExtensible.GetExtensionObject(bool createIfMissing)
+      { return global::ProtoBuf.Extensible.GetExtensionObject(ref extensionObject, createIfMissing); }
+  }
+  
+  [global::System.Serializable, global::ProtoBuf.ProtoContract(Name=@"RPVote")]
+  public partial class RPVote : global::ProtoBuf.IExtensible
+  {
+    public RPVote() {}
+    
+    private bool _isagree = default(bool);
+    [global::ProtoBuf.ProtoMember(1, IsRequired = false, Name=@"isagree", DataFormat = global::ProtoBuf.DataFormat.Default)]
+    [global::System.ComponentModel.DefaultValue(default(bool))]
+    public bool isagree
+    {
+      get { return _isagree; }
+      set { _isagree = value; }
+    }
+    private global::ProtoBuf.IExtension extensionObject;
+    global::ProtoBuf.IExtension global::ProtoBuf.IExtensible.GetExtensionObject(bool createIfMissing)
+      { return global::ProtoBuf.Extensible.GetExtensionObject(ref extensionObject, createIfMissing); }
+  }
+  
+  [global::System.Serializable, global::ProtoBuf.ProtoContract(Name=@"RQVote")]
+  public partial class RQVote : global::ProtoBuf.IExtensible
+  {
+    public RQVote() {}
+    
+    private bool _isagree = default(bool);
+    [global::ProtoBuf.ProtoMember(1, IsRequired = false, Name=@"isagree", DataFormat = global::ProtoBuf.DataFormat.Default)]
+    [global::System.ComponentModel.DefaultValue(default(bool))]
+    public bool isagree
+    {
+      get { return _isagree; }
+      set { _isagree = value; }
+    }
+    private int _uid = default(int);
+    [global::ProtoBuf.ProtoMember(2, IsRequired = false, Name=@"uid", DataFormat = global::ProtoBuf.DataFormat.TwosComplement)]
+    [global::System.ComponentModel.DefaultValue(default(int))]
+    public int uid
+    {
+      get { return _uid; }
+      set { _uid = value; }
+    }
+    private global::ProtoBuf.IExtension extensionObject;
+    global::ProtoBuf.IExtension global::ProtoBuf.IExtensible.GetExtensionObject(bool createIfMissing)
+      { return global::ProtoBuf.Extensible.GetExtensionObject(ref extensionObject, createIfMissing); }
+  }
+  
 }

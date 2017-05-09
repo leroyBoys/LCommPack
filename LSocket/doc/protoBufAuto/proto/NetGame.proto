@@ -77,3 +77,20 @@ message NetMjUserResult {
 message RQEnterRoom {
   optional NetUserData user = 1;
 }
+
+message RQExit{
+  optional int32 uid = 1;
+}
+
+/** 投票解散 */
+message RPVote{
+  optional bool isagree = 1;
+}
+
+
+/** 投票解散 */
+message RQVote{
+  optional bool isagree = 1;
+  /** 如果为0表示发起投票，显示同意/拒绝按钮,否则为该玩家的选择 */
+  optional int32 uid = 2;
+}
