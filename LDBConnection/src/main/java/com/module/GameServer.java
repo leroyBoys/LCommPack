@@ -125,7 +125,7 @@ public class GameServer extends DbFactory {
         GameServer gameServer = createNew();
         gameServer.setId(rs.getInt("id"));
         gameServer.setG_v_id(rs.getInt("g_v_id"));
-        gameServer.setGroupNum(rs.getInt("group_num"));
+        gameServer.setGroupNum(rs.getInt("zone_num"));
         gameServer.setIp(rs.getString("ip"));
         gameServer.setMaxCount(rs.getInt("max_count"));
         gameServer.setPort(rs.getInt("port"));
