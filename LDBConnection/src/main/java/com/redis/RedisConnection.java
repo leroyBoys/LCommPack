@@ -39,6 +39,7 @@ public  class RedisConnection {
         String[] secondArray = firstArray[1].split("@");
         //  String user = secondArray[0].split(":")[0];
         String password = secondArray[0].split(":")[1];
+        password = password.trim().isEmpty()?null:password;
 
         String[] threeArray = secondArray[1].split(":");
         String host = threeArray[0];
