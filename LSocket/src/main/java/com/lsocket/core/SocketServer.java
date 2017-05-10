@@ -146,16 +146,7 @@ public abstract class SocketServer<V extends Visitor> {
             instances.load();
         }
 
-        File file = null;
-        file = new File(FileTool.ROOTPATH+"dispater.xml");
-        if(!file.exists()){
-            file = new File(FileTool.ROOTPATH+"config/dispater.xml");
-
-            if(!file.exists()){
-                PrintTool.error("cant find dispater.xml");
-                return;
-            }
-        }
+        File file = new File(PropertiesTool.getPropertiesPath("dispater.xml"));
 
         instances = XmlApi.readObjectFromXml(ModuleDispaterInstance.class, file.getAbsolutePath());
         instances.load();
