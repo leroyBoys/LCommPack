@@ -1,5 +1,6 @@
 package com.redis;
 
+import com.lgame.util.comm.StringTool;
 import redis.clients.jedis.BinaryClient;
 import redis.clients.jedis.Jedis;
 import redis.clients.jedis.JedisPool;
@@ -18,7 +19,7 @@ public  class RedisConnection {
 
     /**
      *
-     * @param url:redis://pwd@119.254.166.136:6379/0
+     * @param url:redis://db@119.254.166.136:6379/pwd
      * @param timeout
      * @param maxTotal
      * @param maxIdel
@@ -28,7 +29,7 @@ public  class RedisConnection {
     }
 
     /**
-     * @param url:redis://pwd@119.254.166.136:6379/0
+     * @param url:redis://db@119.254.166.136:6379/pwd
      */
     public RedisConnection(String url){
         init(url,5000,3000,1500);
@@ -37,15 +38,18 @@ public  class RedisConnection {
     private void init(String url,int timeout,int maxTotal,int maxIdel){
         String[] firstArray = url.split("//");
         String[] secondArray = firstArray[1].split("@");
-        String password = secondArray[0];
-        password = password.trim().isEmpty()?null:password;
+        int db = 0;
+        if(!secondArray[0].trim().isEmpty()){
+            db = Integer.valueOf(secondArray[0]);
+        }
 
         String[] threeArray = secondArray[1].split(":");
         String host = threeArray[0];
         int port = Integer.valueOf(threeArray[1].split("/")[0]);
-        int db = 0;
+
+        String password = null;
         if(threeArray[1].split("/").length>1){
-            db = Integer.valueOf(threeArray[1].split("/")[1]);
+            password = StringTool.trimToNull(threeArray[1].split("/")[1]);
         }
 
         JedisPoolConfig config = new JedisPoolConfig();
