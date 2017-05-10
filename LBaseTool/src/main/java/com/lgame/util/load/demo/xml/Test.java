@@ -22,7 +22,7 @@ public class Test {
      */
     public static void main(String[] args) {
 
-       // create();
+        create();
        /* XmlLoad xmlLoad = new XmlLoad(path);
         Element element = xmlLoad.searchSingleNode("/root/cmd[@value>2]",xmlLoad.getRoot());
         if(element != null){

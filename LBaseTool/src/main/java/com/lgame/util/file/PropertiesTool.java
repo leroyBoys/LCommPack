@@ -1,6 +1,8 @@
 package com.lgame.util.file;
 
 import java.io.*;
+import java.net.URI;
+import java.net.URL;
 import java.util.*;
 
 /**
@@ -369,5 +371,15 @@ public class PropertiesTool {
             }
         }
         return p;
+    }
+
+    public static String getPropertiesPath(String fileName){
+
+        URL url = Thread.currentThread().getContextClassLoader().getResource(fileName);
+        if(url == null){
+            return null;
+        }
+
+        return url.getFile();
     }
 }

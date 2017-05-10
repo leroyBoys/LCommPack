@@ -68,6 +68,8 @@ public class ServerConnection extends GameServer implements Runnable {
                 return;
             }
 
+
+
             send(DefaultSocketPackage.transformHeartMsg());
         } catch (Exception e) {
             e.printStackTrace();
