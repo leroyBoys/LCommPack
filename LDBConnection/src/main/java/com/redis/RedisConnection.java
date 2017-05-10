@@ -28,7 +28,7 @@ public  class RedisConnection {
     }
 
     /**
-     * @param url:redis://user:pwd@119.254.166.136:6379/0
+     * @param url:redis://pwd@119.254.166.136:6379/0
      */
     public RedisConnection(String url){
         init(url,5000,3000,1500);
@@ -37,8 +37,7 @@ public  class RedisConnection {
     private void init(String url,int timeout,int maxTotal,int maxIdel){
         String[] firstArray = url.split("//");
         String[] secondArray = firstArray[1].split("@");
-        //  String user = secondArray[0].split(":")[0];
-        String password = secondArray[0].split(":")[1];
+        String password = secondArray[0];
         password = password.trim().isEmpty()?null:password;
 
         String[] threeArray = secondArray[1].split(":");
