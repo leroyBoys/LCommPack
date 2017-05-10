@@ -377,7 +377,7 @@ public class PropertiesTool {
 
         URL url = Thread.currentThread().getContextClassLoader().getResource(fileName);
         if(url == null){
-            System.out.println("load fail fileName:"+fileName);
+            System.err.println("load fail fileName:"+fileName);
             return null;
         }
 
