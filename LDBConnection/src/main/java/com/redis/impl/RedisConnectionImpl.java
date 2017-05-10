@@ -9,7 +9,7 @@ import com.redis.RedisConnection;
 public class RedisConnectionImpl extends RedisConnection {
     /**
      *
-     * @param url:redis://user:pwd@119.254.166.136:6379/0
+     * @param url:redis://pwd@119.254.166.136:6379/0
      * @param timeout
      * @param maxTotal
      * @param maxIdel
@@ -19,7 +19,7 @@ public class RedisConnectionImpl extends RedisConnection {
     }
 
     /**
-     * @param url:redis://user:pwd@119.254.166.136:6379/0
+     * @param url:redis://pwd@119.254.166.136:6379/0
      */
     public RedisConnectionImpl(String url){
        super(url);

@@ -18,7 +18,7 @@ public  class RedisConnection {
 
     /**
      *
-     * @param url:redis://user:pwd@119.254.166.136:6379/0
+     * @param url:redis://pwd@119.254.166.136:6379/0
      * @param timeout
      * @param maxTotal
      * @param maxIdel
