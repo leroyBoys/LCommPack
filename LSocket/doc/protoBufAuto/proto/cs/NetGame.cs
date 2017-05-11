@@ -493,4 +493,61 @@ namespace proto.NetGame
       { return global::ProtoBuf.Extensible.GetExtensionObject(ref extensionObject, createIfMissing); }
   }
   
+  [global::System.Serializable, global::ProtoBuf.ProtoContract(Name=@"NetResponse")]
+  public partial class NetResponse : global::ProtoBuf.IExtensible
+  {
+    public NetResponse() {}
+    
+    private int _status = default(int);
+    [global::ProtoBuf.ProtoMember(1, IsRequired = false, Name=@"status", DataFormat = global::ProtoBuf.DataFormat.TwosComplement)]
+    [global::System.ComponentModel.DefaultValue(default(int))]
+    public int status
+    {
+      get { return _status; }
+      set { _status = value; }
+    }
+    private readonly global::System.Collections.Generic.List<NetOprateData> _operateDatas = new global::System.Collections.Generic.List<NetOprateData>();
+    [global::ProtoBuf.ProtoMember(2, Name=@"operateDatas", DataFormat = global::ProtoBuf.DataFormat.Default)]
+    public global::System.Collections.Generic.List<NetOprateData> operateDatas
+    {
+      get { return _operateDatas; }
+    }
+  
+    private int _retStatus;
+    [global::ProtoBuf.ProtoMember(3, IsRequired = true, Name=@"retStatus", DataFormat = global::ProtoBuf.DataFormat.TwosComplement)]
+    public int retStatus
+    {
+      get { return _retStatus; }
+      set { _retStatus = value; }
+    }
+    private int _step = default(int);
+    [global::ProtoBuf.ProtoMember(4, IsRequired = false, Name=@"step", DataFormat = global::ProtoBuf.DataFormat.TwosComplement)]
+    [global::System.ComponentModel.DefaultValue(default(int))]
+    public int step
+    {
+      get { return _step; }
+      set { _step = value; }
+    }
+    private global::ProtoBuf.IExtension extensionObject;
+    global::ProtoBuf.IExtension global::ProtoBuf.IExtensible.GetExtensionObject(bool createIfMissing)
+      { return global::ProtoBuf.Extensible.GetExtensionObject(ref extensionObject, createIfMissing); }
+  }
+  
+  [global::System.Serializable, global::ProtoBuf.ProtoContract(Name=@"NetLoginConfirm")]
+  public partial class NetLoginConfirm : global::ProtoBuf.IExtensible
+  {
+    public NetLoginConfirm() {}
+    
+    private int _uid;
+    [global::ProtoBuf.ProtoMember(1, IsRequired = true, Name=@"uid", DataFormat = global::ProtoBuf.DataFormat.TwosComplement)]
+    public int uid
+    {
+      get { return _uid; }
+      set { _uid = value; }
+    }
+    private global::ProtoBuf.IExtension extensionObject;
+    global::ProtoBuf.IExtension global::ProtoBuf.IExtensible.GetExtensionObject(bool createIfMissing)
+      { return global::ProtoBuf.Extensible.GetExtensionObject(ref extensionObject, createIfMissing); }
+  }
+  
 }

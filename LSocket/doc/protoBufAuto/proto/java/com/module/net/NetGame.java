@@ -2115,7 +2115,7 @@ public final class NetGame {
      * <code>optional int32 otype = 1;</code>
      *
      * <pre>
-     ** ²Ù×÷ÀàĞÍ 
+     ** æ“ä½œç±»å‹ 
      * </pre>
      */
     boolean hasOtype();
@@ -2123,7 +2123,7 @@ public final class NetGame {
      * <code>optional int32 otype = 1;</code>
      *
      * <pre>
-     ** ²Ù×÷ÀàĞÍ 
+     ** æ“ä½œç±»å‹ 
      * </pre>
      */
     int getOtype();
@@ -2143,7 +2143,7 @@ public final class NetGame {
      * <code>optional int32 dval = 3;</code>
      *
      * <pre>
-     ** ¸½¼ÓÊı¾İÄ¬ÈÏÖµ0 
+     ** é™„åŠ æ•°æ®é»˜è®¤å€¼0 
      * </pre>
      */
     boolean hasDval();
@@ -2151,7 +2151,7 @@ public final class NetGame {
      * <code>optional int32 dval = 3;</code>
      *
      * <pre>
-     ** ¸½¼ÓÊı¾İÄ¬ÈÏÖµ0 
+     ** é™„åŠ æ•°æ®é»˜è®¤å€¼0 
      * </pre>
      */
     int getDval();
@@ -2161,7 +2161,7 @@ public final class NetGame {
      * <code>optional int32 flag = 4;</code>
      *
      * <pre>
-     ** ¸½¼ÓÊı¾İÄ¬ÈÏÖµ0 
+     ** é™„åŠ æ•°æ®é»˜è®¤å€¼0 
      * </pre>
      */
     boolean hasFlag();
@@ -2169,7 +2169,7 @@ public final class NetGame {
      * <code>optional int32 flag = 4;</code>
      *
      * <pre>
-     ** ¸½¼ÓÊı¾İÄ¬ÈÏÖµ0 
+     ** é™„åŠ æ•°æ®é»˜è®¤å€¼0 
      * </pre>
      */
     int getFlag();
@@ -2366,7 +2366,7 @@ public final class NetGame {
      * <code>optional int32 otype = 1;</code>
      *
      * <pre>
-     ** ²Ù×÷ÀàĞÍ 
+     ** æ“ä½œç±»å‹ 
      * </pre>
      */
     public boolean hasOtype() {
@@ -2376,7 +2376,7 @@ public final class NetGame {
      * <code>optional int32 otype = 1;</code>
      *
      * <pre>
-     ** ²Ù×÷ÀàĞÍ 
+     ** æ“ä½œç±»å‹ 
      * </pre>
      */
     public int getOtype() {
@@ -2406,7 +2406,7 @@ public final class NetGame {
      * <code>optional int32 dval = 3;</code>
      *
      * <pre>
-     ** ¸½¼ÓÊı¾İÄ¬ÈÏÖµ0 
+     ** é™„åŠ æ•°æ®é»˜è®¤å€¼0 
      * </pre>
      */
     public boolean hasDval() {
@@ -2416,7 +2416,7 @@ public final class NetGame {
      * <code>optional int32 dval = 3;</code>
      *
      * <pre>
-     ** ¸½¼ÓÊı¾İÄ¬ÈÏÖµ0 
+     ** é™„åŠ æ•°æ®é»˜è®¤å€¼0 
      * </pre>
      */
     public int getDval() {
@@ -2430,7 +2430,7 @@ public final class NetGame {
      * <code>optional int32 flag = 4;</code>
      *
      * <pre>
-     ** ¸½¼ÓÊı¾İÄ¬ÈÏÖµ0 
+     ** é™„åŠ æ•°æ®é»˜è®¤å€¼0 
      * </pre>
      */
     public boolean hasFlag() {
@@ -2440,7 +2440,7 @@ public final class NetGame {
      * <code>optional int32 flag = 4;</code>
      *
      * <pre>
-     ** ¸½¼ÓÊı¾İÄ¬ÈÏÖµ0 
+     ** é™„åŠ æ•°æ®é»˜è®¤å€¼0 
      * </pre>
      */
     public int getFlag() {
@@ -2870,7 +2870,7 @@ public final class NetGame {
        * <code>optional int32 otype = 1;</code>
        *
        * <pre>
-       ** ²Ù×÷ÀàĞÍ 
+       ** æ“ä½œç±»å‹ 
        * </pre>
        */
       public boolean hasOtype() {
@@ -2880,7 +2880,7 @@ public final class NetGame {
        * <code>optional int32 otype = 1;</code>
        *
        * <pre>
-       ** ²Ù×÷ÀàĞÍ 
+       ** æ“ä½œç±»å‹ 
        * </pre>
        */
       public int getOtype() {
@@ -2890,7 +2890,7 @@ public final class NetGame {
        * <code>optional int32 otype = 1;</code>
        *
        * <pre>
-       ** ²Ù×÷ÀàĞÍ 
+       ** æ“ä½œç±»å‹ 
        * </pre>
        */
       public Builder setOtype(int value) {
@@ -2903,7 +2903,7 @@ public final class NetGame {
        * <code>optional int32 otype = 1;</code>
        *
        * <pre>
-       ** ²Ù×÷ÀàĞÍ 
+       ** æ“ä½œç±»å‹ 
        * </pre>
        */
       public Builder clearOtype() {
@@ -2952,7 +2952,7 @@ public final class NetGame {
        * <code>optional int32 dval = 3;</code>
        *
        * <pre>
-       ** ¸½¼ÓÊı¾İÄ¬ÈÏÖµ0 
+       ** é™„åŠ æ•°æ®é»˜è®¤å€¼0 
        * </pre>
        */
       public boolean hasDval() {
@@ -2962,7 +2962,7 @@ public final class NetGame {
        * <code>optional int32 dval = 3;</code>
        *
        * <pre>
-       ** ¸½¼ÓÊı¾İÄ¬ÈÏÖµ0 
+       ** é™„åŠ æ•°æ®é»˜è®¤å€¼0 
        * </pre>
        */
       public int getDval() {
@@ -2972,7 +2972,7 @@ public final class NetGame {
        * <code>optional int32 dval = 3;</code>
        *
        * <pre>
-       ** ¸½¼ÓÊı¾İÄ¬ÈÏÖµ0 
+       ** é™„åŠ æ•°æ®é»˜è®¤å€¼0 
        * </pre>
        */
       public Builder setDval(int value) {
@@ -2985,7 +2985,7 @@ public final class NetGame {
        * <code>optional int32 dval = 3;</code>
        *
        * <pre>
-       ** ¸½¼ÓÊı¾İÄ¬ÈÏÖµ0 
+       ** é™„åŠ æ•°æ®é»˜è®¤å€¼0 
        * </pre>
        */
       public Builder clearDval() {
@@ -3001,7 +3001,7 @@ public final class NetGame {
        * <code>optional int32 flag = 4;</code>
        *
        * <pre>
-       ** ¸½¼ÓÊı¾İÄ¬ÈÏÖµ0 
+       ** é™„åŠ æ•°æ®é»˜è®¤å€¼0 
        * </pre>
        */
       public boolean hasFlag() {
@@ -3011,7 +3011,7 @@ public final class NetGame {
        * <code>optional int32 flag = 4;</code>
        *
        * <pre>
-       ** ¸½¼ÓÊı¾İÄ¬ÈÏÖµ0 
+       ** é™„åŠ æ•°æ®é»˜è®¤å€¼0 
        * </pre>
        */
       public int getFlag() {
@@ -3021,7 +3021,7 @@ public final class NetGame {
        * <code>optional int32 flag = 4;</code>
        *
        * <pre>
-       ** ¸½¼ÓÊı¾İÄ¬ÈÏÖµ0 
+       ** é™„åŠ æ•°æ®é»˜è®¤å€¼0 
        * </pre>
        */
       public Builder setFlag(int value) {
@@ -3034,7 +3034,7 @@ public final class NetGame {
        * <code>optional int32 flag = 4;</code>
        *
        * <pre>
-       ** ¸½¼ÓÊı¾İÄ¬ÈÏÖµ0 
+       ** é™„åŠ æ•°æ®é»˜è®¤å€¼0 
        * </pre>
        */
       public Builder clearFlag() {
@@ -6620,7 +6620,7 @@ public final class NetGame {
      * <code>optional int32 status = 1;</code>
      *
      * <pre>
-     ** ×´Ì¬Î»(ÓëNetUserDataµÄstatusÒ»Ñù) 
+     ** çŠ¶æ€ä½(ä¸NetUserDataçš„statusä¸€æ ·) 
      * </pre>
      */
     boolean hasStatus();
@@ -6628,7 +6628,7 @@ public final class NetGame {
      * <code>optional int32 status = 1;</code>
      *
      * <pre>
-     ** ×´Ì¬Î»(ÓëNetUserDataµÄstatusÒ»Ñù) 
+     ** çŠ¶æ€ä½(ä¸NetUserDataçš„statusä¸€æ ·) 
      * </pre>
      */
     int getStatus();
@@ -6736,7 +6736,7 @@ public final class NetGame {
      * <code>optional int32 status = 1;</code>
      *
      * <pre>
-     ** ×´Ì¬Î»(ÓëNetUserDataµÄstatusÒ»Ñù) 
+     ** çŠ¶æ€ä½(ä¸NetUserDataçš„statusä¸€æ ·) 
      * </pre>
      */
     public boolean hasStatus() {
@@ -6746,7 +6746,7 @@ public final class NetGame {
      * <code>optional int32 status = 1;</code>
      *
      * <pre>
-     ** ×´Ì¬Î»(ÓëNetUserDataµÄstatusÒ»Ñù) 
+     ** çŠ¶æ€ä½(ä¸NetUserDataçš„statusä¸€æ ·) 
      * </pre>
      */
     public int getStatus() {
@@ -6986,7 +6986,7 @@ public final class NetGame {
        * <code>optional int32 status = 1;</code>
        *
        * <pre>
-       ** ×´Ì¬Î»(ÓëNetUserDataµÄstatusÒ»Ñù) 
+       ** çŠ¶æ€ä½(ä¸NetUserDataçš„statusä¸€æ ·) 
        * </pre>
        */
       public boolean hasStatus() {
@@ -6996,7 +6996,7 @@ public final class NetGame {
        * <code>optional int32 status = 1;</code>
        *
        * <pre>
-       ** ×´Ì¬Î»(ÓëNetUserDataµÄstatusÒ»Ñù) 
+       ** çŠ¶æ€ä½(ä¸NetUserDataçš„statusä¸€æ ·) 
        * </pre>
        */
       public int getStatus() {
@@ -7006,7 +7006,7 @@ public final class NetGame {
        * <code>optional int32 status = 1;</code>
        *
        * <pre>
-       ** ×´Ì¬Î»(ÓëNetUserDataµÄstatusÒ»Ñù) 
+       ** çŠ¶æ€ä½(ä¸NetUserDataçš„statusä¸€æ ·) 
        * </pre>
        */
       public Builder setStatus(int value) {
@@ -7019,7 +7019,7 @@ public final class NetGame {
        * <code>optional int32 status = 1;</code>
        *
        * <pre>
-       ** ×´Ì¬Î»(ÓëNetUserDataµÄstatusÒ»Ñù) 
+       ** çŠ¶æ€ä½(ä¸NetUserDataçš„statusä¸€æ ·) 
        * </pre>
        */
       public Builder clearStatus() {
@@ -7831,7 +7831,7 @@ public final class NetGame {
      * <code>optional int32 showType = 2;</code>
      *
      * <pre>
-     ** ºúÅÆÀàĞÍ£¨×î´ó·¬£©/½Ğ×ì£¨×î´ó·¬£©/µãÅÚÀàĞÍ 
+     ** èƒ¡ç‰Œç±»å‹ï¼ˆæœ€å¤§ç•ªï¼‰/å«å˜´ï¼ˆæœ€å¤§ç•ªï¼‰/ç‚¹ç‚®ç±»å‹ 
      * </pre>
      */
     boolean hasShowType();
@@ -7839,7 +7839,7 @@ public final class NetGame {
      * <code>optional int32 showType = 2;</code>
      *
      * <pre>
-     ** ºúÅÆÀàĞÍ£¨×î´ó·¬£©/½Ğ×ì£¨×î´ó·¬£©/µãÅÚÀàĞÍ 
+     ** èƒ¡ç‰Œç±»å‹ï¼ˆæœ€å¤§ç•ªï¼‰/å«å˜´ï¼ˆæœ€å¤§ç•ªï¼‰/ç‚¹ç‚®ç±»å‹ 
      * </pre>
      */
     int getShowType();
@@ -8024,7 +8024,7 @@ public final class NetGame {
      * <code>optional int32 showType = 2;</code>
      *
      * <pre>
-     ** ºúÅÆÀàĞÍ£¨×î´ó·¬£©/½Ğ×ì£¨×î´ó·¬£©/µãÅÚÀàĞÍ 
+     ** èƒ¡ç‰Œç±»å‹ï¼ˆæœ€å¤§ç•ªï¼‰/å«å˜´ï¼ˆæœ€å¤§ç•ªï¼‰/ç‚¹ç‚®ç±»å‹ 
      * </pre>
      */
     public boolean hasShowType() {
@@ -8034,7 +8034,7 @@ public final class NetGame {
      * <code>optional int32 showType = 2;</code>
      *
      * <pre>
-     ** ºúÅÆÀàĞÍ£¨×î´ó·¬£©/½Ğ×ì£¨×î´ó·¬£©/µãÅÚÀàĞÍ 
+     ** èƒ¡ç‰Œç±»å‹ï¼ˆæœ€å¤§ç•ªï¼‰/å«å˜´ï¼ˆæœ€å¤§ç•ªï¼‰/ç‚¹ç‚®ç±»å‹ 
      * </pre>
      */
     public int getShowType() {
@@ -8630,7 +8630,7 @@ public final class NetGame {
        * <code>optional int32 showType = 2;</code>
        *
        * <pre>
-       ** ºúÅÆÀàĞÍ£¨×î´ó·¬£©/½Ğ×ì£¨×î´ó·¬£©/µãÅÚÀàĞÍ 
+       ** èƒ¡ç‰Œç±»å‹ï¼ˆæœ€å¤§ç•ªï¼‰/å«å˜´ï¼ˆæœ€å¤§ç•ªï¼‰/ç‚¹ç‚®ç±»å‹ 
        * </pre>
        */
       public boolean hasShowType() {
@@ -8640,7 +8640,7 @@ public final class NetGame {
        * <code>optional int32 showType = 2;</code>
        *
        * <pre>
-       ** ºúÅÆÀàĞÍ£¨×î´ó·¬£©/½Ğ×ì£¨×î´ó·¬£©/µãÅÚÀàĞÍ 
+       ** èƒ¡ç‰Œç±»å‹ï¼ˆæœ€å¤§ç•ªï¼‰/å«å˜´ï¼ˆæœ€å¤§ç•ªï¼‰/ç‚¹ç‚®ç±»å‹ 
        * </pre>
        */
       public int getShowType() {
@@ -8650,7 +8650,7 @@ public final class NetGame {
        * <code>optional int32 showType = 2;</code>
        *
        * <pre>
-       ** ºúÅÆÀàĞÍ£¨×î´ó·¬£©/½Ğ×ì£¨×î´ó·¬£©/µãÅÚÀàĞÍ 
+       ** èƒ¡ç‰Œç±»å‹ï¼ˆæœ€å¤§ç•ªï¼‰/å«å˜´ï¼ˆæœ€å¤§ç•ªï¼‰/ç‚¹ç‚®ç±»å‹ 
        * </pre>
        */
       public Builder setShowType(int value) {
@@ -8663,7 +8663,7 @@ public final class NetGame {
        * <code>optional int32 showType = 2;</code>
        *
        * <pre>
-       ** ºúÅÆÀàĞÍ£¨×î´ó·¬£©/½Ğ×ì£¨×î´ó·¬£©/µãÅÚÀàĞÍ 
+       ** èƒ¡ç‰Œç±»å‹ï¼ˆæœ€å¤§ç•ªï¼‰/å«å˜´ï¼ˆæœ€å¤§ç•ªï¼‰/ç‚¹ç‚®ç±»å‹ 
        * </pre>
        */
       public Builder clearShowType() {
@@ -9670,7 +9670,7 @@ public final class NetGame {
    * Protobuf type {@code RPVote}
    *
    * <pre>
-   ** Í¶Æ±½âÉ¢ 
+   ** æŠ•ç¥¨è§£æ•£ 
    * </pre>
    */
   public static final class RPVote extends
@@ -9895,7 +9895,7 @@ public final class NetGame {
      * Protobuf type {@code RPVote}
      *
      * <pre>
-     ** Í¶Æ±½âÉ¢ 
+     ** æŠ•ç¥¨è§£æ•£ 
      * </pre>
      */
     public static final class Builder extends
@@ -10075,7 +10075,7 @@ public final class NetGame {
      * <code>optional int32 uid = 2;</code>
      *
      * <pre>
-     ** Èç¹ûÎª0±íÊ¾·¢ÆğÍ¶Æ±£¬ÏÔÊ¾Í¬Òâ/¾Ü¾ø°´Å¥,·ñÔòÎª¸ÃÍæ¼ÒµÄÑ¡Ôñ 
+     ** å¦‚æœä¸º0è¡¨ç¤ºå‘èµ·æŠ•ç¥¨ï¼Œæ˜¾ç¤ºåŒæ„/æ‹’ç»æŒ‰é’®,å¦åˆ™ä¸ºè¯¥ç©å®¶çš„é€‰æ‹© 
      * </pre>
      */
     boolean hasUid();
@@ -10083,7 +10083,7 @@ public final class NetGame {
      * <code>optional int32 uid = 2;</code>
      *
      * <pre>
-     ** Èç¹ûÎª0±íÊ¾·¢ÆğÍ¶Æ±£¬ÏÔÊ¾Í¬Òâ/¾Ü¾ø°´Å¥,·ñÔòÎª¸ÃÍæ¼ÒµÄÑ¡Ôñ 
+     ** å¦‚æœä¸º0è¡¨ç¤ºå‘èµ·æŠ•ç¥¨ï¼Œæ˜¾ç¤ºåŒæ„/æ‹’ç»æŒ‰é’®,å¦åˆ™ä¸ºè¯¥ç©å®¶çš„é€‰æ‹© 
      * </pre>
      */
     int getUid();
@@ -10092,7 +10092,7 @@ public final class NetGame {
    * Protobuf type {@code RQVote}
    *
    * <pre>
-   ** Í¶Æ±½âÉ¢ 
+   ** æŠ•ç¥¨è§£æ•£ 
    * </pre>
    */
   public static final class RQVote extends
@@ -10216,7 +10216,7 @@ public final class NetGame {
      * <code>optional int32 uid = 2;</code>
      *
      * <pre>
-     ** Èç¹ûÎª0±íÊ¾·¢ÆğÍ¶Æ±£¬ÏÔÊ¾Í¬Òâ/¾Ü¾ø°´Å¥,·ñÔòÎª¸ÃÍæ¼ÒµÄÑ¡Ôñ 
+     ** å¦‚æœä¸º0è¡¨ç¤ºå‘èµ·æŠ•ç¥¨ï¼Œæ˜¾ç¤ºåŒæ„/æ‹’ç»æŒ‰é’®,å¦åˆ™ä¸ºè¯¥ç©å®¶çš„é€‰æ‹© 
      * </pre>
      */
     public boolean hasUid() {
@@ -10226,7 +10226,7 @@ public final class NetGame {
      * <code>optional int32 uid = 2;</code>
      *
      * <pre>
-     ** Èç¹ûÎª0±íÊ¾·¢ÆğÍ¶Æ±£¬ÏÔÊ¾Í¬Òâ/¾Ü¾ø°´Å¥,·ñÔòÎª¸ÃÍæ¼ÒµÄÑ¡Ôñ 
+     ** å¦‚æœä¸º0è¡¨ç¤ºå‘èµ·æŠ•ç¥¨ï¼Œæ˜¾ç¤ºåŒæ„/æ‹’ç»æŒ‰é’®,å¦åˆ™ä¸ºè¯¥ç©å®¶çš„é€‰æ‹© 
      * </pre>
      */
     public int getUid() {
@@ -10354,7 +10354,7 @@ public final class NetGame {
      * Protobuf type {@code RQVote}
      *
      * <pre>
-     ** Í¶Æ±½âÉ¢ 
+     ** æŠ•ç¥¨è§£æ•£ 
      * </pre>
      */
     public static final class Builder extends
@@ -10520,7 +10520,7 @@ public final class NetGame {
        * <code>optional int32 uid = 2;</code>
        *
        * <pre>
-       ** Èç¹ûÎª0±íÊ¾·¢ÆğÍ¶Æ±£¬ÏÔÊ¾Í¬Òâ/¾Ü¾ø°´Å¥,·ñÔòÎª¸ÃÍæ¼ÒµÄÑ¡Ôñ 
+       ** å¦‚æœä¸º0è¡¨ç¤ºå‘èµ·æŠ•ç¥¨ï¼Œæ˜¾ç¤ºåŒæ„/æ‹’ç»æŒ‰é’®,å¦åˆ™ä¸ºè¯¥ç©å®¶çš„é€‰æ‹© 
        * </pre>
        */
       public boolean hasUid() {
@@ -10530,7 +10530,7 @@ public final class NetGame {
        * <code>optional int32 uid = 2;</code>
        *
        * <pre>
-       ** Èç¹ûÎª0±íÊ¾·¢ÆğÍ¶Æ±£¬ÏÔÊ¾Í¬Òâ/¾Ü¾ø°´Å¥,·ñÔòÎª¸ÃÍæ¼ÒµÄÑ¡Ôñ 
+       ** å¦‚æœä¸º0è¡¨ç¤ºå‘èµ·æŠ•ç¥¨ï¼Œæ˜¾ç¤ºåŒæ„/æ‹’ç»æŒ‰é’®,å¦åˆ™ä¸ºè¯¥ç©å®¶çš„é€‰æ‹© 
        * </pre>
        */
       public int getUid() {
@@ -10540,7 +10540,7 @@ public final class NetGame {
        * <code>optional int32 uid = 2;</code>
        *
        * <pre>
-       ** Èç¹ûÎª0±íÊ¾·¢ÆğÍ¶Æ±£¬ÏÔÊ¾Í¬Òâ/¾Ü¾ø°´Å¥,·ñÔòÎª¸ÃÍæ¼ÒµÄÑ¡Ôñ 
+       ** å¦‚æœä¸º0è¡¨ç¤ºå‘èµ·æŠ•ç¥¨ï¼Œæ˜¾ç¤ºåŒæ„/æ‹’ç»æŒ‰é’®,å¦åˆ™ä¸ºè¯¥ç©å®¶çš„é€‰æ‹© 
        * </pre>
        */
       public Builder setUid(int value) {
@@ -10553,7 +10553,7 @@ public final class NetGame {
        * <code>optional int32 uid = 2;</code>
        *
        * <pre>
-       ** Èç¹ûÎª0±íÊ¾·¢ÆğÍ¶Æ±£¬ÏÔÊ¾Í¬Òâ/¾Ü¾ø°´Å¥,·ñÔòÎª¸ÃÍæ¼ÒµÄÑ¡Ôñ 
+       ** å¦‚æœä¸º0è¡¨ç¤ºå‘èµ·æŠ•ç¥¨ï¼Œæ˜¾ç¤ºåŒæ„/æ‹’ç»æŒ‰é’®,å¦åˆ™ä¸ºè¯¥ç©å®¶çš„é€‰æ‹© 
        * </pre>
        */
       public Builder clearUid() {
@@ -10970,6 +10970,1490 @@ public final class NetGame {
     // @@protoc_insertion_point(class_scope:RQConnect)
   }
 
+  public interface NetResponseOrBuilder
+      extends com.google.protobuf.MessageOrBuilder {
+
+    // optional int32 status = 1;
+    /**
+     * <code>optional int32 status = 1;</code>
+     */
+    boolean hasStatus();
+    /**
+     * <code>optional int32 status = 1;</code>
+     */
+    int getStatus();
+
+    // repeated .NetOprateData operateDatas = 2;
+    /**
+     * <code>repeated .NetOprateData operateDatas = 2;</code>
+     *
+     * <pre>
+     ** å…³è” 
+     * </pre>
+     */
+    java.util.List<com.module.net.NetGame.NetOprateData> 
+        getOperateDatasList();
+    /**
+     * <code>repeated .NetOprateData operateDatas = 2;</code>
+     *
+     * <pre>
+     ** å…³è” 
+     * </pre>
+     */
+    com.module.net.NetGame.NetOprateData getOperateDatas(int index);
+    /**
+     * <code>repeated .NetOprateData operateDatas = 2;</code>
+     *
+     * <pre>
+     ** å…³è” 
+     * </pre>
+     */
+    int getOperateDatasCount();
+    /**
+     * <code>repeated .NetOprateData operateDatas = 2;</code>
+     *
+     * <pre>
+     ** å…³è” 
+     * </pre>
+     */
+    java.util.List<? extends com.module.net.NetGame.NetOprateDataOrBuilder> 
+        getOperateDatasOrBuilderList();
+    /**
+     * <code>repeated .NetOprateData operateDatas = 2;</code>
+     *
+     * <pre>
+     ** å…³è” 
+     * </pre>
+     */
+    com.module.net.NetGame.NetOprateDataOrBuilder getOperateDatasOrBuilder(
+        int index);
+
+    // required int32 retStatus = 3;
+    /**
+     * <code>required int32 retStatus = 3;</code>
+     *
+     * <pre>
+     ** çŠ¶æ€ 
+     * </pre>
+     */
+    boolean hasRetStatus();
+    /**
+     * <code>required int32 retStatus = 3;</code>
+     *
+     * <pre>
+     ** çŠ¶æ€ 
+     * </pre>
+     */
+    int getRetStatus();
+
+    // optional int32 step = 4;
+    /**
+     * <code>optional int32 step = 4;</code>
+     */
+    boolean hasStep();
+    /**
+     * <code>optional int32 step = 4;</code>
+     */
+    int getStep();
+  }
+  /**
+   * Protobuf type {@code NetResponse}
+   */
+  public static final class NetResponse extends
+      com.google.protobuf.GeneratedMessage
+      implements NetResponseOrBuilder {
+    // Use NetResponse.newBuilder() to construct.
+    private NetResponse(com.google.protobuf.GeneratedMessage.Builder<?> builder) {
+      super(builder);
+      this.unknownFields = builder.getUnknownFields();
+    }
+    private NetResponse(boolean noInit) { this.unknownFields = com.google.protobuf.UnknownFieldSet.getDefaultInstance(); }
+
+    private static final NetResponse defaultInstance;
+    public static NetResponse getDefaultInstance() {
+      return defaultInstance;
+    }
+
+    public NetResponse getDefaultInstanceForType() {
+      return defaultInstance;
+    }
+
+    private final com.google.protobuf.UnknownFieldSet unknownFields;
+    @java.lang.Override
+    public final com.google.protobuf.UnknownFieldSet
+        getUnknownFields() {
+      return this.unknownFields;
+    }
+    private NetResponse(
+        com.google.protobuf.CodedInputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      initFields();
+      int mutable_bitField0_ = 0;
+      com.google.protobuf.UnknownFieldSet.Builder unknownFields =
+          com.google.protobuf.UnknownFieldSet.newBuilder();
+      try {
+        boolean done = false;
+        while (!done) {
+          int tag = input.readTag();
+          switch (tag) {
+            case 0:
+              done = true;
+              break;
+            default: {
+              if (!parseUnknownField(input, unknownFields,
+                                     extensionRegistry, tag)) {
+                done = true;
+              }
+              break;
+            }
+            case 8: {
+              bitField0_ |= 0x00000001;
+              status_ = input.readInt32();
+              break;
+            }
+            case 18: {
+              if (!((mutable_bitField0_ & 0x00000002) == 0x00000002)) {
+                operateDatas_ = new java.util.ArrayList<com.module.net.NetGame.NetOprateData>();
+                mutable_bitField0_ |= 0x00000002;
+              }
+              operateDatas_.add(input.readMessage(com.module.net.NetGame.NetOprateData.PARSER, extensionRegistry));
+              break;
+            }
+            case 24: {
+              bitField0_ |= 0x00000002;
+              retStatus_ = input.readInt32();
+              break;
+            }
+            case 32: {
+              bitField0_ |= 0x00000004;
+              step_ = input.readInt32();
+              break;
+            }
+          }
+        }
+      } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+        throw e.setUnfinishedMessage(this);
+      } catch (java.io.IOException e) {
+        throw new com.google.protobuf.InvalidProtocolBufferException(
+            e.getMessage()).setUnfinishedMessage(this);
+      } finally {
+        if (((mutable_bitField0_ & 0x00000002) == 0x00000002)) {
+          operateDatas_ = java.util.Collections.unmodifiableList(operateDatas_);
+        }
+        this.unknownFields = unknownFields.build();
+        makeExtensionsImmutable();
+      }
+    }
+    public static final com.google.protobuf.Descriptors.Descriptor
+        getDescriptor() {
+      return com.module.net.NetGame.internal_static_NetResponse_descriptor;
+    }
+
+    protected com.google.protobuf.GeneratedMessage.FieldAccessorTable
+        internalGetFieldAccessorTable() {
+      return com.module.net.NetGame.internal_static_NetResponse_fieldAccessorTable
+          .ensureFieldAccessorsInitialized(
+              com.module.net.NetGame.NetResponse.class, com.module.net.NetGame.NetResponse.Builder.class);
+    }
+
+    public static com.google.protobuf.Parser<NetResponse> PARSER =
+        new com.google.protobuf.AbstractParser<NetResponse>() {
+      public NetResponse parsePartialFrom(
+          com.google.protobuf.CodedInputStream input,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws com.google.protobuf.InvalidProtocolBufferException {
+        return new NetResponse(input, extensionRegistry);
+      }
+    };
+
+    @java.lang.Override
+    public com.google.protobuf.Parser<NetResponse> getParserForType() {
+      return PARSER;
+    }
+
+    private int bitField0_;
+    // optional int32 status = 1;
+    public static final int STATUS_FIELD_NUMBER = 1;
+    private int status_;
+    /**
+     * <code>optional int32 status = 1;</code>
+     */
+    public boolean hasStatus() {
+      return ((bitField0_ & 0x00000001) == 0x00000001);
+    }
+    /**
+     * <code>optional int32 status = 1;</code>
+     */
+    public int getStatus() {
+      return status_;
+    }
+
+    // repeated .NetOprateData operateDatas = 2;
+    public static final int OPERATEDATAS_FIELD_NUMBER = 2;
+    private java.util.List<com.module.net.NetGame.NetOprateData> operateDatas_;
+    /**
+     * <code>repeated .NetOprateData operateDatas = 2;</code>
+     *
+     * <pre>
+     ** å…³è” 
+     * </pre>
+     */
+    public java.util.List<com.module.net.NetGame.NetOprateData> getOperateDatasList() {
+      return operateDatas_;
+    }
+    /**
+     * <code>repeated .NetOprateData operateDatas = 2;</code>
+     *
+     * <pre>
+     ** å…³è” 
+     * </pre>
+     */
+    public java.util.List<? extends com.module.net.NetGame.NetOprateDataOrBuilder> 
+        getOperateDatasOrBuilderList() {
+      return operateDatas_;
+    }
+    /**
+     * <code>repeated .NetOprateData operateDatas = 2;</code>
+     *
+     * <pre>
+     ** å…³è” 
+     * </pre>
+     */
+    public int getOperateDatasCount() {
+      return operateDatas_.size();
+    }
+    /**
+     * <code>repeated .NetOprateData operateDatas = 2;</code>
+     *
+     * <pre>
+     ** å…³è” 
+     * </pre>
+     */
+    public com.module.net.NetGame.NetOprateData getOperateDatas(int index) {
+      return operateDatas_.get(index);
+    }
+    /**
+     * <code>repeated .NetOprateData operateDatas = 2;</code>
+     *
+     * <pre>
+     ** å…³è” 
+     * </pre>
+     */
+    public com.module.net.NetGame.NetOprateDataOrBuilder getOperateDatasOrBuilder(
+        int index) {
+      return operateDatas_.get(index);
+    }
+
+    // required int32 retStatus = 3;
+    public static final int RETSTATUS_FIELD_NUMBER = 3;
+    private int retStatus_;
+    /**
+     * <code>required int32 retStatus = 3;</code>
+     *
+     * <pre>
+     ** çŠ¶æ€ 
+     * </pre>
+     */
+    public boolean hasRetStatus() {
+      return ((bitField0_ & 0x00000002) == 0x00000002);
+    }
+    /**
+     * <code>required int32 retStatus = 3;</code>
+     *
+     * <pre>
+     ** çŠ¶æ€ 
+     * </pre>
+     */
+    public int getRetStatus() {
+      return retStatus_;
+    }
+
+    // optional int32 step = 4;
+    public static final int STEP_FIELD_NUMBER = 4;
+    private int step_;
+    /**
+     * <code>optional int32 step = 4;</code>
+     */
+    public boolean hasStep() {
+      return ((bitField0_ & 0x00000004) == 0x00000004);
+    }
+    /**
+     * <code>optional int32 step = 4;</code>
+     */
+    public int getStep() {
+      return step_;
+    }
+
+    private void initFields() {
+      status_ = 0;
+      operateDatas_ = java.util.Collections.emptyList();
+      retStatus_ = 0;
+      step_ = 0;
+    }
+    private byte memoizedIsInitialized = -1;
+    public final boolean isInitialized() {
+      byte isInitialized = memoizedIsInitialized;
+      if (isInitialized != -1) return isInitialized == 1;
+
+      if (!hasRetStatus()) {
+        memoizedIsInitialized = 0;
+        return false;
+      }
+      memoizedIsInitialized = 1;
+      return true;
+    }
+
+    public void writeTo(com.google.protobuf.CodedOutputStream output)
+                        throws java.io.IOException {
+      getSerializedSize();
+      if (((bitField0_ & 0x00000001) == 0x00000001)) {
+        output.writeInt32(1, status_);
+      }
+      for (int i = 0; i < operateDatas_.size(); i++) {
+        output.writeMessage(2, operateDatas_.get(i));
+      }
+      if (((bitField0_ & 0x00000002) == 0x00000002)) {
+        output.writeInt32(3, retStatus_);
+      }
+      if (((bitField0_ & 0x00000004) == 0x00000004)) {
+        output.writeInt32(4, step_);
+      }
+      getUnknownFields().writeTo(output);
+    }
+
+    private int memoizedSerializedSize = -1;
+    public int getSerializedSize() {
+      int size = memoizedSerializedSize;
+      if (size != -1) return size;
+
+      size = 0;
+      if (((bitField0_ & 0x00000001) == 0x00000001)) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeInt32Size(1, status_);
+      }
+      for (int i = 0; i < operateDatas_.size(); i++) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeMessageSize(2, operateDatas_.get(i));
+      }
+      if (((bitField0_ & 0x00000002) == 0x00000002)) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeInt32Size(3, retStatus_);
+      }
+      if (((bitField0_ & 0x00000004) == 0x00000004)) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeInt32Size(4, step_);
+      }
+      size += getUnknownFields().getSerializedSize();
+      memoizedSerializedSize = size;
+      return size;
+    }
+
+    private static final long serialVersionUID = 0L;
+    @java.lang.Override
+    protected java.lang.Object writeReplace()
+        throws java.io.ObjectStreamException {
+      return super.writeReplace();
+    }
+
+    public static com.module.net.NetGame.NetResponse parseFrom(
+        com.google.protobuf.ByteString data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data);
+    }
+    public static com.module.net.NetGame.NetResponse parseFrom(
+        com.google.protobuf.ByteString data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data, extensionRegistry);
+    }
+    public static com.module.net.NetGame.NetResponse parseFrom(byte[] data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data);
+    }
+    public static com.module.net.NetGame.NetResponse parseFrom(
+        byte[] data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data, extensionRegistry);
+    }
+    public static com.module.net.NetGame.NetResponse parseFrom(java.io.InputStream input)
+        throws java.io.IOException {
+      return PARSER.parseFrom(input);
+    }
+    public static com.module.net.NetGame.NetResponse parseFrom(
+        java.io.InputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return PARSER.parseFrom(input, extensionRegistry);
+    }
+    public static com.module.net.NetGame.NetResponse parseDelimitedFrom(java.io.InputStream input)
+        throws java.io.IOException {
+      return PARSER.parseDelimitedFrom(input);
+    }
+    public static com.module.net.NetGame.NetResponse parseDelimitedFrom(
+        java.io.InputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return PARSER.parseDelimitedFrom(input, extensionRegistry);
+    }
+    public static com.module.net.NetGame.NetResponse parseFrom(
+        com.google.protobuf.CodedInputStream input)
+        throws java.io.IOException {
+      return PARSER.parseFrom(input);
+    }
+    public static com.module.net.NetGame.NetResponse parseFrom(
+        com.google.protobuf.CodedInputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return PARSER.parseFrom(input, extensionRegistry);
+    }
+
+    public static Builder newBuilder() { return Builder.create(); }
+    public Builder newBuilderForType() { return newBuilder(); }
+    public static Builder newBuilder(com.module.net.NetGame.NetResponse prototype) {
+      return newBuilder().mergeFrom(prototype);
+    }
+    public Builder toBuilder() { return newBuilder(this); }
+
+    @java.lang.Override
+    protected Builder newBuilderForType(
+        com.google.protobuf.GeneratedMessage.BuilderParent parent) {
+      Builder builder = new Builder(parent);
+      return builder;
+    }
+    /**
+     * Protobuf type {@code NetResponse}
+     */
+    public static final class Builder extends
+        com.google.protobuf.GeneratedMessage.Builder<Builder>
+       implements com.module.net.NetGame.NetResponseOrBuilder {
+      public static final com.google.protobuf.Descriptors.Descriptor
+          getDescriptor() {
+        return com.module.net.NetGame.internal_static_NetResponse_descriptor;
+      }
+
+      protected com.google.protobuf.GeneratedMessage.FieldAccessorTable
+          internalGetFieldAccessorTable() {
+        return com.module.net.NetGame.internal_static_NetResponse_fieldAccessorTable
+            .ensureFieldAccessorsInitialized(
+                com.module.net.NetGame.NetResponse.class, com.module.net.NetGame.NetResponse.Builder.class);
+      }
+
+      // Construct using com.module.net.NetGame.NetResponse.newBuilder()
+      private Builder() {
+        maybeForceBuilderInitialization();
+      }
+
+      private Builder(
+          com.google.protobuf.GeneratedMessage.BuilderParent parent) {
+        super(parent);
+        maybeForceBuilderInitialization();
+      }
+      private void maybeForceBuilderInitialization() {
+        if (com.google.protobuf.GeneratedMessage.alwaysUseFieldBuilders) {
+          getOperateDatasFieldBuilder();
+        }
+      }
+      private static Builder create() {
+        return new Builder();
+      }
+
+      public Builder clear() {
+        super.clear();
+        status_ = 0;
+        bitField0_ = (bitField0_ & ~0x00000001);
+        if (operateDatasBuilder_ == null) {
+          operateDatas_ = java.util.Collections.emptyList();
+          bitField0_ = (bitField0_ & ~0x00000002);
+        } else {
+          operateDatasBuilder_.clear();
+        }
+        retStatus_ = 0;
+        bitField0_ = (bitField0_ & ~0x00000004);
+        step_ = 0;
+        bitField0_ = (bitField0_ & ~0x00000008);
+        return this;
+      }
+
+      public Builder clone() {
+        return create().mergeFrom(buildPartial());
+      }
+
+      public com.google.protobuf.Descriptors.Descriptor
+          getDescriptorForType() {
+        return com.module.net.NetGame.internal_static_NetResponse_descriptor;
+      }
+
+      public com.module.net.NetGame.NetResponse getDefaultInstanceForType() {
+        return com.module.net.NetGame.NetResponse.getDefaultInstance();
+      }
+
+      public com.module.net.NetGame.NetResponse build() {
+        com.module.net.NetGame.NetResponse result = buildPartial();
+        if (!result.isInitialized()) {
+          throw newUninitializedMessageException(result);
+        }
+        return result;
+      }
+
+      public com.module.net.NetGame.NetResponse buildPartial() {
+        com.module.net.NetGame.NetResponse result = new com.module.net.NetGame.NetResponse(this);
+        int from_bitField0_ = bitField0_;
+        int to_bitField0_ = 0;
+        if (((from_bitField0_ & 0x00000001) == 0x00000001)) {
+          to_bitField0_ |= 0x00000001;
+        }
+        result.status_ = status_;
+        if (operateDatasBuilder_ == null) {
+          if (((bitField0_ & 0x00000002) == 0x00000002)) {
+            operateDatas_ = java.util.Collections.unmodifiableList(operateDatas_);
+            bitField0_ = (bitField0_ & ~0x00000002);
+          }
+          result.operateDatas_ = operateDatas_;
+        } else {
+          result.operateDatas_ = operateDatasBuilder_.build();
+        }
+        if (((from_bitField0_ & 0x00000004) == 0x00000004)) {
+          to_bitField0_ |= 0x00000002;
+        }
+        result.retStatus_ = retStatus_;
+        if (((from_bitField0_ & 0x00000008) == 0x00000008)) {
+          to_bitField0_ |= 0x00000004;
+        }
+        result.step_ = step_;
+        result.bitField0_ = to_bitField0_;
+        onBuilt();
+        return result;
+      }
+
+      public Builder mergeFrom(com.google.protobuf.Message other) {
+        if (other instanceof com.module.net.NetGame.NetResponse) {
+          return mergeFrom((com.module.net.NetGame.NetResponse)other);
+        } else {
+          super.mergeFrom(other);
+          return this;
+        }
+      }
+
+      public Builder mergeFrom(com.module.net.NetGame.NetResponse other) {
+        if (other == com.module.net.NetGame.NetResponse.getDefaultInstance()) return this;
+        if (other.hasStatus()) {
+          setStatus(other.getStatus());
+        }
+        if (operateDatasBuilder_ == null) {
+          if (!other.operateDatas_.isEmpty()) {
+            if (operateDatas_.isEmpty()) {
+              operateDatas_ = other.operateDatas_;
+              bitField0_ = (bitField0_ & ~0x00000002);
+            } else {
+              ensureOperateDatasIsMutable();
+              operateDatas_.addAll(other.operateDatas_);
+            }
+            onChanged();
+          }
+        } else {
+          if (!other.operateDatas_.isEmpty()) {
+            if (operateDatasBuilder_.isEmpty()) {
+              operateDatasBuilder_.dispose();
+              operateDatasBuilder_ = null;
+              operateDatas_ = other.operateDatas_;
+              bitField0_ = (bitField0_ & ~0x00000002);
+              operateDatasBuilder_ = 
+                com.google.protobuf.GeneratedMessage.alwaysUseFieldBuilders ?
+                   getOperateDatasFieldBuilder() : null;
+            } else {
+              operateDatasBuilder_.addAllMessages(other.operateDatas_);
+            }
+          }
+        }
+        if (other.hasRetStatus()) {
+          setRetStatus(other.getRetStatus());
+        }
+        if (other.hasStep()) {
+          setStep(other.getStep());
+        }
+        this.mergeUnknownFields(other.getUnknownFields());
+        return this;
+      }
+
+      public final boolean isInitialized() {
+        if (!hasRetStatus()) {
+          
+          return false;
+        }
+        return true;
+      }
+
+      public Builder mergeFrom(
+          com.google.protobuf.CodedInputStream input,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws java.io.IOException {
+        com.module.net.NetGame.NetResponse parsedMessage = null;
+        try {
+          parsedMessage = PARSER.parsePartialFrom(input, extensionRegistry);
+        } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+          parsedMessage = (com.module.net.NetGame.NetResponse) e.getUnfinishedMessage();
+          throw e;
+        } finally {
+          if (parsedMessage != null) {
+            mergeFrom(parsedMessage);
+          }
+        }
+        return this;
+      }
+      private int bitField0_;
+
+      // optional int32 status = 1;
+      private int status_ ;
+      /**
+       * <code>optional int32 status = 1;</code>
+       */
+      public boolean hasStatus() {
+        return ((bitField0_ & 0x00000001) == 0x00000001);
+      }
+      /**
+       * <code>optional int32 status = 1;</code>
+       */
+      public int getStatus() {
+        return status_;
+      }
+      /**
+       * <code>optional int32 status = 1;</code>
+       */
+      public Builder setStatus(int value) {
+        bitField0_ |= 0x00000001;
+        status_ = value;
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>optional int32 status = 1;</code>
+       */
+      public Builder clearStatus() {
+        bitField0_ = (bitField0_ & ~0x00000001);
+        status_ = 0;
+        onChanged();
+        return this;
+      }
+
+      // repeated .NetOprateData operateDatas = 2;
+      private java.util.List<com.module.net.NetGame.NetOprateData> operateDatas_ =
+        java.util.Collections.emptyList();
+      private void ensureOperateDatasIsMutable() {
+        if (!((bitField0_ & 0x00000002) == 0x00000002)) {
+          operateDatas_ = new java.util.ArrayList<com.module.net.NetGame.NetOprateData>(operateDatas_);
+          bitField0_ |= 0x00000002;
+         }
+      }
+
+      private com.google.protobuf.RepeatedFieldBuilder<
+          com.module.net.NetGame.NetOprateData, com.module.net.NetGame.NetOprateData.Builder, com.module.net.NetGame.NetOprateDataOrBuilder> operateDatasBuilder_;
+
+      /**
+       * <code>repeated .NetOprateData operateDatas = 2;</code>
+       *
+       * <pre>
+       ** å…³è” 
+       * </pre>
+       */
+      public java.util.List<com.module.net.NetGame.NetOprateData> getOperateDatasList() {
+        if (operateDatasBuilder_ == null) {
+          return java.util.Collections.unmodifiableList(operateDatas_);
+        } else {
+          return operateDatasBuilder_.getMessageList();
+        }
+      }
+      /**
+       * <code>repeated .NetOprateData operateDatas = 2;</code>
+       *
+       * <pre>
+       ** å…³è” 
+       * </pre>
+       */
+      public int getOperateDatasCount() {
+        if (operateDatasBuilder_ == null) {
+          return operateDatas_.size();
+        } else {
+          return operateDatasBuilder_.getCount();
+        }
+      }
+      /**
+       * <code>repeated .NetOprateData operateDatas = 2;</code>
+       *
+       * <pre>
+       ** å…³è” 
+       * </pre>
+       */
+      public com.module.net.NetGame.NetOprateData getOperateDatas(int index) {
+        if (operateDatasBuilder_ == null) {
+          return operateDatas_.get(index);
+        } else {
+          return operateDatasBuilder_.getMessage(index);
+        }
+      }
+      /**
+       * <code>repeated .NetOprateData operateDatas = 2;</code>
+       *
+       * <pre>
+       ** å…³è” 
+       * </pre>
+       */
+      public Builder setOperateDatas(
+          int index, com.module.net.NetGame.NetOprateData value) {
+        if (operateDatasBuilder_ == null) {
+          if (value == null) {
+            throw new NullPointerException();
+          }
+          ensureOperateDatasIsMutable();
+          operateDatas_.set(index, value);
+          onChanged();
+        } else {
+          operateDatasBuilder_.setMessage(index, value);
+        }
+        return this;
+      }
+      /**
+       * <code>repeated .NetOprateData operateDatas = 2;</code>
+       *
+       * <pre>
+       ** å…³è” 
+       * </pre>
+       */
+      public Builder setOperateDatas(
+          int index, com.module.net.NetGame.NetOprateData.Builder builderForValue) {
+        if (operateDatasBuilder_ == null) {
+          ensureOperateDatasIsMutable();
+          operateDatas_.set(index, builderForValue.build());
+          onChanged();
+        } else {
+          operateDatasBuilder_.setMessage(index, builderForValue.build());
+        }
+        return this;
+      }
+      /**
+       * <code>repeated .NetOprateData operateDatas = 2;</code>
+       *
+       * <pre>
+       ** å…³è” 
+       * </pre>
+       */
+      public Builder addOperateDatas(com.module.net.NetGame.NetOprateData value) {
+        if (operateDatasBuilder_ == null) {
+          if (value == null) {
+            throw new NullPointerException();
+          }
+          ensureOperateDatasIsMutable();
+          operateDatas_.add(value);
+          onChanged();
+        } else {
+          operateDatasBuilder_.addMessage(value);
+        }
+        return this;
+      }
+      /**
+       * <code>repeated .NetOprateData operateDatas = 2;</code>
+       *
+       * <pre>
+       ** å…³è” 
+       * </pre>
+       */
+      public Builder addOperateDatas(
+          int index, com.module.net.NetGame.NetOprateData value) {
+        if (operateDatasBuilder_ == null) {
+          if (value == null) {
+            throw new NullPointerException();
+          }
+          ensureOperateDatasIsMutable();
+          operateDatas_.add(index, value);
+          onChanged();
+        } else {
+          operateDatasBuilder_.addMessage(index, value);
+        }
+        return this;
+      }
+      /**
+       * <code>repeated .NetOprateData operateDatas = 2;</code>
+       *
+       * <pre>
+       ** å…³è” 
+       * </pre>
+       */
+      public Builder addOperateDatas(
+          com.module.net.NetGame.NetOprateData.Builder builderForValue) {
+        if (operateDatasBuilder_ == null) {
+          ensureOperateDatasIsMutable();
+          operateDatas_.add(builderForValue.build());
+          onChanged();
+        } else {
+          operateDatasBuilder_.addMessage(builderForValue.build());
+        }
+        return this;
+      }
+      /**
+       * <code>repeated .NetOprateData operateDatas = 2;</code>
+       *
+       * <pre>
+       ** å…³è” 
+       * </pre>
+       */
+      public Builder addOperateDatas(
+          int index, com.module.net.NetGame.NetOprateData.Builder builderForValue) {
+        if (operateDatasBuilder_ == null) {
+          ensureOperateDatasIsMutable();
+          operateDatas_.add(index, builderForValue.build());
+          onChanged();
+        } else {
+          operateDatasBuilder_.addMessage(index, builderForValue.build());
+        }
+        return this;
+      }
+      /**
+       * <code>repeated .NetOprateData operateDatas = 2;</code>
+       *
+       * <pre>
+       ** å…³è” 
+       * </pre>
+       */
+      public Builder addAllOperateDatas(
+          java.lang.Iterable<? extends com.module.net.NetGame.NetOprateData> values) {
+        if (operateDatasBuilder_ == null) {
+          ensureOperateDatasIsMutable();
+          super.addAll(values, operateDatas_);
+          onChanged();
+        } else {
+          operateDatasBuilder_.addAllMessages(values);
+        }
+        return this;
+      }
+      /**
+       * <code>repeated .NetOprateData operateDatas = 2;</code>
+       *
+       * <pre>
+       ** å…³è” 
+       * </pre>
+       */
+      public Builder clearOperateDatas() {
+        if (operateDatasBuilder_ == null) {
+          operateDatas_ = java.util.Collections.emptyList();
+          bitField0_ = (bitField0_ & ~0x00000002);
+          onChanged();
+        } else {
+          operateDatasBuilder_.clear();
+        }
+        return this;
+      }
+      /**
+       * <code>repeated .NetOprateData operateDatas = 2;</code>
+       *
+       * <pre>
+       ** å…³è” 
+       * </pre>
+       */
+      public Builder removeOperateDatas(int index) {
+        if (operateDatasBuilder_ == null) {
+          ensureOperateDatasIsMutable();
+          operateDatas_.remove(index);
+          onChanged();
+        } else {
+          operateDatasBuilder_.remove(index);
+        }
+        return this;
+      }
+      /**
+       * <code>repeated .NetOprateData operateDatas = 2;</code>
+       *
+       * <pre>
+       ** å…³è” 
+       * </pre>
+       */
+      public com.module.net.NetGame.NetOprateData.Builder getOperateDatasBuilder(
+          int index) {
+        return getOperateDatasFieldBuilder().getBuilder(index);
+      }
+      /**
+       * <code>repeated .NetOprateData operateDatas = 2;</code>
+       *
+       * <pre>
+       ** å…³è” 
+       * </pre>
+       */
+      public com.module.net.NetGame.NetOprateDataOrBuilder getOperateDatasOrBuilder(
+          int index) {
+        if (operateDatasBuilder_ == null) {
+          return operateDatas_.get(index);  } else {
+          return operateDatasBuilder_.getMessageOrBuilder(index);
+        }
+      }
+      /**
+       * <code>repeated .NetOprateData operateDatas = 2;</code>
+       *
+       * <pre>
+       ** å…³è” 
+       * </pre>
+       */
+      public java.util.List<? extends com.module.net.NetGame.NetOprateDataOrBuilder> 
+           getOperateDatasOrBuilderList() {
+        if (operateDatasBuilder_ != null) {
+          return operateDatasBuilder_.getMessageOrBuilderList();
+        } else {
+          return java.util.Collections.unmodifiableList(operateDatas_);
+        }
+      }
+      /**
+       * <code>repeated .NetOprateData operateDatas = 2;</code>
+       *
+       * <pre>
+       ** å…³è” 
+       * </pre>
+       */
+      public com.module.net.NetGame.NetOprateData.Builder addOperateDatasBuilder() {
+        return getOperateDatasFieldBuilder().addBuilder(
+            com.module.net.NetGame.NetOprateData.getDefaultInstance());
+      }
+      /**
+       * <code>repeated .NetOprateData operateDatas = 2;</code>
+       *
+       * <pre>
+       ** å…³è” 
+       * </pre>
+       */
+      public com.module.net.NetGame.NetOprateData.Builder addOperateDatasBuilder(
+          int index) {
+        return getOperateDatasFieldBuilder().addBuilder(
+            index, com.module.net.NetGame.NetOprateData.getDefaultInstance());
+      }
+      /**
+       * <code>repeated .NetOprateData operateDatas = 2;</code>
+       *
+       * <pre>
+       ** å…³è” 
+       * </pre>
+       */
+      public java.util.List<com.module.net.NetGame.NetOprateData.Builder> 
+           getOperateDatasBuilderList() {
+        return getOperateDatasFieldBuilder().getBuilderList();
+      }
+      private com.google.protobuf.RepeatedFieldBuilder<
+          com.module.net.NetGame.NetOprateData, com.module.net.NetGame.NetOprateData.Builder, com.module.net.NetGame.NetOprateDataOrBuilder> 
+          getOperateDatasFieldBuilder() {
+        if (operateDatasBuilder_ == null) {
+          operateDatasBuilder_ = new com.google.protobuf.RepeatedFieldBuilder<
+              com.module.net.NetGame.NetOprateData, com.module.net.NetGame.NetOprateData.Builder, com.module.net.NetGame.NetOprateDataOrBuilder>(
+                  operateDatas_,
+                  ((bitField0_ & 0x00000002) == 0x00000002),
+                  getParentForChildren(),
+                  isClean());
+          operateDatas_ = null;
+        }
+        return operateDatasBuilder_;
+      }
+
+      // required int32 retStatus = 3;
+      private int retStatus_ ;
+      /**
+       * <code>required int32 retStatus = 3;</code>
+       *
+       * <pre>
+       ** çŠ¶æ€ 
+       * </pre>
+       */
+      public boolean hasRetStatus() {
+        return ((bitField0_ & 0x00000004) == 0x00000004);
+      }
+      /**
+       * <code>required int32 retStatus = 3;</code>
+       *
+       * <pre>
+       ** çŠ¶æ€ 
+       * </pre>
+       */
+      public int getRetStatus() {
+        return retStatus_;
+      }
+      /**
+       * <code>required int32 retStatus = 3;</code>
+       *
+       * <pre>
+       ** çŠ¶æ€ 
+       * </pre>
+       */
+      public Builder setRetStatus(int value) {
+        bitField0_ |= 0x00000004;
+        retStatus_ = value;
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>required int32 retStatus = 3;</code>
+       *
+       * <pre>
+       ** çŠ¶æ€ 
+       * </pre>
+       */
+      public Builder clearRetStatus() {
+        bitField0_ = (bitField0_ & ~0x00000004);
+        retStatus_ = 0;
+        onChanged();
+        return this;
+      }
+
+      // optional int32 step = 4;
+      private int step_ ;
+      /**
+       * <code>optional int32 step = 4;</code>
+       */
+      public boolean hasStep() {
+        return ((bitField0_ & 0x00000008) == 0x00000008);
+      }
+      /**
+       * <code>optional int32 step = 4;</code>
+       */
+      public int getStep() {
+        return step_;
+      }
+      /**
+       * <code>optional int32 step = 4;</code>
+       */
+      public Builder setStep(int value) {
+        bitField0_ |= 0x00000008;
+        step_ = value;
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>optional int32 step = 4;</code>
+       */
+      public Builder clearStep() {
+        bitField0_ = (bitField0_ & ~0x00000008);
+        step_ = 0;
+        onChanged();
+        return this;
+      }
+
+      // @@protoc_insertion_point(builder_scope:NetResponse)
+    }
+
+    static {
+      defaultInstance = new NetResponse(true);
+      defaultInstance.initFields();
+    }
+
+    // @@protoc_insertion_point(class_scope:NetResponse)
+  }
+
+  public interface NetLoginConfirmOrBuilder
+      extends com.google.protobuf.MessageOrBuilder {
+
+    // required int32 uid = 1;
+    /**
+     * <code>required int32 uid = 1;</code>
+     */
+    boolean hasUid();
+    /**
+     * <code>required int32 uid = 1;</code>
+     */
+    int getUid();
+  }
+  /**
+   * Protobuf type {@code NetLoginConfirm}
+   *
+   * <pre>
+   ** ç™»å½•åçš„ç¬¬ä¸€è¯·æ±‚ 
+   * </pre>
+   */
+  public static final class NetLoginConfirm extends
+      com.google.protobuf.GeneratedMessage
+      implements NetLoginConfirmOrBuilder {
+    // Use NetLoginConfirm.newBuilder() to construct.
+    private NetLoginConfirm(com.google.protobuf.GeneratedMessage.Builder<?> builder) {
+      super(builder);
+      this.unknownFields = builder.getUnknownFields();
+    }
+    private NetLoginConfirm(boolean noInit) { this.unknownFields = com.google.protobuf.UnknownFieldSet.getDefaultInstance(); }
+
+    private static final NetLoginConfirm defaultInstance;
+    public static NetLoginConfirm getDefaultInstance() {
+      return defaultInstance;
+    }
+
+    public NetLoginConfirm getDefaultInstanceForType() {
+      return defaultInstance;
+    }
+
+    private final com.google.protobuf.UnknownFieldSet unknownFields;
+    @java.lang.Override
+    public final com.google.protobuf.UnknownFieldSet
+        getUnknownFields() {
+      return this.unknownFields;
+    }
+    private NetLoginConfirm(
+        com.google.protobuf.CodedInputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      initFields();
+      int mutable_bitField0_ = 0;
+      com.google.protobuf.UnknownFieldSet.Builder unknownFields =
+          com.google.protobuf.UnknownFieldSet.newBuilder();
+      try {
+        boolean done = false;
+        while (!done) {
+          int tag = input.readTag();
+          switch (tag) {
+            case 0:
+              done = true;
+              break;
+            default: {
+              if (!parseUnknownField(input, unknownFields,
+                                     extensionRegistry, tag)) {
+                done = true;
+              }
+              break;
+            }
+            case 8: {
+              bitField0_ |= 0x00000001;
+              uid_ = input.readInt32();
+              break;
+            }
+          }
+        }
+      } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+        throw e.setUnfinishedMessage(this);
+      } catch (java.io.IOException e) {
+        throw new com.google.protobuf.InvalidProtocolBufferException(
+            e.getMessage()).setUnfinishedMessage(this);
+      } finally {
+        this.unknownFields = unknownFields.build();
+        makeExtensionsImmutable();
+      }
+    }
+    public static final com.google.protobuf.Descriptors.Descriptor
+        getDescriptor() {
+      return com.module.net.NetGame.internal_static_NetLoginConfirm_descriptor;
+    }
+
+    protected com.google.protobuf.GeneratedMessage.FieldAccessorTable
+        internalGetFieldAccessorTable() {
+      return com.module.net.NetGame.internal_static_NetLoginConfirm_fieldAccessorTable
+          .ensureFieldAccessorsInitialized(
+              com.module.net.NetGame.NetLoginConfirm.class, com.module.net.NetGame.NetLoginConfirm.Builder.class);
+    }
+
+    public static com.google.protobuf.Parser<NetLoginConfirm> PARSER =
+        new com.google.protobuf.AbstractParser<NetLoginConfirm>() {
+      public NetLoginConfirm parsePartialFrom(
+          com.google.protobuf.CodedInputStream input,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws com.google.protobuf.InvalidProtocolBufferException {
+        return new NetLoginConfirm(input, extensionRegistry);
+      }
+    };
+
+    @java.lang.Override
+    public com.google.protobuf.Parser<NetLoginConfirm> getParserForType() {
+      return PARSER;
+    }
+
+    private int bitField0_;
+    // required int32 uid = 1;
+    public static final int UID_FIELD_NUMBER = 1;
+    private int uid_;
+    /**
+     * <code>required int32 uid = 1;</code>
+     */
+    public boolean hasUid() {
+      return ((bitField0_ & 0x00000001) == 0x00000001);
+    }
+    /**
+     * <code>required int32 uid = 1;</code>
+     */
+    public int getUid() {
+      return uid_;
+    }
+
+    private void initFields() {
+      uid_ = 0;
+    }
+    private byte memoizedIsInitialized = -1;
+    public final boolean isInitialized() {
+      byte isInitialized = memoizedIsInitialized;
+      if (isInitialized != -1) return isInitialized == 1;
+
+      if (!hasUid()) {
+        memoizedIsInitialized = 0;
+        return false;
+      }
+      memoizedIsInitialized = 1;
+      return true;
+    }
+
+    public void writeTo(com.google.protobuf.CodedOutputStream output)
+                        throws java.io.IOException {
+      getSerializedSize();
+      if (((bitField0_ & 0x00000001) == 0x00000001)) {
+        output.writeInt32(1, uid_);
+      }
+      getUnknownFields().writeTo(output);
+    }
+
+    private int memoizedSerializedSize = -1;
+    public int getSerializedSize() {
+      int size = memoizedSerializedSize;
+      if (size != -1) return size;
+
+      size = 0;
+      if (((bitField0_ & 0x00000001) == 0x00000001)) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeInt32Size(1, uid_);
+      }
+      size += getUnknownFields().getSerializedSize();
+      memoizedSerializedSize = size;
+      return size;
+    }
+
+    private static final long serialVersionUID = 0L;
+    @java.lang.Override
+    protected java.lang.Object writeReplace()
+        throws java.io.ObjectStreamException {
+      return super.writeReplace();
+    }
+
+    public static com.module.net.NetGame.NetLoginConfirm parseFrom(
+        com.google.protobuf.ByteString data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data);
+    }
+    public static com.module.net.NetGame.NetLoginConfirm parseFrom(
+        com.google.protobuf.ByteString data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data, extensionRegistry);
+    }
+    public static com.module.net.NetGame.NetLoginConfirm parseFrom(byte[] data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data);
+    }
+    public static com.module.net.NetGame.NetLoginConfirm parseFrom(
+        byte[] data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data, extensionRegistry);
+    }
+    public static com.module.net.NetGame.NetLoginConfirm parseFrom(java.io.InputStream input)
+        throws java.io.IOException {
+      return PARSER.parseFrom(input);
+    }
+    public static com.module.net.NetGame.NetLoginConfirm parseFrom(
+        java.io.InputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return PARSER.parseFrom(input, extensionRegistry);
+    }
+    public static com.module.net.NetGame.NetLoginConfirm parseDelimitedFrom(java.io.InputStream input)
+        throws java.io.IOException {
+      return PARSER.parseDelimitedFrom(input);
+    }
+    public static com.module.net.NetGame.NetLoginConfirm parseDelimitedFrom(
+        java.io.InputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return PARSER.parseDelimitedFrom(input, extensionRegistry);
+    }
+    public static com.module.net.NetGame.NetLoginConfirm parseFrom(
+        com.google.protobuf.CodedInputStream input)
+        throws java.io.IOException {
+      return PARSER.parseFrom(input);
+    }
+    public static com.module.net.NetGame.NetLoginConfirm parseFrom(
+        com.google.protobuf.CodedInputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return PARSER.parseFrom(input, extensionRegistry);
+    }
+
+    public static Builder newBuilder() { return Builder.create(); }
+    public Builder newBuilderForType() { return newBuilder(); }
+    public static Builder newBuilder(com.module.net.NetGame.NetLoginConfirm prototype) {
+      return newBuilder().mergeFrom(prototype);
+    }
+    public Builder toBuilder() { return newBuilder(this); }
+
+    @java.lang.Override
+    protected Builder newBuilderForType(
+        com.google.protobuf.GeneratedMessage.BuilderParent parent) {
+      Builder builder = new Builder(parent);
+      return builder;
+    }
+    /**
+     * Protobuf type {@code NetLoginConfirm}
+     *
+     * <pre>
+     ** ç™»å½•åçš„ç¬¬ä¸€è¯·æ±‚ 
+     * </pre>
+     */
+    public static final class Builder extends
+        com.google.protobuf.GeneratedMessage.Builder<Builder>
+       implements com.module.net.NetGame.NetLoginConfirmOrBuilder {
+      public static final com.google.protobuf.Descriptors.Descriptor
+          getDescriptor() {
+        return com.module.net.NetGame.internal_static_NetLoginConfirm_descriptor;
+      }
+
+      protected com.google.protobuf.GeneratedMessage.FieldAccessorTable
+          internalGetFieldAccessorTable() {
+        return com.module.net.NetGame.internal_static_NetLoginConfirm_fieldAccessorTable
+            .ensureFieldAccessorsInitialized(
+                com.module.net.NetGame.NetLoginConfirm.class, com.module.net.NetGame.NetLoginConfirm.Builder.class);
+      }
+
+      // Construct using com.module.net.NetGame.NetLoginConfirm.newBuilder()
+      private Builder() {
+        maybeForceBuilderInitialization();
+      }
+
+      private Builder(
+          com.google.protobuf.GeneratedMessage.BuilderParent parent) {
+        super(parent);
+        maybeForceBuilderInitialization();
+      }
+      private void maybeForceBuilderInitialization() {
+        if (com.google.protobuf.GeneratedMessage.alwaysUseFieldBuilders) {
+        }
+      }
+      private static Builder create() {
+        return new Builder();
+      }
+
+      public Builder clear() {
+        super.clear();
+        uid_ = 0;
+        bitField0_ = (bitField0_ & ~0x00000001);
+        return this;
+      }
+
+      public Builder clone() {
+        return create().mergeFrom(buildPartial());
+      }
+
+      public com.google.protobuf.Descriptors.Descriptor
+          getDescriptorForType() {
+        return com.module.net.NetGame.internal_static_NetLoginConfirm_descriptor;
+      }
+
+      public com.module.net.NetGame.NetLoginConfirm getDefaultInstanceForType() {
+        return com.module.net.NetGame.NetLoginConfirm.getDefaultInstance();
+      }
+
+      public com.module.net.NetGame.NetLoginConfirm build() {
+        com.module.net.NetGame.NetLoginConfirm result = buildPartial();
+        if (!result.isInitialized()) {
+          throw newUninitializedMessageException(result);
+        }
+        return result;
+      }
+
+      public com.module.net.NetGame.NetLoginConfirm buildPartial() {
+        com.module.net.NetGame.NetLoginConfirm result = new com.module.net.NetGame.NetLoginConfirm(this);
+        int from_bitField0_ = bitField0_;
+        int to_bitField0_ = 0;
+        if (((from_bitField0_ & 0x00000001) == 0x00000001)) {
+          to_bitField0_ |= 0x00000001;
+        }
+        result.uid_ = uid_;
+        result.bitField0_ = to_bitField0_;
+        onBuilt();
+        return result;
+      }
+
+      public Builder mergeFrom(com.google.protobuf.Message other) {
+        if (other instanceof com.module.net.NetGame.NetLoginConfirm) {
+          return mergeFrom((com.module.net.NetGame.NetLoginConfirm)other);
+        } else {
+          super.mergeFrom(other);
+          return this;
+        }
+      }
+
+      public Builder mergeFrom(com.module.net.NetGame.NetLoginConfirm other) {
+        if (other == com.module.net.NetGame.NetLoginConfirm.getDefaultInstance()) return this;
+        if (other.hasUid()) {
+          setUid(other.getUid());
+        }
+        this.mergeUnknownFields(other.getUnknownFields());
+        return this;
+      }
+
+      public final boolean isInitialized() {
+        if (!hasUid()) {
+          
+          return false;
+        }
+        return true;
+      }
+
+      public Builder mergeFrom(
+          com.google.protobuf.CodedInputStream input,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws java.io.IOException {
+        com.module.net.NetGame.NetLoginConfirm parsedMessage = null;
+        try {
+          parsedMessage = PARSER.parsePartialFrom(input, extensionRegistry);
+        } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+          parsedMessage = (com.module.net.NetGame.NetLoginConfirm) e.getUnfinishedMessage();
+          throw e;
+        } finally {
+          if (parsedMessage != null) {
+            mergeFrom(parsedMessage);
+          }
+        }
+        return this;
+      }
+      private int bitField0_;
+
+      // required int32 uid = 1;
+      private int uid_ ;
+      /**
+       * <code>required int32 uid = 1;</code>
+       */
+      public boolean hasUid() {
+        return ((bitField0_ & 0x00000001) == 0x00000001);
+      }
+      /**
+       * <code>required int32 uid = 1;</code>
+       */
+      public int getUid() {
+        return uid_;
+      }
+      /**
+       * <code>required int32 uid = 1;</code>
+       */
+      public Builder setUid(int value) {
+        bitField0_ |= 0x00000001;
+        uid_ = value;
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>required int32 uid = 1;</code>
+       */
+      public Builder clearUid() {
+        bitField0_ = (bitField0_ & ~0x00000001);
+        uid_ = 0;
+        onChanged();
+        return this;
+      }
+
+      // @@protoc_insertion_point(builder_scope:NetLoginConfirm)
+    }
+
+    static {
+      defaultInstance = new NetLoginConfirm(true);
+      defaultInstance.initFields();
+    }
+
+    // @@protoc_insertion_point(class_scope:NetLoginConfirm)
+  }
+
   private static com.google.protobuf.Descriptors.Descriptor
     internal_static_NetUserData_descriptor;
   private static
@@ -11045,6 +12529,16 @@ public final class NetGame {
   private static
     com.google.protobuf.GeneratedMessage.FieldAccessorTable
       internal_static_RQConnect_fieldAccessorTable;
+  private static com.google.protobuf.Descriptors.Descriptor
+    internal_static_NetResponse_descriptor;
+  private static
+    com.google.protobuf.GeneratedMessage.FieldAccessorTable
+      internal_static_NetResponse_fieldAccessorTable;
+  private static com.google.protobuf.Descriptors.Descriptor
+    internal_static_NetLoginConfirm_descriptor;
+  private static
+    com.google.protobuf.GeneratedMessage.FieldAccessorTable
+      internal_static_NetLoginConfirm_fieldAccessorTable;
 
   public static com.google.protobuf.Descriptors.FileDescriptor
       getDescriptor() {
@@ -11079,8 +12573,11 @@ public final class NetGame {
       " \001(\0132\014.NetUserData\"\025\n\006RQExit\022\013\n\003uid\030\001 \001(" +
       "\005\"\031\n\006RPVote\022\017\n\007isagree\030\001 \001(\010\"&\n\006RQVote\022\017" +
       "\n\007isagree\030\001 \001(\010\022\013\n\003uid\030\002 \001(\005\"\033\n\tRQConnec" +
-      "t\022\016\n\006roomId\030\001 \001(\005B\031\n\016com.module.netB\007Net" +
-      "Game"
+      "t\022\016\n\006roomId\030\001 \001(\005\"d\n\013NetResponse\022\016\n\006stat" +
+      "us\030\001 \001(\005\022$\n\014operateDatas\030\002 \003(\0132\016.NetOpra" +
+      "teData\022\021\n\tretStatus\030\003 \002(\005\022\014\n\004step\030\004 \001(\005\"" +
+      "\036\n\017NetLoginConfirm\022\013\n\003uid\030\001 \002(\005B\031\n\016com.m" +
+      "odule.netB\007NetGame"
     };
     com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner assigner =
       new com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner() {
@@ -11177,6 +12674,18 @@ public final class NetGame {
             com.google.protobuf.GeneratedMessage.FieldAccessorTable(
               internal_static_RQConnect_descriptor,
               new java.lang.String[] { "RoomId", });
+          internal_static_NetResponse_descriptor =
+            getDescriptor().getMessageTypes().get(15);
+          internal_static_NetResponse_fieldAccessorTable = new
+            com.google.protobuf.GeneratedMessage.FieldAccessorTable(
+              internal_static_NetResponse_descriptor,
+              new java.lang.String[] { "Status", "OperateDatas", "RetStatus", "Step", });
+          internal_static_NetLoginConfirm_descriptor =
+            getDescriptor().getMessageTypes().get(16);
+          internal_static_NetLoginConfirm_fieldAccessorTable = new
+            com.google.protobuf.GeneratedMessage.FieldAccessorTable(
+              internal_static_NetLoginConfirm_descriptor,
+              new java.lang.String[] { "Uid", });
           return null;
         }
       };

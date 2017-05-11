@@ -16,12 +16,12 @@ message NetExtraData{
 } 
 
 message NetOprateData{
-  /** ²Ù×÷ÀàĞÍ */
+  /** æ“ä½œç±»å‹ */
   optional int32 otype = 1; 
   optional int32 uid = 2; 
-  /** ¸½¼ÓÊı¾İÄ¬ÈÏÖµ0 */
+  /** é™„åŠ æ•°æ®é»˜è®¤å€¼0 */
   optional int32 dval = 3; 
-  /** ¸½¼ÓÊı¾İÄ¬ÈÏÖµ0 */
+  /** é™„åŠ æ•°æ®é»˜è®¤å€¼0 */
   optional int32 flag = 4; 
   repeated int32 dlist = 5; 
   repeated NetKvData kvDatas = 6;
@@ -56,7 +56,7 @@ message RPEnterRoom {
 } 
 
 message RQUserStatus { 
-  /** ×´Ì¬Î»(ÓëNetUserDataµÄstatusÒ»Ñù) */
+  /** çŠ¶æ€ä½(ä¸NetUserDataçš„statusä¸€æ ·) */
   optional int32 status = 1;
 } 
 
@@ -68,7 +68,7 @@ message RQREsult {
 
 message NetMjUserResult {
   repeated NetKvData scores = 1;
-  /** ºúÅÆÀàĞÍ£¨×î´ó·¬£©/½Ğ×ì£¨×î´ó·¬£©/µãÅÚÀàĞÍ */
+  /** èƒ¡ç‰Œç±»å‹ï¼ˆæœ€å¤§ç•ªï¼‰/å«å˜´ï¼ˆæœ€å¤§ç•ªï¼‰/ç‚¹ç‚®ç±»å‹ */
   optional int32 showType = 2;
   optional int32 winType = 3;
   optional int32 score = 4;
@@ -82,19 +82,33 @@ message RQExit{
   optional int32 uid = 1;
 }
 
-/** Í¶Æ±½âÉ¢ */
+/** æŠ•ç¥¨è§£æ•£ */
 message RPVote{
   optional bool isagree = 1;
 }
 
 
-/** Í¶Æ±½âÉ¢ */
+/** æŠ•ç¥¨è§£æ•£ */
 message RQVote{
   optional bool isagree = 1;
-  /** Èç¹ûÎª0±íÊ¾·¢ÆğÍ¶Æ±£¬ÏÔÊ¾Í¬Òâ/¾Ü¾ø°´Å¥,·ñÔòÎª¸ÃÍæ¼ÒµÄÑ¡Ôñ */
+  /** å¦‚æœä¸º0è¡¨ç¤ºå‘èµ·æŠ•ç¥¨ï¼Œæ˜¾ç¤ºåŒæ„/æ‹’ç»æŒ‰é’®,å¦åˆ™ä¸ºè¯¥ç©å®¶çš„é€‰æ‹© */
   optional int32 uid = 2;
 }
 
 message RQConnect{
   optional int32 roomId = 1;
+}
+
+message NetResponse{ 
+  optional int32 status = 1; 
+  /** å…³è” */
+  repeated NetOprateData operateDatas = 2; 
+  /** çŠ¶æ€ */
+  required int32 retStatus = 3; 
+  optional int32 step = 4; 
+}
+
+/** ç™»å½•åçš„ç¬¬ä¸€è¯·æ±‚ */
+message NetLoginConfirm{ 
+  required int32 uid = 1;
 }
