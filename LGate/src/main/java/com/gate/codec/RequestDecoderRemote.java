@@ -58,9 +58,9 @@ public class RequestDecoderRemote extends RequestDecoder {
         try{
             NetParent.NetCommond netCommond = NetParent.NetCommond.parseFrom(receiveData.getData());
             if(receiveData.getCompreType() != 0){
-                out.write(cmdModule.getRequset(ZipTool.uncompressBytes(receiveData.getData()),cmd_m,netCommond.getSeq()));
+                out.write(cmdModule.getRequset(ZipTool.uncompressBytes(receiveData.getData()),receiveData.getModule(),receiveData.getCmd(),netCommond.getSeq()));
             }else {
-                out.write(cmdModule.getRequset(receiveData.getData(),cmd_m,netCommond.getSeq()));
+                out.write(cmdModule.getRequset(receiveData.getData(),receiveData.getModule(),receiveData.getCmd(),netCommond.getSeq()));
             }
         }catch (Exception e){
             e.printStackTrace();
