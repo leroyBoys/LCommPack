@@ -20,6 +20,11 @@ public class ExcelLoader extends AbstractExcelLoader {
 	public String[][] loadConfig(InputStream is, String sheetName)
 			throws Exception {
 		HSSFSheet sheet = getFile(is, sheetName);
+		if(sheet == null){
+			System.err.println("sheetName :"+sheetName+"  can not find");
+			return null;
+		}
+
 		int rowCount = sheet.getPhysicalNumberOfRows();
 		if (rowCount == 0) {
 			return new String[0][0];

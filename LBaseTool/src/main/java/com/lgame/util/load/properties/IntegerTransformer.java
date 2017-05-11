@@ -17,7 +17,7 @@ public class IntegerTransformer implements PropertyTransformer<Integer> {
 
     public Integer transform(String value, Field field) {
         try {
-            return Integer.decode(value);
+            return Integer.decode(value.trim().isEmpty()?"0":value.trim());
         } catch (Exception e) {
             throw new RuntimeException(e);
         }

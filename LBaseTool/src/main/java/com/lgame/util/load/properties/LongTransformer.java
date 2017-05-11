@@ -18,7 +18,7 @@ public class LongTransformer implements PropertyTransformer<Long> {
 
     public Long transform(String value, Field field) {
         try {
-            return Long.decode(value);
+            return Long.decode(value.trim().isEmpty()?"0":value.trim());
         } catch (Exception e) {
             throw new RuntimeException(e);
         }

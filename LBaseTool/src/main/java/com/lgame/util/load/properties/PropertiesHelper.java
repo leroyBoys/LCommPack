@@ -6,6 +6,7 @@
 package com.lgame.util.load.properties;
 
 import com.lgame.util.PrintTool;
+import com.lgame.util.json.JsonTool;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
@@ -72,6 +73,7 @@ public class PropertiesHelper {
             PropertyTransformer<?> propertyTransformer = PropertyTransformerFactory.newTransformer(fieldType, formers);
             return propertyTransformer.transform(value, field);
         } catch (Exception e) {
+            System.out.println(JsonTool.getJsonFromBean(field)+" --->:"+value+"  formatData is error");
         }
         PrintTool.info(field.getName()+" = "+value);
         return annotation.defaultValue();

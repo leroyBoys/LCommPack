@@ -2,6 +2,7 @@ package com.lgame.util.load.excel;
 
 
 import com.lgame.util.PrintTool;
+import com.lgame.util.json.JsonTool;
 import com.lgame.util.load.properties.PropertyTransformer;
 import com.lgame.util.load.properties.PropertyTransformerFactory;
 
@@ -56,6 +57,7 @@ public class DefaultBuilder implements IBuilder {
 			PropertyTransformer<?> propertyTransformer = PropertyTransformerFactory.newTransformer(fieldType, formers);
 			return propertyTransformer.transform(value, field);
 		} catch (Exception e) {
+			System.out.println(JsonTool.getJsonFromBean(field)+" --->:"+value+"  formatData is error");
 		}
 		PrintTool.info(field.getName()+" = "+value);
 		return null;

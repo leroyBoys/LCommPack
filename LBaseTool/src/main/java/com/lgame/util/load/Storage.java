@@ -20,7 +20,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
 public class Storage<T> {
 
     private Class<T> clazz;
-    private String location;
+    private String locationFileName;
     private ResourceReader reader;
     private Getter identifier;
     //private Map<String, IndexBuilder.IndexVisitor> indexVisitors;
@@ -39,8 +39,8 @@ public class Storage<T> {
     private void initialize(Class clazz) {
         Resource resource = (Resource) clazz.getAnnotation(Resource.class);
         this.clazz = clazz;
-        this.location = this.resourceLocation + clazz.getSimpleName() + "." + resource.suffix();//配置文件
-        System.out.println("location--------------" + location);
+        this.locationFileName = clazz.getSimpleName() + "." + resource.suffix();//配置文件
+        System.out.println("location--------------" + locationFileName);
         if(resource.suffix().equalsIgnoreCase("xml")){
             this.reader = new JsonReader();
         }else {
@@ -54,24 +54,23 @@ public class Storage<T> {
         InputStream input = null;
         try {
             File dir = new File(this.resourceLocation);
-            final String filePath = this.location;
-            String[] fileNames = dir.list(new FilenameFilter() {
+            final String fileName = this.locationFileName;
+            File[] files = dir.listFiles(new FilenameFilter() {
                 @Override
                 public boolean accept(File dir, String name) {
-                    String path = dir+"\\"+name;
-                    if(path.equalsIgnoreCase(filePath)){
+                    if(name.equalsIgnoreCase(fileName)){
                         return true;
                     }
                     return false;
                 }
             });
-            if (fileNames==null ||fileNames.length == 0) {
-                PrintTool.error("基础数据["+this.clazz.getName()+"]所对应的资源文件["+this.location+"]不存在!");
+            if (files==null ||files.length == 0) {
+                PrintTool.error("基础数据["+this.clazz.getName()+"]所对应的资源文件["+this.locationFileName+"]不存在!");
                 return;
             }
-            File resource = new File(this.resourceLocation+fileNames[0]);
+            File resource = files[0];
             if (resource == null) {
-                PrintTool.error("基础数据["+this.clazz.getName()+"]所对应的资源文件["+this.location+"]不存在!");
+                PrintTool.error("基础数据["+this.clazz.getName()+"]所对应的资源文件["+this.locationFileName+"]不存在!");
                 return;
             }
 //                        InputStream input = resource.openStream();
@@ -108,7 +107,7 @@ public class Storage<T> {
             this.idList.addAll(idList_copy);
             PrintTool.info("完成加载  {} 基础数据...", this.clazz.getName());
         } catch (IOException e) {
-            PrintTool.error("基础数据["+this.clazz.getName()+"]所对应的资源文件["+this.location+"]不存在!",e);
+            PrintTool.error("基础数据["+this.clazz.getName()+"]所对应的资源文件["+this.locationFileName+"]不存在!",e);
         } catch (Exception e) {
             PrintTool.error("{}", e);
         }finally {
