@@ -42,18 +42,17 @@ import java.net.InetSocketAddress;
  */
 public abstract class SocketServer<V extends Visitor> {
 
-    private static final Logger logger = LoggerFactory.getLogger(SocketConstant.logName);
+    protected static final Logger logger = LoggerFactory.getLogger(SocketConstant.logName);
     private SocketAcceptor acceptor;
-    private InetSocketAddress address;
-    private IoFilter cmdAttackFilter;
-    private IoFilter byteAttackFilter;
-    private ProtocolCodecFactory codecFactory;
-    private int processorCount = Runtime.getRuntime().availableProcessors() + 1;
-    private SocketConfig confg;
-    private CoreDispatcher coreDispatcher;
-    private NewSessionManager<V> newSessionManager = new NewSessionManager<>();
-    private HeartListen heartListen;
-
+    protected InetSocketAddress address;
+    protected IoFilter cmdAttackFilter;
+    protected IoFilter byteAttackFilter;
+    protected ProtocolCodecFactory codecFactory;
+    protected int processorCount = Runtime.getRuntime().availableProcessors() + 1;
+    protected SocketConfig confg;
+    protected CoreDispatcher coreDispatcher;
+    protected NewSessionManager<V> newSessionManager = new NewSessionManager<>();
+    protected HeartListen heartListen;
 
     public SocketServer(CoreDispatcher coreDispatcher) {
         this.coreDispatcher = coreDispatcher;
@@ -74,7 +73,7 @@ public abstract class SocketServer<V extends Visitor> {
 
     public abstract SocketConfig initConfig();
 
-    public final void start()throws Exception {
+    public void start(int port)throws Exception {
         if (this.codecFactory == null) {
             throw new NullPointerException("ProtocolCodecFactory is null...");
         }
@@ -96,9 +95,9 @@ public abstract class SocketServer<V extends Visitor> {
         filterChain.addLast("codecFactory", new ProtocolCodecFilter(this.codecFactory));
 
         this.acceptor.setHandler(new SocketHanlder<>(this,confg.isOpenBlack()));
-        this.address = new InetSocketAddress(confg.getSocketPort());
+        this.address = new InetSocketAddress(port);
         this.acceptor.bind(this.address);
-        logger.info("Listening on " + this.address.getHostName() + ":" + this.address.getPort());
+        logger.info("Listening on " + this.address.getHostName() + ":" + port);
 
         this.initModuleHanderConfig();
         started();
@@ -106,7 +105,7 @@ public abstract class SocketServer<V extends Visitor> {
 
     public void started(){}
 
-    public final SocketSessionConfig getSessionConfig() {
+    public SocketSessionConfig getSessionConfig() {
         SocketSessionConfig sessionConfig = new DefaultSocketSessionConfig();
         sessionConfig.setSoLinger(0);
         sessionConfig.setKeepAlive(true);
@@ -137,7 +136,7 @@ public abstract class SocketServer<V extends Visitor> {
         }*/
     }
 
-    private void initModuleHanderConfig(){
+    protected void initModuleHanderConfig(){
         ModuleDispaterInstance instances = this.getInnerModuleDispaterConfig();
         if(instances != null){
             instances.load();

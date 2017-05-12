@@ -43,7 +43,9 @@ public abstract class CoreDispatcher<V extends Visitor,M extends Request> implem
     public void put(int moduleKey, ModuleHandler BaseHandler) {
         if (BaseHandler != null) {
             if (moduleHandlers.containsKey(moduleKey)) {
-                throw new RuntimeException(String.format("Error: duplicated key [%d]", new Object[]{moduleKey}));
+                SystemLogger.warn(this.getClass(),String.format("Error: duplicated key [%d] class:"+this.getClass().getSimpleName(), new Object[]{moduleKey}));
+                return;
+               // throw new RuntimeException();
             }
             moduleHandlers.put(moduleKey, BaseHandler);
         }

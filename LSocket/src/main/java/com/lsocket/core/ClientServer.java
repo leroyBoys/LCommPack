@@ -56,7 +56,8 @@ public class ClientServer {
         try {
             session = connectFuture.getSession();
         } catch (Exception e) {
-            e.printStackTrace();
+          //  e.printStackTrace();
+            System.err.println("connect fail:"+e.getMessage());
         }
     }
 }

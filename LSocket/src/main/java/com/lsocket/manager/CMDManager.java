@@ -1,5 +1,6 @@
 package com.lsocket.manager;
 
+import com.logger.log.SystemLogger;
 import com.lsocket.handler.CmdModule;
 
 import java.util.HashMap;
@@ -25,9 +26,7 @@ public class CMDManager {
 
     public void put(int module, int cmd, CmdModule cmdModule){
         synchronized (cmdMaps){
-            if(cmdMaps.put(getCmd_M(module,cmd),cmdModule) != null){
-                throw new RuntimeException("module:"+module+" cmd:"+cmd+" is repeate!");
-            }
+            cmdMaps.put(getCmd_M(module,cmd),cmdModule);
         }
     }
 
