@@ -373,14 +373,54 @@ public class PropertiesTool {
         return p;
     }
 
-    public static String getPropertiesPath(String fileName){
+    public static String getPropertiesPath(final String fileName){
 
         URL url = Thread.currentThread().getContextClassLoader().getResource(fileName);
         if(url == null){
+            url = Thread.currentThread().getContextClassLoader().getResource(".");
+            File dir = new File(url.getPath());
+            if(dir !=null  && dir.exists() && dir.isDirectory()){
+                dir = findFirstFile(fileName,dir);
+                if(dir != null){
+                    return dir.getAbsolutePath();
+                }
+            }
             System.err.println("load fail fileName:"+fileName);
             return null;
         }
 
         return url.getFile();
     }
+
+    public static File findFirstFile(final String fileName, final File dir){
+
+        File[] dirfiles = dir.listFiles(new FileFilter() {
+            public boolean accept(File file) {
+                return (file.isDirectory() || file.getName().equals(fileName));
+            }
+        });
+
+        if(dirfiles == null || dirfiles.length == 0){
+            return null;
+        }
+
+        List<File> dirs = new LinkedList<>();
+        for(File file:dirfiles){
+            if(file.isDirectory()){
+                dirs.add(file);
+            }else if(file.getName().equals(fileName)){
+                return file;
+            }
+        }
+
+        File target;
+        for(File file:dirs){
+            target = findFirstFile(fileName,file);
+            if(target != null){
+                return target;
+            }
+        }
+        return null;
+    }
+
 }
