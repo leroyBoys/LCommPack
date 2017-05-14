@@ -9,7 +9,7 @@ import com.gate.socket.Lgate;
 public class Main {
     public static void main(String[] args){
         try {
-            Lgate.getIntance().start();
+            Lgate.getIntance().start(1);
         } catch (Exception e) {
             e.printStackTrace();
         }
