@@ -28,7 +28,7 @@ public class DateTimeTool {
 
     public static final int M_ONE_MINUTE = 60;
     public static final int M_ONE_HOUR = 60 * M_ONE_MINUTE;
-    public static final long M_ONE_DAY = 24 * M_ONE_HOUR;
+    public static final int M_ONE_DAY = 24 * M_ONE_HOUR;
     /**
      * Return the current date
      *
