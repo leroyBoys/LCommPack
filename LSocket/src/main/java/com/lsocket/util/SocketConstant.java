@@ -35,7 +35,7 @@ public final class SocketConstant {
         return ip;
     }
 
-    public static IP getLocalIp(IoSession session) {
+    public static IP getLocalIp() {
         return localIP;
     }
 
@@ -48,6 +48,13 @@ public final class SocketConstant {
             return null;
         }
         return getIP(session.getRemoteAddress());
+    }
+
+    public static void init(IP localIP,int maxSocketLenght,int maxQuqueVistor,int sameIpMaxConnections){
+        SocketConstant.localIP = localIP;
+        SocketConstant.maxSocketLenght = maxSocketLenght>0? maxSocketLenght:SocketConstant.maxSocketLenght;
+        SocketConstant.maxQuqueVistor=maxQuqueVistor>0?maxQuqueVistor:SocketConstant.maxQuqueVistor;
+        SocketConstant.sameIpMaxConnections=sameIpMaxConnections>0?sameIpMaxConnections:SocketConstant.sameIpMaxConnections;
     }
 
     public enum SessionKey{

@@ -10,14 +10,21 @@ import com.lgame.util.load.properties.Properties;
 
 /**
  * Server配置文件变量
- *
- * @author penn.ma <penn.pk.ma@gmail.com>
  */
 public class SocketConfig extends AutoConfig {
     @Properties(defaultValue = "Hikari", fileName = "server", keyName = "server.dbtype")
     private String dbType;
     @Properties(defaultValue = "127.0.0.1", fileName = "server", keyName = "server.id")
     private int serverId;
+    /**  最大数据包长度 */
+    @Properties(defaultValue = "10240", fileName = "server", keyName = "server.maxSocketLength")
+    private int maxSocketLength;
+    /** 每个玩家最大的请求处理数量，超过次数量则拒绝新请求直到此队列减少足够 */
+    @Properties(defaultValue = "100", fileName = "server", keyName = "server.maxQuqueVistor")
+    private int maxQuqueVistor;
+    /** 同一个ip最大链接数 */
+    @Properties(defaultValue = "100", fileName = "server", keyName = "server.sameIpMaxConnections")
+    private int sameIpMaxConnections;
     @Properties(defaultValue = "12345", fileName = "server", keyName = "server.socket.default.key")
     private String serverDKey;
     @Properties(defaultValue = "false", fileName = "server", keyName = "server.socket.isGzip")
@@ -92,6 +99,18 @@ public class SocketConfig extends AutoConfig {
     public String getDbType() {
         return dbType;
 
+    }
+
+    public int getMaxSocketLength() {
+        return maxSocketLength;
+    }
+
+    public int getMaxQuqueVistor() {
+        return maxQuqueVistor;
+    }
+
+    public int getSameIpMaxConnections() {
+        return sameIpMaxConnections;
     }
 
     public static SocketConfig getConfig() {
