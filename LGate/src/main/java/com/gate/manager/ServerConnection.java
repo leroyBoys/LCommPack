@@ -135,7 +135,7 @@ public class ServerConnection extends GameServer implements Runnable {
         }
 
         @Override
-        public void receiveMsg() {
+        public void receiveMsg(Object object) {
             lastHeartTime = TimeCacheManager.getInstance().getCurTime();
         }
 

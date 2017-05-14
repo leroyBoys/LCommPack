@@ -1,5 +1,7 @@
 package com.lsocket.core;
 
+import com.lsocket.codec.RequestDecoderClient;
+import com.lsocket.codec.ResponseEncoderClient;
 import com.lsocket.listen.HandlerListen;
 import com.lsocket.handler.ClientHandler;
 import com.lsocket.module.CommonCodecFactory;
@@ -28,7 +30,7 @@ public class ClientServer {
     private IoSession session;
     private long CONNECT_TIMEOUT = 30 * 1000L;
 
-    public ClientServer(String host, int port, long timeout , String key,ProtocolEncoder encoder, ProtocolDecoder decoder,HandlerListen handlerListen) {
+    public ClientServer(String host, int port, long timeout , String key, ResponseEncoderClient encoder, RequestDecoderClient decoder, HandlerListen handlerListen) {
         this.host = host;
         this.port = port;
         this.key = key;
@@ -39,6 +41,8 @@ public class ClientServer {
         connector.getSessionConfig().setReadBufferSize(20480);
         connector.getSessionConfig().setSendBufferSize(20480);
 
+        encoder.setClientServer(this);
+        decoder.setClientServer(this);
         connector.getFilterChain().addLast("codec",
                 new ProtocolCodecFilter(new CommonCodecFactory(encoder, decoder)));
         connector.getFilterChain().addLast("threadPool",

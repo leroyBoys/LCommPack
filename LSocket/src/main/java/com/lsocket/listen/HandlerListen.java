@@ -6,5 +6,5 @@ package com.lsocket.listen;
  */
 public interface HandlerListen {
     public void sendSuc();
-    public void receiveMsg();
+    public void receiveMsg(Object object);
 }

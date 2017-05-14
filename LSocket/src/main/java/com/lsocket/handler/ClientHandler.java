@@ -16,11 +16,10 @@ public class ClientHandler extends IoHandlerAdapter {
 
     @Override
     public void messageReceived(IoSession session, Object message) throws Exception {
-        handlerListen.receiveMsg();
+        handlerListen.receiveMsg(message);
     }
 
     @Override
     public void messageSent(IoSession session, Object message) throws Exception {
-        handlerListen.receiveMsg();
     }
 }
