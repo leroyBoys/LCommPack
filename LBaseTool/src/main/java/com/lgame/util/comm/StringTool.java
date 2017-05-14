@@ -25,7 +25,7 @@ public class StringTool {
     public final static String SIGN6 = "-";
     public final static String SIGN7 = "/";
     public final static String SIGN8 = "\\|";
-    public final static String SIGN9 = ".";
+    public final static String SIGN9 = "\\.";
 
     /**
      * 验证str是否为null或者""
