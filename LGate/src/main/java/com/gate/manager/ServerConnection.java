@@ -3,7 +3,9 @@ package com.gate.manager;
 import com.gate.codec.RequestDecoderLocal;
 import com.gate.codec.ResponseEncoderLocal;
 import com.logger.log.SystemLogger;
+import com.lsocket.config.SocketConfig;
 import com.lsocket.core.ClientServer;
+import com.lsocket.core.SocketServer;
 import com.lsocket.listen.HandlerListen;
 import com.lsocket.util.DefaultSocketPackage;
 import com.module.GameServer;
@@ -28,7 +30,7 @@ public class ServerConnection extends GameServer implements Runnable {
         if(clientServer != null){
             return;
         }
-        clientServer = new ClientServer(this.getIp(),this.getPort(),2000,new ResponseEncoderLocal(),new RequestDecoderLocal(),serverMonitor);
+        clientServer = new ClientServer(this.getIp(),this.getPort(),2000, this.getKey(),new ResponseEncoderLocal(),new RequestDecoderLocal(),serverMonitor);
     }
 
     public void check(long curTime){

@@ -22,6 +22,7 @@ public class GameServer extends DbFactory {
     private int port;
     private int maxCount;
     private int severStatus;
+    private String key;
 
 
     public int getId() {
@@ -135,10 +136,20 @@ public class GameServer extends DbFactory {
         gameServer.setZoneDes(rs.getString("zone_desc"));
         gameServer.setZoneName(rs.getString("zone_name"));
         gameServer.setZoneIcon(rs.getString("zone_icon"));
+        gameServer.setKey(rs.getString("key"));
         return gameServer;
     }
 
+    public String getKey() {
+        return key;
+    }
+
+    public void setKey(String key) {
+        this.key = key;
+    }
+
     @Override
+
     protected GameServer createNew() {
         return new GameServer();
     }

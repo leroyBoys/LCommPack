@@ -23,13 +23,15 @@ import java.util.concurrent.Executors;
 public class ClientServer {
     private int port;
     private String host;
+    public final String key;
     private SocketConnector connector;
     private IoSession session;
     private long CONNECT_TIMEOUT = 30 * 1000L;
 
-    public ClientServer(String host, int port, long timeout , ProtocolEncoder encoder, ProtocolDecoder decoder,HandlerListen handlerListen) {
+    public ClientServer(String host, int port, long timeout , String key,ProtocolEncoder encoder, ProtocolDecoder decoder,HandlerListen handlerListen) {
         this.host = host;
         this.port = port;
+        this.key = key;
         this.CONNECT_TIMEOUT = timeout;
         connector = new NioSocketConnector();
         connector.setConnectTimeoutMillis(CONNECT_TIMEOUT);
@@ -44,6 +46,10 @@ public class ClientServer {
 
         connector.setHandler(new ClientHandler(handlerListen));
         connector.setDefaultRemoteAddress(new InetSocketAddress(host, port));
+    }
+
+    public String getKey() {
+        return key;
     }
 
     public IoSession getSession() {
