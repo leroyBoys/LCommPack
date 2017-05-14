@@ -3,6 +3,7 @@ import com.google.protobuf.GeneratedMessage;
 import com.google.protobuf.InvalidProtocolBufferException;
 import com.lgame.util.comm.Tools;
 import com.lgame.util.file.FileTool;
+import com.lgame.util.json.JsonUtil;
 import com.protobuftest.protobuf.PersonProbuf;
 import com.protobuftest.protobuf.Student;
 
@@ -28,13 +29,27 @@ public class Test {
 /*        SocketConfig serverConfig = SocketConfig.getInstance();
         System.out.println(JsonTool.bean2json(serverConfig));*/
         PersonProbuf.Person.Builder peron = PersonProbuf.Person.newBuilder();
-        peron.setEmail("tom222张三李四张三李四张三李四张三李四22222222222222222");
-        peron.setName("tom张三李四张三李四张三李四张三李四张三李四张三李四张三李四张三李四张三李四张三李四张三李四张三李四张三李四张三李四张三李四张三李四张三李四张三李四张三李四张三李四张三李四张三李四e");
+        peron.setEmail("tom222222222222222222");
+        peron.setName("tonamee");
         peron.setId(1);
         PersonProbuf.Person.PhoneNumber.Builder phoneNumber = PersonProbuf.Person.PhoneNumber.newBuilder();
+        phoneNumber.setNumber("dsdddddddddd");
+        peron.addPhone(phoneNumber);
 
         Student.Student22.Builder stat = Student.Student22.newBuilder();
         stat.setQuery("tommmm");
+
+        System.out.println(JsonUtil.getJsonFromBean(peron.build()));
+
+        System.out.println(peron.toString());
+
+        boolean isBreak = true;
+        if(isBreak){
+            return;
+        }
+
+
+
         byte[] bytes = peron.build().toByteArray();
        // System.out.println("===>"+Arrays.toString(bytes));
 

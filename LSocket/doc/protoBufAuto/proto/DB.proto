@@ -1,16 +1,10 @@
 option java_package = "com.module.net"; 
 option java_outer_classname = "DB"; 
  
-message DBServer { 
-  required int32 id = 1; 
-  required int32 group = 2; 
-  required string name = 3; 
-} 
-
 /** 玩家秘钥 */
 message UK{ 
   required int32 uid = 1; 
-  required string ip_port = 2; 
+  optional string ip_port = 2; 
   /** 秘钥 */
   required string key = 3; 
 } 

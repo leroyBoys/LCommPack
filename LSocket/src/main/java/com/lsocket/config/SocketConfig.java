@@ -14,6 +14,10 @@ import com.lgame.util.load.properties.Properties;
  * @author penn.ma <penn.pk.ma@gmail.com>
  */
 public class SocketConfig extends AutoConfig {
+    @Properties(defaultValue = "Hikari", fileName = "server", keyName = "server.dbtype")
+    private String dbType;
+    @Properties(defaultValue = "127.0.0.1", fileName = "server", keyName = "server.id")
+    private int serverId;
     @Properties(defaultValue = "12345", fileName = "server", keyName = "server.socket.default.key")
     private String serverDKey;
     @Properties(defaultValue = "false", fileName = "server", keyName = "server.socket.isGzip")
@@ -79,6 +83,19 @@ public class SocketConfig extends AutoConfig {
 
     public int getSocketBothIdle() {
         return socketBothIdle;
+    }
+
+    public int getServerId() {
+        return serverId;
+    }
+
+    public String getDbType() {
+        return dbType;
+
+    }
+
+    public static SocketConfig getConfig() {
+        return config;
     }
 
     public int getWorkerPoolIdle() {
