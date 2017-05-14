@@ -48,6 +48,7 @@ public abstract class Visitor<Req extends Request,Res extends Response,E extends
         if(cmdUrl != null){
             requests.add(cmdUrl);
         }
+        trigger();
     }
 
     private void checkLimit(){
