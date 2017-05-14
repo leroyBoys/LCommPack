@@ -79,6 +79,25 @@ public class RedisConnection {
     }
 
     /**
+     * 设置过期时间
+     * @param key
+     * @param seconds 秒
+     * @return
+     */
+    public long expire(byte[] key, int seconds) {
+        Jedis jedis = null;
+        try {
+            jedis = jedisPool.getResource();
+            return jedis.expire(key, seconds);
+        } catch (Exception e) {
+            logException(e);
+            return 0L;
+        } finally {
+            returnResource(jedisPool, jedis);
+        }
+    }
+
+    /**
      * 设置到期时间
      * @param key
      * @param millisecondsTimestamp 到期时间的时间戳（）
@@ -97,6 +116,24 @@ public class RedisConnection {
         }
     }
 
+    /**
+     * 设置到期时间
+     * @param key
+     * @param millisecondsTimestamp 到期时间的时间戳（）
+     * @return
+     */
+    public long expireAt(byte[] key, long millisecondsTimestamp) {
+        Jedis jedis = null;
+        try {
+            jedis = jedisPool.getResource();
+            return jedis.pexpireAt(key, millisecondsTimestamp);
+        } catch (Exception e) {
+            logException(e);
+            return 0L;
+        } finally {
+            returnResource(jedisPool, jedis);
+        }
+    }
 
     /**
      * <p>删除指定的key,也可以传入一个包含key的数组</p>
