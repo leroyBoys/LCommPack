@@ -14,7 +14,7 @@ import java.util.Properties;
  * 2017/4/13.
  */
 public class HikariDataSourceImpl implements SqlDataSource{
-    private static HikariDataSource dds = null;
+    private HikariDataSource dds = null;
 
     /**
      * 默认配置文件名字：hikari_db.properties
