@@ -14,7 +14,7 @@ import java.util.Properties;
  * 2017/4/13.
  */
 public class DruidDataSourceImpl implements SqlDataSource{
-    private static DruidDataSource dds = null;
+    private DruidDataSource dds = null;
 
     /**
      * 默认配置文件名字：druid_db.properties
