@@ -20,7 +20,7 @@ public class FileTool {
      * @param file
      * @return
      */
-    public static List<String> readNewUpdaeLines(ReadUpdateFile file) {
+    public static List<String> readNewUpdaeLines(ReadUpdateFile file,String charsetName) {
 
         BufferedReader bf = null;
         List<String> lines = new ArrayList<String>();
@@ -35,7 +35,7 @@ public class FileTool {
             randomFile.seek(file.getLastTimeFileSize());
             String tmp = "";
             while( (tmp = randomFile.readLine())!= null) {
-                lines.add(new String(tmp.getBytes("utf-8")));
+                lines.add(new String(tmp.getBytes(charsetName)));
             }
 
             file.setLastTimeFileSize(randomFile.length());
