@@ -18,7 +18,7 @@ public class DoubleTransformer implements PropertyTransformer<Double> {
 
     public Double transform(String value, Field field){
         try {
-            return Double.valueOf(Double.parseDouble(value.trim().isEmpty()?"0":value.trim()));
+            return Double.valueOf(Double.parseDouble(value == null || value.trim().isEmpty()?"0":value.trim()));
         } catch (Exception e) {
             throw new RuntimeException(e);
         }

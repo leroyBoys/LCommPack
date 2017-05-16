@@ -19,7 +19,7 @@ public class FloatTransformer implements PropertyTransformer<Float> {
 
     public Float transform(String value, Field field){
         try {
-            return Float.valueOf(Float.parseFloat(value.trim().isEmpty()?"0":value.trim()));
+            return Float.valueOf(Float.parseFloat(value == null || value.trim().isEmpty()?"0":value.trim()));
         } catch (Exception e) {
             throw new RuntimeException(e);
         }

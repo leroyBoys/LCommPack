@@ -18,7 +18,7 @@ public class ShortTransformer implements PropertyTransformer<Short> {
 
     public Short transform(String value, Field field) {
         try {
-            return Short.decode(value.trim().isEmpty()?"0":value.trim());
+            return Short.decode(value == null || value.trim().isEmpty()?"0":value.trim());
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
