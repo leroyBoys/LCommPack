@@ -1,18 +1,6 @@
 package com.lgame.util.file;
 
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.FileReader;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.OutputStream;
-import java.io.OutputStreamWriter;
-import java.io.PrintStream;
+import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -25,6 +13,47 @@ import java.util.List;
 public class FileTool {
 
     public static final String ROOTPATH = FileTool.class.getResource("/").getFile();
+
+    /**
+     * 按行读文件
+     *
+     * @param file
+     * @return
+     */
+    public static List<String> readNewUpdaeLines(ReadUpdateFile file) {
+
+        BufferedReader bf = null;
+        List<String> lines = new ArrayList<String>();
+        try {
+            final RandomAccessFile randomFile = new RandomAccessFile(file.getFile(),"r");
+            if(file.getLastTimeFileSize() == 0){
+                file.setLastTimeFileSize(randomFile.length());
+                return lines;
+            }
+
+            //获得变化部分的
+            randomFile.seek(file.getLastTimeFileSize());
+            String tmp = "";
+            while( (tmp = randomFile.readLine())!= null) {
+                lines.add(new String(tmp.getBytes("utf-8")));
+            }
+
+            file.setLastTimeFileSize(randomFile.length());
+        } catch (FileNotFoundException e1) {
+            e1.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                if (bf != null) {
+                    bf.close();
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+        return lines;
+    }
 
     /**
      * 按行读文件
