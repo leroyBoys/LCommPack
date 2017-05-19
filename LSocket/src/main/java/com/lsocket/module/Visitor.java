@@ -27,6 +27,7 @@ public abstract class Visitor<Req extends Request,Res extends Response,E extends
     private IP ip;
     private int uid;
     private int serverId;
+    private boolean isSever = false;//是否是服务器
 
     public Visitor(SocketServer socketServer,IoSession ioSession,long timeOutTime){
         this.socketServer = socketServer;
@@ -127,11 +128,23 @@ public abstract class Visitor<Req extends Request,Res extends Response,E extends
     }
 
     public boolean isTimeOut(long curTime) {
+        if(isSever){
+            return false;
+        }
+
         return curTime >= timeOutTime;
     }
 
     public int getServerId() {
         return serverId;
+    }
+
+    public void setSever(boolean sever) {
+        isSever = sever;
+    }
+
+    public void setIp(String ip, int port) {
+        this.ip = new IP(ip,0);
     }
 
     public void setServerId(int serverId) {
