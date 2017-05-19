@@ -112,3 +112,13 @@ message NetResponse{
 message NetLoginConfirm{ 
   required int32 uid = 1;
 }
+
+/** 聊天 */
+message NetChat{ 
+  optional int32 receiveId = 1;
+  optional string userName = 2;
+  optional int32 channel = 3;
+  optional string content = 4;
+  /** 是否是动作表情特效0:普通聊天，1：特效 */
+  optional int32 isaction = 5;
+}

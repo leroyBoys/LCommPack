@@ -15,7 +15,7 @@ import java.util.List;
  * Created by Administrator on 2017/4/1.
  */
 public class Test {
-    private final static String path = "D:\\hot.xml";
+    private final static String path = "D:\\hot2.xml";
 
     /**
      * @param args
@@ -39,16 +39,18 @@ public class Test {
         Root hotel=new Root();
 
         for(int i=0;i<10;i++){
-            Root.Cmd cmd= new Root.Cmd();
-            cmd.setCmd(i*10+2);
+            Root cmd= new Root();
+            cmd.setCmd(i*100+2);
             cmd.setNeedLogin(i%2==0);
             cmd.setServerType(i/2);
+            cmd.setType(i%2);
             hotel.addCmd(cmd);
         }
 
         //将java对象转换为XML字符串
         XmlApi.save(hotel,path,true);
-        System.out.println(JsonTool.getJsonFromBean(XmlApi.readObjectFromXml(Root.class,path)));
+        System.out.println("========over");
+       System.out.println(JsonTool.getJsonFromBean(XmlApi.readObjectFromXml(Root.class,path)));
     }
 
    public static class RoomTypeVO {

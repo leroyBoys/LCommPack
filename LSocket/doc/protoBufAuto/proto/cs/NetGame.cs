@@ -550,4 +550,54 @@ namespace proto.NetGame
       { return global::ProtoBuf.Extensible.GetExtensionObject(ref extensionObject, createIfMissing); }
   }
   
+  [global::System.Serializable, global::ProtoBuf.ProtoContract(Name=@"NetChat")]
+  public partial class NetChat : global::ProtoBuf.IExtensible
+  {
+    public NetChat() {}
+    
+    private int _receiveId = default(int);
+    [global::ProtoBuf.ProtoMember(1, IsRequired = false, Name=@"receiveId", DataFormat = global::ProtoBuf.DataFormat.TwosComplement)]
+    [global::System.ComponentModel.DefaultValue(default(int))]
+    public int receiveId
+    {
+      get { return _receiveId; }
+      set { _receiveId = value; }
+    }
+    private string _userName = "";
+    [global::ProtoBuf.ProtoMember(2, IsRequired = false, Name=@"userName", DataFormat = global::ProtoBuf.DataFormat.Default)]
+    [global::System.ComponentModel.DefaultValue("")]
+    public string userName
+    {
+      get { return _userName; }
+      set { _userName = value; }
+    }
+    private int _channel = default(int);
+    [global::ProtoBuf.ProtoMember(3, IsRequired = false, Name=@"channel", DataFormat = global::ProtoBuf.DataFormat.TwosComplement)]
+    [global::System.ComponentModel.DefaultValue(default(int))]
+    public int channel
+    {
+      get { return _channel; }
+      set { _channel = value; }
+    }
+    private string _content = "";
+    [global::ProtoBuf.ProtoMember(4, IsRequired = false, Name=@"content", DataFormat = global::ProtoBuf.DataFormat.Default)]
+    [global::System.ComponentModel.DefaultValue("")]
+    public string content
+    {
+      get { return _content; }
+      set { _content = value; }
+    }
+    private int _isaction = default(int);
+    [global::ProtoBuf.ProtoMember(5, IsRequired = false, Name=@"isaction", DataFormat = global::ProtoBuf.DataFormat.TwosComplement)]
+    [global::System.ComponentModel.DefaultValue(default(int))]
+    public int isaction
+    {
+      get { return _isaction; }
+      set { _isaction = value; }
+    }
+    private global::ProtoBuf.IExtension extensionObject;
+    global::ProtoBuf.IExtension global::ProtoBuf.IExtensible.GetExtensionObject(bool createIfMissing)
+      { return global::ProtoBuf.Extensible.GetExtensionObject(ref extensionObject, createIfMissing); }
+  }
+  
 }
