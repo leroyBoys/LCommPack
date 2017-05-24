@@ -6,6 +6,8 @@ package com.logger.log;
  * and open the template in the editor.
  */
 
+import com.lgame.util.comm.StringTool;
+import com.lgame.util.time.DateTimeTool;
 import com.logger.mongo.MongoDBManager;
 import com.logger.type.LogType;
 import com.mongodb.BasicDBObject;
@@ -24,6 +26,7 @@ public class GameLog {
 
     public final static MongoDBManager mananger = MongoDBManager.getInstance("192.168.4.84:27017", "qwbbt");
     private static final Logger logger = LoggerFactory.getLogger(GameLog.class);
+    private static final Logger cardLog = LoggerFactory.getLogger(LogType.Card.getLogName());
 
     private static String[] getExpands(String... expand) {
         if (expand == null || expand.length == 0) {
@@ -54,12 +57,14 @@ public class GameLog {
         });
     }
 
-    public static void baseUserInfo(LogType type, int userId, int sex, Date loginTime, String userName, String... expands) {
+    public static void log(LogType type, String info) {
 
         //TaskPools.addTask(LogMethod.class, "baseUserInfo", type.getName(), userId, sex, loginTime, userName, getExpands(expands));
     }
 
-    public static void UserLevelUpdate(LogType type, int userId, int level, Date time, String userName, String... expands) {
+    public static void cardLog(int card, int roleId,int uid, Date time, String userName, String... expands) {
+
+        cardLog.info(DateTimeTool.getDateTime(time)+" :"+roleId+":"+uid+":"+userName+ StringTool.SIGN8+card);
         // TaskPools.addTask(LogMethod.class, "UserLevelUpdate", type.getName(), userId, level, time, userName, getExpands(expands));
     }
 
