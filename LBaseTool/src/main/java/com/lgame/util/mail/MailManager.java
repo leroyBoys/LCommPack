@@ -33,9 +33,9 @@ public class MailManager {
     //邮件通信会话
     Session session;
     //连接邮件发送的账号与密码
-    private static final String default_username="systemRobot@163.com";
-    private static final String default_passwd="shouquanma1987";
-    private static final String default_smtpHost="smtp.163.com";
+    private static final String default_username="leroy_boy@139.com";
+    private static final String default_passwd="lxh19870718";
+    private static final String default_smtpHost="smtp.139.com";
     private String username="systemRobot@163.com";
     private String passwd="shouquanma1987";
 
@@ -157,7 +157,8 @@ public class MailManager {
     public static void main(String[] args){
         MailManager sendReceiveMessage=MailManager.getInstance();
         try {
-            Message message=sendReceiveMessage.createSimpleMessage("服务器监控数据","服务器出问题了");
+            Message message=sendReceiveMessage.createSimpleMessage("656515489@qq.com","服务器监控数据","服务器出问题了");
+            //Message message=sendReceiveMessage.createSimpleMessage("服务器监控数据","服务器出问题了");
             sendReceiveMessage.send(message);
         } catch (Exception e) {
             e.printStackTrace();
