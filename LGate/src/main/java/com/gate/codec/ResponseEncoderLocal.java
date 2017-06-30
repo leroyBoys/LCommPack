@@ -1,6 +1,5 @@
 package com.gate.codec;
 
-import com.lsocket.codec.ResponseEncoder;
 import com.lsocket.codec.ResponseEncoderClient;
 import org.apache.mina.core.session.IoSession;
 import org.apache.mina.filter.codec.ProtocolEncoderOutput;
