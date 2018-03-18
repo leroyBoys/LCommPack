@@ -77,30 +77,49 @@ public abstract class SocketServer<V extends Visitor> {
         if (this.codecFactory == null) {
             throw new NullPointerException("ProtocolCodecFactory is null...");
         }
-        IoBuffer.setUseDirectBuffer(false);
-        IoBuffer.setAllocator(new SimpleBufferAllocator());
-        this.acceptor = new NioSocketAcceptor(processorCount);
-        this.acceptor.setReuseAddress(true);
-        this.acceptor.setBacklog(confg.getServerMaxBacklog());
-        this.acceptor.getSessionConfig().setAll(getSessionConfig());
-        MdcInjectionFilter mdcInjectionFilter = new MdcInjectionFilter();
-        DefaultIoFilterChainBuilder filterChain = this.acceptor.getFilterChain();
-        filterChain.addLast("mdcInjectionFilter", mdcInjectionFilter);
-        if (this.byteAttackFilter != null) {
-            filterChain.addLast("byteAttackFilter", this.byteAttackFilter);
-        }
-        if (this.cmdAttackFilter != null) {
-            filterChain.addLast("cmdAttackFilter", this.cmdAttackFilter);
-        }
-        filterChain.addLast("codecFactory", new ProtocolCodecFilter(this.codecFactory));
 
-        this.acceptor.setHandler(new SocketHanlder<>(this,confg.isOpenBlack()));
-        this.address = new InetSocketAddress(port);
-        this.acceptor.bind(this.address);
-        logger.info("Listening on " + this.address.getHostName() + ":" + port);
+        try{
+            IoBuffer.setUseDirectBuffer(false);
+            IoBuffer.setAllocator(new SimpleBufferAllocator());
+            this.acceptor = new NioSocketAcceptor(processorCount);
+            this.acceptor.setReuseAddress(true);
+            this.acceptor.setBacklog(confg.getServerMaxBacklog());
+            this.acceptor.getSessionConfig().setAll(getSessionConfig());
+            MdcInjectionFilter mdcInjectionFilter = new MdcInjectionFilter();
+            DefaultIoFilterChainBuilder filterChain = this.acceptor.getFilterChain();
+            filterChain.addLast("mdcInjectionFilter", mdcInjectionFilter);
+            if (this.byteAttackFilter != null) {
+                filterChain.addLast("byteAttackFilter", this.byteAttackFilter);
+            }
+            if (this.cmdAttackFilter != null) {
+                filterChain.addLast("cmdAttackFilter", this.cmdAttackFilter);
+            }
+            filterChain.addLast("codecFactory", new ProtocolCodecFilter(this.codecFactory));
 
-        this.initModuleHanderConfig();
-        started();
+            this.acceptor.setHandler(new SocketHanlder<>(this,confg.isOpenBlack()));
+            this.address = new InetSocketAddress(port);
+            this.acceptor.bind(this.address);
+            logger.info("Listening on " + this.address.getHostName() + ":" + port);
+
+            this.initModuleHanderConfig();
+            started();
+
+        }finally {
+            Runtime.getRuntime().addShutdownHook(
+                    new Thread(new Runnable() {
+                        @Override
+                        public void run() {
+                            logger.info("server stop.....");
+                            if (acceptor != null) {
+                                acceptor.unbind();
+                                acceptor.dispose();
+                                acceptor = null;
+                            }
+                            stop();
+                            logger.info("server stop over");
+                        }
+                    }, "SoketServerStop"));
+        }
     }
 
     public void started(){}
@@ -121,12 +140,7 @@ public abstract class SocketServer<V extends Visitor> {
     }
 
     public void stop() {
-        if (this.acceptor != null) {
-            this.acceptor.unbind();
-            this.acceptor.dispose();
-            this.acceptor = null;
-        }
-       /* if (FILTER_EXECUTOR != null) {
+      /*  if (FILTER_EXECUTOR != null) {
             FILTER_EXECUTOR.shutdown();
             try {
                 FILTER_EXECUTOR.awaitTermination(5000L, TimeUnit.MILLISECONDS);

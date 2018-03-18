@@ -51,10 +51,5 @@ public abstract class UdpServer<V extends Visitor> extends SocketServer<V> {
     }
 
     public void stop() {
-        if (this.acceptor != null) {
-            this.acceptor.unbind();
-            this.acceptor.dispose();
-            this.acceptor = null;
-        }
     }
 }
