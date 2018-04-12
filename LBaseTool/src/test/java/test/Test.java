@@ -6,6 +6,7 @@
 package test;
 
 import com.lgame.util.comm.StringTool;
+import com.lgame.util.http.HttpTool;
 
 import java.util.concurrent.LinkedBlockingQueue;
 
@@ -15,52 +16,7 @@ import java.util.concurrent.LinkedBlockingQueue;
  */
 public class Test {
     public static void main(String[] args) {
-//        System.out.println("-----d当前日期:"+DateUtils.currentDate());
-//        List<String> aa = new ArrayList<>();
-//        aa.add("11");
-//        System.out.println("-----"+JsonUtil.getJsonFromBean(aa));
-//        AtomicInteger sa=  new AtomicInteger(20);
-//        for(int i = 0;i<10;i++){
-//            System.out.println(sa.getAndIncrement());
-//        }
-
-        try {
-            LinkedBlockingQueue<String> queue=new LinkedBlockingQueue(2);
-
-            queue.take();
-            queue.put("hello");
-            System.out.println("==");
-            queue.put("world");
-            System.out.println("==world");
-            queue.put("yes");
-        } catch (Exception e) {
-            // TODO: handle exception
-            e.printStackTrace();
-        }
-
-
-        int[] ll = new int[11];
-        String sql = "{0},{1}";
-        for(int i = 0;i<10;i++){
-            System.out.println(StringTool.Format(sql,new Object[]{i,i+1}));
-            System.out.println(sql);
-            ll[i] = i+1;
-            System.out.println("=========>"+i+"    "+(i & -i));
-        }
-
- /*       KVData<Integer,KVData> obj = new KVData<>();
-        obj.setK(11);
-        obj.setV(new KVData(12,13));
-        System.out.println(JsonTool.getJsonFromBean(obj));*/
-
-        //Date data = new Date();
-    /*    Date data = DateUtil.getDateTime("1987-09-10 0:0:0");
-        System.out.println(DateUtil.getDateTime(DateUtil.getFirstDayOfMonth(data)));
-        System.out.println(DateUtil.getDateTime(DateUtil.getLastDayOfMonth(data)));*/
-
-        int im = 3;
-        System.out.println(im<<1);
-        System.out.println(im<<2);
-
+       String sj= HttpTool.httpGet("https://s.click.taobao.com/t?e=m%3D2%26s%3DvfDGbdOUB8yw%2Bv2O2yX1MeeEDrYVVa64LKpWJ%2Bin0XLjf2vlNIV67q4f%2FAzrd3UB18u9BjgaVz6FRVQo%2BDh00kJUHyd2dIQcYUJOPaqG8lgBUnXF4FHWjDerllUiS3naG6Ta2zz3Zu1pTbn5pyQbtKKYbEGbWAlocSpj5qSCmbA%3D&amp;pvid=26_117.136.0.42_1265_1521347779324&amp;ut_sk=1.utdid_null_1521347799180.TaoPassword-Outside.lianmeng-app&amp;spm=a211b4.24823497&amp;visa=13a09278fde22a2e&amp;disablePopup=true&amp;disableSJ=1");
+        System.out.println(sj);
     }
 }
