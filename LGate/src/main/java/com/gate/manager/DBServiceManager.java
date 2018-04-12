@@ -6,7 +6,7 @@ import com.lgame.util.file.PropertiesTool;
 import com.lsocket.core.ICommon;
 import com.module.GameServer;
 import com.module.ServerGroup;
-import com.mysql.impl.SqlPool;
+import com.mysql.impl.JdbcTemplate;
 
 import java.util.List;
 import java.util.Properties;
@@ -29,14 +29,14 @@ public class DBServiceManager extends ICommon {
         return dbServiceManager;
     }
 
-    private SqlPool commUserPool;//用户中心数据连接池
-    private SqlPool commGamePool;//游戏数据连接池
+    private JdbcTemplate commUserPool;//用户中心数据连接池
+    private JdbcTemplate commGamePool;//游戏数据连接池
     private GameServer gameServer;
     private ServerGroup serverGroup;
     private ServerService serverService;
 
-    private Properties getProperties(SqlPool.DataSourceType sourceType){
-        if(sourceType == SqlPool.DataSourceType.Druid){
+    private Properties getProperties(JdbcTemplate.DataSourceType sourceType){
+        if(sourceType == JdbcTemplate.DataSourceType.Druid){
             return PropertiesTool.loadProperty("druid_db.properties");
         }
         return PropertiesTool.loadProperty("hikari_db.properties");
@@ -54,12 +54,12 @@ public class DBServiceManager extends ICommon {
     }
 
     private void loadConfig(Properties properties){
-        SqlPool.DataSourceType sourceType = SqlPool.DataSourceType.valueOf(properties.getProperty("server.dbtype"));
+        JdbcTemplate.DataSourceType sourceType = JdbcTemplate.DataSourceType.valueOf(properties.getProperty("server.dbtype"));
         if(sourceType == null){
             throw new RuntimeException(properties.getProperty("server.dbtype")+" can not find in DataSourceType");
         }
         Properties dbProper = getProperties(sourceType);
-        commUserPool = new SqlPool(sourceType,dbProper);
+        commUserPool = new JdbcTemplate(sourceType,dbProper);
 
         serverService = new ServerService(commUserPool);
         gameServer = serverService.getServerById(Integer.valueOf(properties.getProperty("server.id")));
@@ -76,7 +76,7 @@ public class DBServiceManager extends ICommon {
         }
 
         dbProper = resetProper(dbProper);
-        commGamePool = new SqlPool(sourceType,dbProper);
+        commGamePool = new JdbcTemplate(sourceType,dbProper);
     }
 
     protected void initService(){
@@ -95,11 +95,11 @@ public class DBServiceManager extends ICommon {
         return dbServiceManager;
     }
 
-    public SqlPool getCommUserPool() {
+    public JdbcTemplate getCommUserPool() {
         return commUserPool;
     }
 
-    public SqlPool getCommGamePool() {
+    public JdbcTemplate getCommGamePool() {
         return commGamePool;
     }
 

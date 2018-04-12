@@ -4,20 +4,17 @@ import com.gate.action.dao.mysql.template.ServerTemplate;
 import com.gate.manager.ServerConnection;
 import com.module.GameServer;
 import com.module.ServerGroup;
-import com.mysql.SqlDataSource;
-import com.mysql.impl.SqlPool;
+import com.mysql.impl.JdbcTemplate;
 
-import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
 
 /**
  * Created by Administrator on 2017/4/15.
  */
 public class ServerService {
-    private SqlPool sqlPool;
+    private JdbcTemplate sqlPool;
 
-    public ServerService(SqlPool sqlPool){
+    public ServerService(JdbcTemplate sqlPool){
         this.sqlPool = sqlPool;
     }
 
