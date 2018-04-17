@@ -1,10 +1,10 @@
-package com.lgame.util.file;
-import java.io.File;
+package com.lgame.util.excel.bigdata;
 import java.io.InputStream;
 import java.util.Arrays;
 import java.util.Iterator;
 
-import com.lgame.util.exception.AppException;
+import com.lgame.util.excel.DefaultRowListener;
+import com.lgame.util.excel.RowListener;
 import org.apache.poi.ss.usermodel.BuiltinFormats;
 import org.apache.poi.xssf.eventusermodel.XSSFReader;
 import org.apache.poi.xssf.model.SharedStringsTable;
@@ -56,7 +56,7 @@ public class ReadBigExcel {
      * @param maxColum 读取最大列数，如果0则表示自动获得最大列数
      * @throws Exception
      */
-    public void processAllSheets(String filename,RowListener listen,int maxColum) throws Exception {
+    public void processAllSheets(String filename, RowListener listen, int maxColum) throws Exception {
         OPCPackage pkg = OPCPackage.open(filename);
         XSSFReader r = new XSSFReader(pkg);
         SharedStringsTable sst = r.getSharedStringsTable();
@@ -92,6 +92,7 @@ public class ReadBigExcel {
         private String[] row = null;
         private int curColumIdex;//当前列索引
         private int maxColum;
+        private int curRow;//当前行号
 
         private SheetHandler(SharedStringsTable sst,RowListener rowListen,StylesTable stylesTable,int maxColum) {
             this.sst = sst;
@@ -147,6 +148,7 @@ public class ReadBigExcel {
                     }
                 }
                 row = new String[maxColum];
+                curRow++;
             }
             // Clear contents cache
             lastContents = "";
@@ -171,7 +173,7 @@ public class ReadBigExcel {
                     row[curColumIdex] = lastContents;
                 }
             }else if (name.equals("row")) {//一行结束
-                rowListen.read(row);
+                rowListen.read(row,curRow);
             }
         }
 
@@ -197,18 +199,6 @@ public class ReadBigExcel {
 
     public static void main(String[] args) throws Exception {
         ReadBigExcel example = new ReadBigExcel();
-        example.processAllSheets("D:/TaokeDetail-2018-04-10.xlsx",new DefaultRowListen(),10);
-    }
-
-    public interface RowListener{
-        void read(String[] row);
-    }
-
-    public static class DefaultRowListen implements RowListener{
-
-        @Override
-        public void read(String[] row) {
-            System.out.println(Arrays.toString(row));
-        }
+        example.processAllSheets("D:/TaokeDetail-2018-04-10.xlsx",new DefaultRowListener(),10);
     }
 }

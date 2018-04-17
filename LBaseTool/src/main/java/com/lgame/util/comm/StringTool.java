@@ -5,6 +5,10 @@
  */
 package com.lgame.util.comm;
 
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Set;
+
 /**
  *
  * @author leroy_boy
@@ -141,4 +145,12 @@ public class StringTool {
         return str;
     }
 
+    public static String getStringFromCollection(Collection<String> strings) {
+        StringBuilder sb = new StringBuilder();
+        for(String str:strings){
+            sb.append("'").append(str).append("'");
+        }
+        sb.deleteCharAt(sb.length()-1);
+        return sb.toString();
+    }
 }

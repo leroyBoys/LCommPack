@@ -1,4 +1,4 @@
-package com.lgame.util.file;
+package com.lgame.util.excel;
 
 import org.apache.poi.hssf.usermodel.HSSFCell;
 import org.apache.poi.hssf.usermodel.HSSFDateUtil;
@@ -15,11 +15,9 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 
-public class WDWUtil {
+public class POIReadData {
 
     /**
      * 总行数
@@ -38,7 +36,7 @@ public class WDWUtil {
      * 构造方法
      */
 
-    public WDWUtil() {
+    public POIReadData() {
     }
 
     /**
@@ -78,7 +76,7 @@ public class WDWUtil {
         /**
          * 检查文件名是否为空或者是否是Excel格式的文件
          */
-        if (fileName == null || !(WDWUtil.isExcel2003(fileName) || WDWUtil.isExcel2007(fileName))) {
+        if (fileName == null || !(POIReadData.isExcel2003(fileName) || POIReadData.isExcel2007(fileName))) {
             errorInfo = "文件名不是excel格式";
             return false;
         }
@@ -93,14 +91,26 @@ public class WDWUtil {
         return true;
     }
 
+    public void read(String fileName) {
+        read(fileName,new DefaultRowListener(),0);
+    }
+
+    public void read(String fileName,RowListener listener) {
+        read(fileName,listener,0);
+    }
+
+    public void read(String fileName,RowListener listener,int endLineNum) {
+        read(fileName,listener,endLineNum,0);
+    }
+
     /**
-     * @描述：根据文件名读取excel文件
-     * @参数：@param fileName
-     * @参数：@return
-     * @返回值：List
+     *
+     * @param fileName
+     * @param listener
+     * @param endLineNum 最大读取行号，如果0则表示自动
+     * @param maxColumNum 最大读取列数，如果0则表示自动
      */
-    public List<List<String>> read(String fileName) {
-        List<List<String>> dataLst = new ArrayList<List<String>>();
+    public void read(String fileName,RowListener listener,int endLineNum,int maxColumNum) {
         InputStream is = null;
         try {
             /**
@@ -108,13 +118,13 @@ public class WDWUtil {
              */
             if (!validateExcel(fileName)) {
                 System.out.println(errorInfo);
-                return null;
+                return;
             }
             /**
              * 判断文件的类型，是2003还是2007
              */
             boolean isExcel2003 = true;
-            if (WDWUtil.isExcel2007(fileName)) {
+            if (POIReadData.isExcel2007(fileName)) {
                 isExcel2003 = false;
             }
             /**
@@ -122,7 +132,8 @@ public class WDWUtil {
              */
             File file = new File(fileName);
             is = new FileInputStream(file);
-            dataLst = read(is, isExcel2003);
+
+            read(is, isExcel2003,listener,endLineNum,maxColumNum);
             is.close();
         } catch (Exception ex) {
             ex.printStackTrace();
@@ -136,10 +147,6 @@ public class WDWUtil {
                 }
             }
         }
-        /**
-         * 返回最后读取的结果
-         */
-        return dataLst;
     }
 
     /**
@@ -149,18 +156,16 @@ public class WDWUtil {
      * @参数：@return
      * @返回值：List
      */
-    public List<List<String>> read(InputStream inputStream, boolean isExcel2003) {
-        List<List<String>> dataLst = null;
+    private void read(InputStream inputStream, boolean isExcel2003,RowListener listener,int endLineNum,int maxColumNum) {
         try {
             /**
              * 根据版本选择创建Workbook的方式
              */
             Workbook wb = isExcel2003 ? new HSSFWorkbook(inputStream) : new XSSFWorkbook(inputStream);
-            dataLst = read(wb);
+            read(wb,listener,endLineNum,maxColumNum);
         } catch (IOException e) {
             e.printStackTrace();
         }
-        return dataLst;
     }
 
     /**
@@ -169,8 +174,7 @@ public class WDWUtil {
      * @参数：@return
      * @返回值：List<List<String>>
      */
-    private List<List<String>> read(Workbook wb) {
-        List<List<String>> dataLst = new ArrayList<List<String>>();
+    private void read(Workbook wb,RowListener listener,int endLineNum,int maxColumNum) {
         /**
          * 得到第一个shell
          */
@@ -179,11 +183,19 @@ public class WDWUtil {
          * 得到Excel的行数
          */
         this.totalRows = sheet.getPhysicalNumberOfRows();
+        if(endLineNum>0){
+            this.totalRows = Math.min(endLineNum,totalRows);
+        }
+
         /**
          * 得到Excel的列数
          */
         if (this.totalRows >= 1 && sheet.getRow(0) != null) {
             this.totalCells = sheet.getRow(0).getPhysicalNumberOfCells();
+        }
+
+        if(maxColumNum>0){
+            this.totalCells = Math.min(this.totalCells,maxColumNum);
         }
         /**
          * 循环Excel的行
@@ -193,7 +205,7 @@ public class WDWUtil {
             if (row == null) {
                 continue;
             }
-            List<String> rowLst = new ArrayList<String>();
+            String[] rowLst = new String[this.totalCells];
             /**
              * 循环Excel的列
              */
@@ -244,24 +256,25 @@ public class WDWUtil {
                         default:
                             cellValue = "";
                     }
+
+                    rowLst[c] = cellValue;
                 }
 
-                if (cell == null) {
+                /*if (cell == null) {
                     rowLst.add(cellValue);
                     continue;
                 }
-                /**
+                *//**
                  * 处理Excel的字符串
-                 */
+                 *//*
                 //cellValue = cell.getStringCellValue();
-                rowLst.add(cellValue);
+                rowLst.add(cellValue);*/
             }
             /**
              * 保存第r行的第c列
              */
-            dataLst.add(rowLst);
+            listener.read(rowLst,r+1);
         }
-        return dataLst;
 
     }
 
@@ -272,18 +285,8 @@ public class WDWUtil {
      * @返回值：void
      */
     public static void main(String[] args) throws Exception {
-        WDWUtil poi = new WDWUtil();
-        List<List<String>> list = poi.read("d:/提示信息配置表.xlsx");
-        if (list != null) {
-            for (int i = 0, ilen = list.size(); i < ilen; i++) {
-                System.out.println("第" + (i + 1) + "行");
-                List<String> cellList = list.get(i);
-                for (int j = 0, jlen = cellList.size(); j < jlen; j++) {
-                    System.out.print("    第" + (j + 1) + "列值：");
-                    System.out.println(cellList.get(j));
-                }
-            }
-        }
+        POIReadData poi = new POIReadData();
+        poi.read("d:/提示信息配置表.xlsx", (row, rowNum) -> System.out.println(Arrays.toString(row)));
 
     }
 
