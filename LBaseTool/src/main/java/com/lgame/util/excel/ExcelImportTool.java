@@ -5,11 +5,8 @@ import com.lgame.util.excel.bigdata.ReadBigExcel;
 import com.lgame.util.exception.AppException;
 import com.lgame.util.exception.TransformationException;
 import com.lgame.util.json.JsonUtil;
-import com.lgame.util.time.DateTimeTool;
 
 import java.io.File;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -22,26 +19,12 @@ import java.util.Map;
 public class ExcelImportTool {
     private final static long maxSize = 1024*1024*50;
 
-    public static void date(String date){
-
-        date = date.replaceAll("\\/|\\-|年|月|日","").replaceAll("时|分|秒",":");
-        int length = date.split(":").length;
-        String strFormat = "yyyyMMdd";
-        if(length == 2){
-            strFormat+=" HH:mm";
-        }else if(length == 3){
-            strFormat+=" HH:mm:ss";
-        }
-        System.out.println(date);
-        System.out.println("==>"+DateTimeTool.getDateTime(DateTimeTool.parseDate(strFormat,date)));
-    }
-
     public static void main(String[] args) throws Exception {
-        date("1998-10-10 11:00");
-        date("1998年10月10日 11时00分5秒");
-        date("1998/10/10日");
+        String smg = "abc";
+        System.out.println(smg.replaceAll("\\([^}]*\\)",""));
 
-       /* importDBFromExcel(new ExcelService() {
+/*
+        importDBFromExcel(new ExcelService() {
             @Override
             public List<String> query(String sql)
             {
@@ -96,9 +79,9 @@ public class ExcelImportTool {
 
         RowListener listener = (row, rowNum) -> {
             if(rowNum >=  excelTempConfig.getDataLineNum()){
-               // suplerExcelData.Instance();
                 if(dbHead.getDbArray() == null){
-                    throw new TransformationException("模板:"+excelTmpFileName+" 配置选项第一行第二列不匹配，检查是否模板正确");
+                    errorRows.add("模板:"+excelTmpFileName+" 配置选项第一行第二列不匹配，检查是否模板正确");
+                    return false;
                 }else if(errorRows.size() > 20){
                     return false;
                 }
@@ -282,17 +265,11 @@ public class ExcelImportTool {
 
 
     public static String getHeadDesc(String desc){
-        int idex = desc.indexOf("（");
-        if(idex >= 0){
-            String bracket = desc.substring(desc.indexOf("（"),desc.indexOf("）")+1);
-            return desc.replace(bracket, "");
-        }
-        return desc;
+        return desc.replaceAll("\\([^}]*\\)","");
     }
 
     private static class ExcelDbDesc{
         private ExcelTempConfig.ExcelDbData[] dbArray = null;
-        private boolean isEmpty =true;
 
         public ExcelTempConfig.ExcelDbData[] getDbArray() {
             return dbArray;
@@ -300,14 +277,6 @@ public class ExcelImportTool {
 
         public void setDbArray(ExcelTempConfig.ExcelDbData[] dbArray) {
             this.dbArray = dbArray;
-        }
-
-        public boolean isEmpty() {
-            return isEmpty;
-        }
-
-        public void setEmpty(boolean empty) {
-            isEmpty = empty;
         }
     }
 }

@@ -1,11 +1,9 @@
 package com.lgame.util.excel.bigdata;
 import java.io.InputStream;
-import java.util.Arrays;
 import java.util.Iterator;
 
 import com.lgame.util.excel.DefaultRowListener;
 import com.lgame.util.excel.RowListener;
-import com.lgame.util.exception.AppException;
 import com.lgame.util.exception.TransformationException;
 import org.apache.poi.ss.usermodel.BuiltinFormats;
 import org.apache.poi.xssf.eventusermodel.XSSFReader;
@@ -151,7 +149,7 @@ public class ReadBigExcel {
                         maxColum = Integer.valueOf(arr[1]);
                     }catch (Exception ex){
                         ex.printStackTrace();
-                        System.out.println("请重写获得最大列数方法");
+                        throw new TransformationException("请重写获得最大列数方法");
                     }
                 }
                 row = new String[maxColum];

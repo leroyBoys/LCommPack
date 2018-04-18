@@ -165,17 +165,12 @@ public class POIReadData {
      * @参数：@return
      * @返回值：List
      */
-    private boolean read(InputStream inputStream,String sheetName, boolean isExcel2003,RowListener listener,int endLineNum,int maxColumNum) {
-        try {
-            /**
-             * 根据版本选择创建Workbook的方式
-             */
-            Workbook wb = isExcel2003 ? new HSSFWorkbook(inputStream) : new XSSFWorkbook(inputStream);
-           return read(wb,sheetName,listener,endLineNum,maxColumNum);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        return false;
+    private boolean read(InputStream inputStream,String sheetName, boolean isExcel2003,RowListener listener,int endLineNum,int maxColumNum) throws IOException {
+        /**
+         * 根据版本选择创建Workbook的方式
+         */
+        Workbook wb = isExcel2003 ? new HSSFWorkbook(inputStream) : new XSSFWorkbook(inputStream);
+        return read(wb,sheetName,listener,endLineNum,maxColumNum);
     }
 
     /**
@@ -291,7 +286,7 @@ public class POIReadData {
              * 保存第r行的第c列
              */
             if(!listener.read(rowLst,r+1)){
-                throw new TransformationException("错误数据过多强制停止解析");
+                return true;
             }
         }
 
