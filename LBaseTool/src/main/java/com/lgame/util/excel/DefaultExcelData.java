@@ -50,7 +50,7 @@ public class DefaultExcelData implements SuplerExcelData {
         defaultExcelData.setTableName(config.getTableName());
         defaultExcelData.setDataEntity(dataEntity);
         defaultExcelData.setUniqueColumName(config.getIdColumName());
-        return null;
+        return defaultExcelData;
     }
 
     @Override

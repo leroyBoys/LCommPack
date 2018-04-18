@@ -1,5 +1,7 @@
 package com.lgame.util.excel;
 
+import com.lgame.util.comm.StringTool;
+import com.lgame.util.exception.TransformationException;
 import org.apache.poi.hssf.usermodel.HSSFCell;
 import org.apache.poi.hssf.usermodel.HSSFDateUtil;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
@@ -15,7 +17,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
-import java.util.*;
+import java.util.Arrays;
+import java.util.Date;
 
 public class POIReadData {
 
@@ -99,10 +102,13 @@ public class POIReadData {
         read(fileName,listener,0);
     }
 
-    public void read(String fileName,RowListener listener,int endLineNum) {
-        read(fileName,listener,endLineNum,0);
+    public boolean read(String fileName,RowListener listener,int endLineNum) {
+        return read(fileName,null,listener,endLineNum,0);
     }
 
+    public boolean read(String fileName,String sheetName,RowListener listener,int endLineNum) {
+        return read(fileName,sheetName,listener,endLineNum,0);
+    }
     /**
      *
      * @param fileName
@@ -110,15 +116,16 @@ public class POIReadData {
      * @param endLineNum 最大读取行号，如果0则表示自动
      * @param maxColumNum 最大读取列数，如果0则表示自动
      */
-    public void read(String fileName,RowListener listener,int endLineNum,int maxColumNum) {
+    public boolean read(String fileName,String sheetName,RowListener listener,int endLineNum,int maxColumNum) {
         InputStream is = null;
+        boolean isSuc = false;
         try {
             /**
              * 验证文件是否合法
              */
             if (!validateExcel(fileName)) {
                 System.out.println(errorInfo);
-                return;
+                return false;
             }
             /**
              * 判断文件的类型，是2003还是2007
@@ -133,7 +140,7 @@ public class POIReadData {
             File file = new File(fileName);
             is = new FileInputStream(file);
 
-            read(is, isExcel2003,listener,endLineNum,maxColumNum);
+            isSuc = read(is,sheetName, isExcel2003,listener,endLineNum,maxColumNum);
             is.close();
         } catch (Exception ex) {
             ex.printStackTrace();
@@ -147,6 +154,8 @@ public class POIReadData {
                 }
             }
         }
+
+        return isSuc;
     }
 
     /**
@@ -156,16 +165,17 @@ public class POIReadData {
      * @参数：@return
      * @返回值：List
      */
-    private void read(InputStream inputStream, boolean isExcel2003,RowListener listener,int endLineNum,int maxColumNum) {
+    private boolean read(InputStream inputStream,String sheetName, boolean isExcel2003,RowListener listener,int endLineNum,int maxColumNum) {
         try {
             /**
              * 根据版本选择创建Workbook的方式
              */
             Workbook wb = isExcel2003 ? new HSSFWorkbook(inputStream) : new XSSFWorkbook(inputStream);
-            read(wb,listener,endLineNum,maxColumNum);
+           return read(wb,sheetName,listener,endLineNum,maxColumNum);
         } catch (IOException e) {
             e.printStackTrace();
         }
+        return false;
     }
 
     /**
@@ -174,11 +184,18 @@ public class POIReadData {
      * @参数：@return
      * @返回值：List<List<String>>
      */
-    private void read(Workbook wb,RowListener listener,int endLineNum,int maxColumNum) {
+    private boolean read(Workbook wb,String sheetName,RowListener listener,int endLineNum,int maxColumNum) {
         /**
          * 得到第一个shell
          */
         Sheet sheet = wb.getSheetAt(0);
+        if(!StringTool.isEmpty(sheetName)){
+            sheet = wb.getSheet(sheetName);
+            if(sheet == null){
+                return false;
+            }
+        }
+
         /**
          * 得到Excel的行数
          */
@@ -273,9 +290,12 @@ public class POIReadData {
             /**
              * 保存第r行的第c列
              */
-            listener.read(rowLst,r+1);
+            if(!listener.read(rowLst,r+1)){
+                throw new TransformationException("错误数据过多强制停止解析");
+            }
         }
 
+        return true;
     }
 
     /**
@@ -286,8 +306,7 @@ public class POIReadData {
      */
     public static void main(String[] args) throws Exception {
         POIReadData poi = new POIReadData();
-        poi.read("d:/提示信息配置表.xlsx", (row, rowNum) -> System.out.println(Arrays.toString(row)));
-
+        poi.read("d:/提示信息配置表.xlsx", (row, rowNum) -> {System.out.println(Arrays.toString(row));return true;});
     }
 
     /**

@@ -5,9 +5,9 @@ package com.lgame.util.excel;
  */
 public interface RowListener {
     /**
-     *
+     * 返回是否继续解析
      * @param row
      * @param rowNum 行号
      */
-    void read(String[] row,int rowNum);
+    boolean read(String[] row,int rowNum);
 }

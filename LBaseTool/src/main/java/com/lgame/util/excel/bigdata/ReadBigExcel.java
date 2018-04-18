@@ -5,6 +5,8 @@ import java.util.Iterator;
 
 import com.lgame.util.excel.DefaultRowListener;
 import com.lgame.util.excel.RowListener;
+import com.lgame.util.exception.AppException;
+import com.lgame.util.exception.TransformationException;
 import org.apache.poi.ss.usermodel.BuiltinFormats;
 import org.apache.poi.xssf.eventusermodel.XSSFReader;
 import org.apache.poi.xssf.model.SharedStringsTable;
@@ -67,7 +69,12 @@ public class ReadBigExcel {
             System.out.println("Processing new sheet:\n");
             InputStream sheet = sheets.next();
             InputSource sheetSource = new InputSource(sheet);
-            parser.parse(sheetSource);
+            try {
+                parser.parse(sheetSource);
+            }catch (Exception ex){
+                ex.printStackTrace();
+                return;
+            }
             sheet.close();
             System.out.println("");
         }
@@ -173,7 +180,9 @@ public class ReadBigExcel {
                     row[curColumIdex] = lastContents;
                 }
             }else if (name.equals("row")) {//一行结束
-                rowListen.read(row,curRow);
+                if(!rowListen.read(row,curRow)){
+                    throw new TransformationException("错误数据过多强制停止解析");
+                }
             }
         }
 

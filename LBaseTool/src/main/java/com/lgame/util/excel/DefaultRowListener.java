@@ -8,7 +8,8 @@ import java.util.Arrays;
 public class DefaultRowListener implements RowListener{
 
     @Override
-    public void read(String[] row,int rowNum) {
+    public boolean read(String[] row,int rowNum) {
         System.out.println("rowNum:"+rowNum+"   :"+Arrays.toString(row));
+        return true;
     }
 }

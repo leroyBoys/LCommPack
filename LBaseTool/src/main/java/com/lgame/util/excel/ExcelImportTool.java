@@ -1,87 +1,173 @@
 package com.lgame.util.excel;
 
-import com.lgame.util.comm.FormatDataTool;
 import com.lgame.util.comm.StringTool;
 import com.lgame.util.excel.bigdata.ReadBigExcel;
 import com.lgame.util.exception.AppException;
 import com.lgame.util.exception.TransformationException;
 import com.lgame.util.json.JsonUtil;
+import com.lgame.util.time.DateTimeTool;
 
 import java.io.File;
-import java.util.*;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
 
 /**
+ *  日期更是全转化为时间戳
  * Created by Administrator on 2018/4/16.
  */
 public class ExcelImportTool {
     private final static long maxSize = 1024*1024*50;
-    public static void main(String[] args) throws Exception {
+
+    public static void date(String date){
+
+        date = date.replaceAll("\\/|\\-|年|月|日","").replaceAll("时|分|秒",":");
+        int length = date.split(":").length;
+        String strFormat = "yyyyMMdd";
+        if(length == 2){
+            strFormat+=" HH:mm";
+        }else if(length == 3){
+            strFormat+=" HH:mm:ss";
+        }
+        System.out.println(date);
+        System.out.println("==>"+DateTimeTool.getDateTime(DateTimeTool.parseDate(strFormat,date)));
     }
 
+    public static void main(String[] args) throws Exception {
+        date("1998-10-10 11:00");
+        date("1998年10月10日 11时00分5秒");
+        date("1998/10/10日");
 
+       /* importDBFromExcel(new ExcelService() {
+            @Override
+            public List<String> query(String sql)
+            {
+                System.out.println(sql);
+                return null;
+            }
+
+            @Override
+            public int excute(List sqls) {
+                System.out.println(sqls);
+                return 0;
+            }
+        },null,"D:\\ww.xls","");*/
+    }
+
+    public static String importDBFromExcel(ExcelService excelService,ExcelTempConfig tempConfig,String fileName,String excelTmpFileName) throws Exception{
+        return importDBFromExcel(excelService,true,tempConfig,50,new DefaultExcelData(),fileName,excelTmpFileName);
+    }
+
+    public static String importDBFromExcel(ExcelService excelService,String fileName,String excelTmpFileName) throws Exception{
+        return importDBFromExcel(excelService,true,null,50,new DefaultExcelData(),fileName,excelTmpFileName);
+    }
     /**
      *
      * @param fileName 数据文件名字带路径
      * @param excelTmpFileName 模板名字带路径
      * @return
      */
-    public static String importDBFromExcel(ExcelService excelService,boolean isCheckBeforeUpdate,int batchUpdateCount,SuplerExcelData suplerExcelData,String fileName,String excelTmpFileName) throws Exception {
-        ExcelTempConfig excelTempConfig = getExcelTempConfig(excelTmpFileName);
-        if(excelTempConfig == null){
+    public static String importDBFromExcel(ExcelService excelService,boolean isCheckBeforeUpdate,ExcelTempConfig tempConfig,int batchUpdateCount,SuplerExcelData suplerExcelData,String fileName,String excelTmpFileName) throws Exception {
+        ExcelTempConfig autoTempConfig = getAutoExcelTempConfig(fileName);
+        if(autoTempConfig != null){
+            tempConfig = autoTempConfig;
+        }
+
+        if(tempConfig == null){
+            tempConfig = getExcelTempConfig(excelTmpFileName);
+        }
+
+        if(tempConfig == null){
             throw new AppException("模板不存在："+excelTmpFileName);
         }
 
+        final ExcelTempConfig excelTempConfig = tempConfig;
         File file = new File(fileName);
         if(!file.exists()){
             throw new AppException("文件不存在："+fileName);
         }
 
-        Map<String,SuplerExcelData> tmpMap = new HashMap<>();
+        final Map<String,SuplerExcelData> tmpMap = new HashMap<>();
         final ExcelDbDesc dbHead = new ExcelDbDesc();
+        final List<String> errorRows = new LinkedList<>();
 
         RowListener listener = (row, rowNum) -> {
             if(rowNum >=  excelTempConfig.getDataLineNum()){
                // suplerExcelData.Instance();
                 if(dbHead.getDbArray() == null){
                     throw new TransformationException("模板:"+excelTmpFileName+" 配置选项第一行第二列不匹配，检查是否模板正确");
+                }else if(errorRows.size() > 20){
+                    return false;
                 }
 
-                Map<String,String> map = new HashMap<>();
-                for(int i = 0;i<row.length;i++){
-                    String dbColum = dbHead.getDbArray()[i];
-                    if(StringTool.isEmpty(dbColum)){
-                        continue;
+                try {
+                    Map<String,String> map = new HashMap<>();
+                    ExcelTempConfig.ExcelDbData excelDbData;
+
+                    StringBuilder errorMsg = null;
+                    for(int i = 0;i<row.length;i++){
+                        excelDbData = dbHead.getDbArray()[i];
+                        if(excelDbData == null){
+                            continue;
+                        }
+
+                        if(excelTempConfig.isCheckColumValueRight() && !excelDbData.getExcelDataTypeEnum().getDataType().isMatch(row[i])){
+                            if(errorMsg == null){
+                                errorMsg = new StringBuilder("第"+rowNum+"行出错，详细列数:");
+                            }
+                            errorMsg.append(i+1).append(",");
+                            continue;
+                        }
+                        map.put(excelDbData.getColumNum(),excelDbData.getExcelDataTypeEnum().getDataType().value(row[i]));
                     }
-                    map.put(dbColum,row[i]);
+
+                    if(errorMsg != null){
+                        errorMsg.deleteCharAt(errorMsg.length()-1);
+                        errorRows.add(errorMsg.toString());
+                    }
+                    SuplerExcelData entity = suplerExcelData.Instance(map,excelTempConfig);
+                    tmpMap.put(entity.getUniqueId(),entity);
+
+
+                }catch (Exception ex){
+                    ex.printStackTrace();
+                    errorRows.add("第"+rowNum+"行出错："+ex.getMessage());
+                    return true;
                 }
-                SuplerExcelData entity = suplerExcelData.Instance(map,excelTempConfig);
-                tmpMap.put(entity.getUniqueId(),entity);
 
                 if(tmpMap.size() == batchUpdateCount){
-
                     _importDBFromExcel(tmpMap,isCheckBeforeUpdate,excelService,excelTempConfig);
                     tmpMap.clear();
                 }
-                return;
+                return true;
             }else if(rowNum == excelTempConfig.getHeadDataLineNum()){//
-                if(!excelTempConfig.getHeadDataMap().isEmpty()){
-                    dbHead.setDbArray(getDbArray(excelTempConfig.getHeadDataMap(),row));
-                }else{
-                    dbHead.setDbArray(row);
-                }
-                return;
+                dbHead.setDbArray(getDbArray(excelTempConfig,row));
+                return true;
             }
 
+            return true;
         };
 
-        if(file.length()>maxSize){
-            if(fileName.endsWith(".xls")){
-                throw new AppException(fileName+"请另存为:"+fileName+"x");
-            }
+        try {
+            if(file.length()>maxSize){
+                if(fileName.endsWith(".xls")){
+                    throw new AppException(fileName+"请另存为:"+fileName+"x");
+                }
 
-            new ReadBigExcel().processOneSheet(fileName,listener,0);
-        }else {
-            new POIReadData().read(fileName,listener,0);
+                new ReadBigExcel().processOneSheet(fileName,listener,0);
+            }else {
+                new POIReadData().read(fileName,listener,0);
+            }
+        }catch (TransformationException ex){
+            ex.printStackTrace();
+        }
+
+
+        if(!tmpMap.isEmpty()){
+            _importDBFromExcel(tmpMap,isCheckBeforeUpdate,excelService,excelTempConfig);
         }
         return null;
     }
@@ -106,23 +192,48 @@ public class ExcelImportTool {
         excelService.excute(sqls);
     }
 
-    private static String[] getDbArray(Map<String, String> headDataMap, String[] row) {
-        String[] tmpArray = new String[row.length];
+    private static ExcelTempConfig.ExcelDbData[] getDbArray(ExcelTempConfig config, String[] row) {
+        ExcelTempConfig.ExcelDbData[] tmpArray = new ExcelTempConfig.ExcelDbData[row.length];
         for(int i = 0;i<row.length;i++){
-            String dbColum = headDataMap.get(getHeadDesc(row[i]));
-            if(StringTool.isEmpty(dbColum)){
+            ExcelTempConfig.ExcelDbData data = config.getHeadDataMap().get(getHeadDesc(row[i]));
+            if(data == null){
                 continue;
             }
-            tmpArray[i] = dbColum;
+            tmpArray[i] = data;
         }
 
         return tmpArray;
     }
 
-
-    static ExcelTempConfig getExcelTempConfig(String fileName){
+    /**
+     * 根据模板获得配置信息
+     * @param tempFileName
+     * @return
+     */
+    public static ExcelTempConfig getExcelTempConfig(String tempFileName){
         List<String[]> readList =  new LinkedList<>();
-        new POIReadData().read(fileName, (row, rowNum) -> readList.add(row), 3);
+        new POIReadData().read(tempFileName, (row, rowNum) -> {
+            readList.add(row);
+            return true;
+        }, 5);
+        if(readList.isEmpty()){
+            return null;
+        }
+
+        return initExcelTempConfig(tempFileName,readList);
+    }
+
+    static ExcelTempConfig getAutoExcelTempConfig(String fileName){
+        List<String[]> readList =  new LinkedList<>();
+        if(!new POIReadData().read(fileName,"config", (row, rowNum) -> {
+            readList.add(row);
+            return true;
+        }, 5)){
+            return null;
+        }
+        return initExcelTempConfig(fileName,readList);
+    }
+    private static ExcelTempConfig initExcelTempConfig(String fileName,List<String[]> readList){
         if(readList.isEmpty()){
             return null;
         }
@@ -133,32 +244,42 @@ public class ExcelImportTool {
             tempConfig.setTableName(headDescv[0]);
             tempConfig.setHeadDataLineNum(Integer.valueOf(headDescv[1]));
             tempConfig.setDataLineNum(Integer.valueOf(headDescv[2]));
-            if(readList.size() == 1){//如果只有一行配置数据说明原始数据行就是db行
-                return tempConfig;
-            }
+            tempConfig.setIdColumName(headDescv[3]);
+            tempConfig.setCheckColumValueRight(headDescv.length < 5?true:Boolean.valueOf(headDescv[4].trim()));
         }catch (Exception e){
-            System.out.println(fileName+"模板数据第一行数据不正确:"+ JsonUtil.getJsonFromBean(headDescv));
-            return null;
+            throw new TransformationException(fileName+"模板数据第一行数据不正确:"+ JsonUtil.getJsonFromBean(headDescv)+"  "+e.getMessage());
         }
+
+        if(readList.size() < 4){
+            throw new TransformationException(fileName+"模板数据不完整，必须超过四行具体数据类型：基准数据，头部数据，数据库数据，数据格式:");
+        }
+
         try {
             String[] headList = readList.get(1);
             String[] dbHeadColum = readList.get(2);
-            Map<String,String> map = new HashMap<>();
+            String[] dbTypes = readList.get(3);
+            Map<String,ExcelTempConfig.ExcelDbData> map = new HashMap<>();
             for(int i=0;i<headList.length;i++){
                 if(StringTool.isEmpty(dbHeadColum[i])){
                     continue;
                 }
-                map.put(getHeadDesc(headList[i]),dbHeadColum[i]);
+
+                ExcelTempConfig.ExcelDataTypeEnum excelDataTypeEnum = ExcelTempConfig.ExcelDataTypeEnum.Str;
+                if(!StringTool.isEmpty(dbTypes[i])){
+                    excelDataTypeEnum = ExcelTempConfig.getExcelDataTypeEnum(dbTypes[i].trim());
+                    excelDataTypeEnum = excelDataTypeEnum==null? ExcelTempConfig.ExcelDataTypeEnum.Str:excelDataTypeEnum;
+                }
+                map.put(getHeadDesc(headList[i]),new ExcelTempConfig.ExcelDbData(dbHeadColum[i],excelDataTypeEnum));
             }
 
             tempConfig.setHeadDataMap(map);
         }catch (Exception e){
-            System.out.println(fileName+"模板数据第二，三行数据不正确:"+ e.getMessage());
-            return null;
+            throw new TransformationException(fileName+"模板数据第二，三,四行数据不正确:"+ e.getMessage());
         }
 
         return tempConfig;
     }
+
 
     public static String getHeadDesc(String desc){
         int idex = desc.indexOf("（");
@@ -170,14 +291,14 @@ public class ExcelImportTool {
     }
 
     private static class ExcelDbDesc{
-        private String[] dbArray = null;
+        private ExcelTempConfig.ExcelDbData[] dbArray = null;
         private boolean isEmpty =true;
 
-        public String[] getDbArray() {
+        public ExcelTempConfig.ExcelDbData[] getDbArray() {
             return dbArray;
         }
 
-        public void setDbArray(String[] dbArray) {
+        public void setDbArray(ExcelTempConfig.ExcelDbData[] dbArray) {
             this.dbArray = dbArray;
         }
 

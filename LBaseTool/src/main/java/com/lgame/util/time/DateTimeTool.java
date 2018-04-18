@@ -4,6 +4,9 @@
  */
 package com.lgame.util.time;
 
+import com.lgame.util.comm.RegexUtils;
+
+import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
@@ -18,7 +21,7 @@ public class DateTimeTool {
     public static final String C_DATE_DIVISION = "-";
     public static final String C_TIME_PATTON_DEFAULT = "yyyy-MM-dd HH:mm:ss";
     public static final String C_DATE_PATTON_DEFAULT = "yyyy-MM-dd";
-    public static final String C_DATA_PATTON_YYYYMMDD = "yyyyMMdd";
+    public static final String C_DATA_PATTON_YYYYMMDD = "yyyyMMdd HH:mm:ss";
     public static final String C_YEAR_MONTH = "yyyyMM";
     public static final String C_TIME_PATTON_HHMMSS = "HH:mm:ss";
     public static final int C_ONE_SECOND = 1000;
@@ -64,27 +67,6 @@ public class DateTimeTool {
         Date currDate = cal.getTime();
 
         return format(currDate, strFormat);
-    }
-
-    /**
-     * Parse a string and return a date value
-     *
-     * @param dateValue
-     * @return
-     * @throws Exception
-     */
-    public static Date parseDate(String dateValue) {
-        return parseDate(C_DATE_PATTON_DEFAULT, dateValue);
-    }
-
-    /**
-     * Parse a strign and return a datetime value
-     *
-     * @param dateValue
-     * @return
-     */
-    public static Date parseDateTime(String dateValue) {
-        return parseDate(C_TIME_PATTON_DEFAULT, dateValue);
     }
 
     /**
@@ -207,25 +189,6 @@ public class DateTimeTool {
     /**
      * 增加日期中某类型的某数值。如增加日期
      *
-     * @param date 日期字符串
-     * @param dateType 类型
-     * @param amount 数值
-     * @return 计算后日期字符串
-     */
-    private static String addInteger(String date, int dateType, int amount) {
-        String dateString = null;
-        DateStyle dateStyle = getDateStyle(date);
-        if (dateStyle != null) {
-            Date myDate = StringToDate(date, dateStyle);
-            myDate = addInteger(myDate, dateType, amount);
-            dateString = DateToString(myDate, dateStyle);
-        }
-        return dateString;
-    }
-
-    /**
-     * 增加日期中某类型的某数值。如增加日期
-     *
      * @param date 日期
      * @param dateType 类型
      * @param amount 数值
@@ -313,54 +276,6 @@ public class DateTimeTool {
     }
 
     /**
-     * 判断字符串是否为日期字符串
-     *
-     * @param date 日期字符串
-     * @return true or false
-     */
-    public static boolean isDate(String date) {
-        boolean isDate = false;
-        if (date != null) {
-            if (StringToDate(date) != null) {
-                isDate = true;
-            }
-        }
-        return isDate;
-    }
-
-    /**
-     * 获取日期字符串的日期风格。失敗返回null。
-     *
-     * @param date 日期字符串
-     * @return 日期风格
-     */
-    public static DateStyle getDateStyle(String date) {
-        DateStyle dateStyle = null;
-        Map<Long, DateStyle> map = new HashMap<Long, DateStyle>();
-        List<Long> timestamps = new ArrayList<Long>();
-        for (DateStyle style : DateStyle.values()) {
-            Date dateTmp = StringToDate(date, style.getValue());
-            if (dateTmp != null) {
-                timestamps.add(dateTmp.getTime());
-                map.put(dateTmp.getTime(), style);
-            }
-        }
-        dateStyle = map.get(getAccurateDate(timestamps).getTime());
-        return dateStyle;
-    }
-
-    /**
-     * 将日期字符串转化为日期。失败返回null。
-     *
-     * @param date 日期字符串
-     * @return 日期
-     */
-    public static Date StringToDate(String date) {
-        DateStyle dateStyle = null;
-        return StringToDate(date, dateStyle);
-    }
-
-    /**
      * 将日期字符串转化为日期。失败返回null。
      *
      * @param date 日期字符串
@@ -379,27 +294,21 @@ public class DateTimeTool {
     }
 
     /**
-     * 将日期字符串转化为日期。失败返回null。
+     * 将日期字符串转化为日期。失败返回null。(慎用效率很慢)
      *
      * @param date 日期字符串
-     * @param dateStyle 日期风格
      * @return 日期
      */
-    public static Date StringToDate(String date, DateStyle dateStyle) {
-        Date myDate = null;
-        if (dateStyle == null) {
-            List<Long> timestamps = new ArrayList<Long>();
-            for (DateStyle style : DateStyle.values()) {
-                Date dateTmp = StringToDate(date, style.getValue());
-                if (dateTmp != null) {
-                    timestamps.add(dateTmp.getTime());
-                }
-            }
-            myDate = getAccurateDate(timestamps);
-        } else {
-            myDate = StringToDate(date, dateStyle.getValue());
+    public static Date getDateTime(String date) {
+        date = date.replaceAll("\\/|\\-|年|月|日","").replaceAll("时|分|秒",":");
+        int length = date.split(":").length;
+        String strFormat = "yyyyMMdd";
+        if(length == 2){
+            strFormat+=" HH:mm";
+        }else if(length == 3){
+            strFormat+=" HH:mm:ss";
         }
-        return myDate;
+        return DateTimeTool.parseDate(strFormat,date);
     }
 
     /**
@@ -436,81 +345,6 @@ public class DateTimeTool {
     }
 
     /**
-     * 将日期字符串转化为另一日期字符串。失败返回null。
-     *
-     * @param date 旧日期字符串
-     * @param parttern 新日期格式
-     * @return 新日期字符串
-     */
-    public static String StringToString(String date, String parttern) {
-        return StringToString(date, null, parttern);
-    }
-
-    /**
-     * 将日期字符串转化为另一日期字符串。失败返回null。
-     *
-     * @param date 旧日期字符串
-     * @param dateStyle 新日期风格
-     * @return 新日期字符串
-     */
-    public static String StringToString(String date, DateStyle dateStyle) {
-        return StringToString(date, null, dateStyle);
-    }
-
-    /**
-     * 将日期字符串转化为另一日期字符串。失败返回null。
-     *
-     * @param date 旧日期字符串
-     * @param olddParttern 旧日期格式
-     * @param newParttern 新日期格式
-     * @return 新日期字符串
-     */
-    public static String StringToString(String date, String olddParttern, String newParttern) {
-        String dateString = null;
-        if (olddParttern == null) {
-            DateStyle style = getDateStyle(date);
-            if (style != null) {
-                Date myDate = StringToDate(date, style.getValue());
-                dateString = DateToString(myDate, newParttern);
-            }
-        } else {
-            Date myDate = StringToDate(date, olddParttern);
-            dateString = DateToString(myDate, newParttern);
-        }
-        return dateString;
-    }
-
-    /**
-     * 将日期字符串转化为另一日期字符串。失败返回null。
-     *
-     * @param date 旧日期字符串
-     * @param olddDteStyle 旧日期风格
-     * @param newDateStyle 新日期风格
-     * @return 新日期字符串
-     */
-    public static String StringToString(String date, DateStyle olddDteStyle, DateStyle newDateStyle) {
-        String dateString = null;
-        if (olddDteStyle == null) {
-            DateStyle style = getDateStyle(date);
-            dateString = StringToString(date, style.getValue(), newDateStyle.getValue());
-        } else {
-            dateString = StringToString(date, olddDteStyle.getValue(), newDateStyle.getValue());
-        }
-        return dateString;
-    }
-
-    /**
-     * 增加日期的年份。失败返回null。
-     *
-     * @param date 日期
-     * @param yearAmount 增加数量。可为负数
-     * @return 增加年份后的日期字符串
-     */
-    public static String addYear(String date, int yearAmount) {
-        return addInteger(date, Calendar.YEAR, yearAmount);
-    }
-
-    /**
      * 增加日期的年份。失败返回null。
      *
      * @param date 日期
@@ -519,17 +353,6 @@ public class DateTimeTool {
      */
     public static Date addYear(Date date, int yearAmount) {
         return addInteger(date, Calendar.YEAR, yearAmount);
-    }
-
-    /**
-     * 增加日期的月份。失败返回null。
-     *
-     * @param date 日期
-     * @param yearAmount 增加数量。可为负数
-     * @return 增加月份后的日期字符串
-     */
-    public static String addMonth(String date, int yearAmount) {
-        return addInteger(date, Calendar.MONTH, yearAmount);
     }
 
     /**
@@ -546,34 +369,12 @@ public class DateTimeTool {
     /**
      * 增加日期的天数。失败返回null。
      *
-     * @param date 日期字符串
-     * @param dayAmount 增加数量。可为负数
-     * @return 增加天数后的日期字符串
-     */
-    public static String addDay(String date, int dayAmount) {
-        return addInteger(date, Calendar.DATE, dayAmount);
-    }
-
-    /**
-     * 增加日期的天数。失败返回null。
-     *
      * @param date 日期
      * @param dayAmount 增加数量。可为负数
      * @return 增加天数后的日期
      */
     public static Date addDay(Date date, int dayAmount) {
         return addInteger(date, Calendar.DATE, dayAmount);
-    }
-
-    /**
-     * 增加日期的小时。失败返回null。
-     *
-     * @param date 日期字符串
-     * @param hourAmount 增加数量。可为负数
-     * @return 增加小时后的日期字符串
-     */
-    public static String addHour(String date, int hourAmount) {
-        return addInteger(date, Calendar.HOUR_OF_DAY, hourAmount);
     }
 
     /**
@@ -590,34 +391,12 @@ public class DateTimeTool {
     /**
      * 增加日期的分钟。失败返回null。
      *
-     * @param date 日期字符串
-     * @param hourAmount 增加数量。可为负数
-     * @return 增加分钟后的日期字符串
-     */
-    public static String addMinute(String date, int hourAmount) {
-        return addInteger(date, Calendar.MINUTE, hourAmount);
-    }
-
-    /**
-     * 增加日期的分钟。失败返回null。
-     *
      * @param date 日期
      * @param hourAmount 增加数量。可为负数
      * @return 增加分钟后的日期
      */
     public static Date addMinute(Date date, int hourAmount) {
         return addInteger(date, Calendar.MINUTE, hourAmount);
-    }
-
-    /**
-     * 增加日期的秒钟。失败返回null。
-     *
-     * @param date 日期字符串
-     * @param hourAmount 增加数量。可为负数
-     * @return 增加秒钟后的日期字符串
-     */
-    public static String addSecond(String date, int hourAmount) {
-        return addInteger(date, Calendar.SECOND, hourAmount);
     }
 
     /**
@@ -634,31 +413,11 @@ public class DateTimeTool {
     /**
      * 获取日期的年份。失败返回0。
      *
-     * @param date 日期字符串
-     * @return 年份
-     */
-    public static int getYear(String date) {
-        return getYear(StringToDate(date));
-    }
-
-    /**
-     * 获取日期的年份。失败返回0。
-     *
      * @param date 日期
      * @return 年份
      */
     public static int getYear(Date date) {
         return getInteger(date, Calendar.YEAR);
-    }
-
-    /**
-     * 获取日期的月份。失败返回0。
-     *
-     * @param date 日期字符串
-     * @return 月份
-     */
-    public static int getMonth(String date) {
-        return getMonth(StringToDate(date));
     }
 
     /**
@@ -674,31 +433,11 @@ public class DateTimeTool {
     /**
      * 获取日期的天数。失败返回0。
      *
-     * @param date 日期字符串
-     * @return 天
-     */
-    public static int getDay(String date) {
-        return getDay(StringToDate(date));
-    }
-
-    /**
-     * 获取日期的天数。失败返回0。
-     *
      * @param date 日期
      * @return 天
      */
     public static int getDay(Date date) {
         return getInteger(date, Calendar.DATE);
-    }
-
-    /**
-     * 获取日期的小时。失败返回0。
-     *
-     * @param date 日期字符串
-     * @return 小时
-     */
-    public static int getHour(String date) {
-        return getHour(StringToDate(date));
     }
 
     /**
@@ -714,16 +453,6 @@ public class DateTimeTool {
     /**
      * 获取日期的分钟。失败返回0。
      *
-     * @param date 日期字符串
-     * @return 分钟
-     */
-    public static int getMinute(String date) {
-        return getMinute(StringToDate(date));
-    }
-
-    /**
-     * 获取日期的分钟。失败返回0。
-     *
      * @param date 日期
      * @return 分钟
      */
@@ -734,31 +463,11 @@ public class DateTimeTool {
     /**
      * 获取日期的秒钟。失败返回0。
      *
-     * @param date 日期字符串
-     * @return 秒钟
-     */
-    public static int getSecond(String date) {
-        return getSecond(StringToDate(date));
-    }
-
-    /**
-     * 获取日期的秒钟。失败返回0。
-     *
      * @param date 日期
      * @return 秒钟
      */
     public static int getSecond(Date date) {
         return getInteger(date, Calendar.SECOND);
-    }
-
-    /**
-     * 获取日期 。默认yyyy-MM-dd格式。失败返回null。
-     *
-     * @param date 日期字符串
-     * @return 日期
-     */
-    public static String getDate(String date) {
-        return StringToString(date, DateStyle.YYYY_MM_DD);
     }
 
     /**
@@ -774,16 +483,6 @@ public class DateTimeTool {
     /**
      * 获取日期的时间。默认HH:mm:ss格式。失败返回null。
      *
-     * @param date 日期字符串
-     * @return 时间
-     */
-    public static String getTime(String date) {
-        return StringToString(date, DateStyle.HH_MM_SS);
-    }
-
-    /**
-     * 获取日期的时间。默认HH:mm:ss格式。失败返回null。
-     *
      * @param date 日期
      * @return 时间
      */
@@ -792,13 +491,13 @@ public class DateTimeTool {
     }
 
     /**
-     * 获取日期的时间。默认yyyy-MM-dd HH:mm:ss格式。失败返回null。
+     * 获取日期的时间
      *
      * @param date 日期字符串
      * @return 时间
      */
-    public static Date getDateTime(String date) {
-        return StringToDate(date);
+    public static Date getDateTime(String date,String strFormat) {
+        return parseDate(strFormat,date);
     }
 
     /**
@@ -826,22 +525,6 @@ public class DateTimeTool {
      */
     public static Date getDate(long time) {
         return new Date(time);
-    }
-
-    /**
-     * 获取日期的星期。失败返回null。
-     *
-     * @param date 日期字符串
-     * @return 星期
-     */
-    public static Week getWeek(String date) {
-        Week week = null;
-        DateStyle dateStyle = getDateStyle(date);
-        if (dateStyle != null) {
-            Date myDate = StringToDate(date, dateStyle);
-            week = getWeek(myDate);
-        }
-        return week;
     }
 
     /**
@@ -882,23 +565,11 @@ public class DateTimeTool {
     }
 
     /**
-     * 获取两个日期相差的天数
-     *
-     * @param date 日期字符串
-     * @param otherDate 另一个日期字符串
-     * @return 相差天数
-     */
-    public static int getIntervalDays(String date, String otherDate) {
-        return getIntervalDays(StringToDate(date), StringToDate(otherDate));
-    }
-
-    /**
      * @param date 日期
      * @param otherDate 另一个日期
      * @return 相差天数
      */
     public static int getIntervalDays(Date date, Date otherDate) {
-        date = StringToDate(getDate(date));
         long time = Math.abs(date.getTime() - otherDate.getTime());
         return (int) time / (24 * 60 * 60 * 1000);
     }
@@ -980,17 +651,6 @@ public class DateTimeTool {
     }
 
     /**
-     * 返回两个时间之差天数
-     * @param startDate
-     * @param endDate
-     * @return
-     * @throws ParseException
-     */
-    public static int getDifferDay(String startDate,String endDate) throws ParseException{
-        return getDifferDay(getDateTime(startDate), getDateTime(endDate));
-    }
-
-    /**
      * 返回两个日期之差月数
      * @return
      */
@@ -1019,14 +679,7 @@ public class DateTimeTool {
         }
         return iMonth;
     }
-    /**
-     * 返回两个日期之差月数
-     * @return
-     * @throws ParseException
-     */
-    public static int getDifferMoon(String date1,String date2) throws ParseException{
-        return getDifferMoon(getDateTime(date1), getDateTime(date2));
-    }
+
     /**
      * 返回两个日期之差的年数
      * @return
@@ -1059,14 +712,6 @@ public class DateTimeTool {
         }else{
             return cur_year - year;
         }
-    }
-    /**
-     * 返回两个日期之差的年数
-     * @return
-     * @throws ParseException
-     */
-    public static int getDifferYear(String date1,String date2) throws ParseException{
-        return getDifferYear(getDateTime(date1), getDateTime(date2));
     }
 
     /**
@@ -1179,7 +824,7 @@ public class DateTimeTool {
     /**
      * 获得周五日期
      * <p>
-     * 注：日历工厂方法{@link #calendar()}设置类每个星期的第一天为Monday，US等每星期第一天为sunday
+     * 注：日历工厂方法{@link #}设置类每个星期的第一天为Monday，US等每星期第一天为sunday
      *
      * @return
      */
