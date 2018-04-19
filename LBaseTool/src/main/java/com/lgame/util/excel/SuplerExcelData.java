@@ -11,7 +11,7 @@ public interface SuplerExcelData {
      * @param dataEntity
      * @return
      */
-    public SuplerExcelData Instance(Map<String,String> dataEntity, ExcelTempConfig config);
+    public SuplerExcelData Instance(int row,Map<String,String> dataEntity, ExcelTempConfig config);
     public void setNew(boolean aNew);
     public String getUniqueId();
     public String getUpdateSql();

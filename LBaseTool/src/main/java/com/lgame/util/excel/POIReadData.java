@@ -20,7 +20,7 @@ import java.text.SimpleDateFormat;
 import java.util.Arrays;
 import java.util.Date;
 
-public class POIReadData {
+public class POIReadData extends ExcelReadWrite{
 
     /**
      * 总行数
@@ -94,21 +94,6 @@ public class POIReadData {
         return true;
     }
 
-    public void read(String fileName) {
-        read(fileName,new DefaultRowListener(),0);
-    }
-
-    public void read(String fileName,RowListener listener) {
-        read(fileName,listener,0);
-    }
-
-    public boolean read(String fileName,RowListener listener,int endLineNum) {
-        return read(fileName,null,listener,endLineNum,0);
-    }
-
-    public boolean read(String fileName,String sheetName,RowListener listener,int endLineNum) {
-        return read(fileName,sheetName,listener,endLineNum,0);
-    }
     /**
      *
      * @param fileName
@@ -217,6 +202,10 @@ public class POIReadData {
             if (row == null) {
                 continue;
             }
+            if(maxColumNum<=0){
+                this.totalCells = Math.max(this.totalCells,row.getPhysicalNumberOfCells());
+            }
+
             String[] rowLst = new String[this.totalCells];
             /**
              * 循环Excel的列
@@ -285,6 +274,7 @@ public class POIReadData {
             /**
              * 保存第r行的第c列
              */
+
             if(!listener.read(rowLst,r+1)){
                 return true;
             }

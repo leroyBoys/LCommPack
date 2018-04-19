@@ -5,6 +5,7 @@ import com.lgame.util.excel.bigdata.ReadBigExcel;
 import com.lgame.util.exception.AppException;
 import com.lgame.util.exception.TransformationException;
 import com.lgame.util.json.JsonUtil;
+import com.lgame.util.thread.TaskPools;
 
 import java.io.File;
 import java.util.HashMap;
@@ -17,35 +18,31 @@ import java.util.Map;
  * Created by Administrator on 2018/4/16.
  */
 public class ExcelImportTool {
-    private final static long maxSize = 1024*1024*50;
+    private final static long maxSize = 1;//1024*1024*50;
 
     public static void main(String[] args) throws Exception {
-        String smg = "abc";
-        System.out.println(smg.replaceAll("\\([^}]*\\)",""));
-
-/*
         importDBFromExcel(new ExcelService() {
             @Override
             public List<String> query(String sql)
             {
-                System.out.println(sql);
+              //  System.out.println(sql);
                 return null;
             }
 
             @Override
             public int excute(List sqls) {
-                System.out.println(sqls);
+                System.out.println("==>"+sqls.size());
                 return 0;
             }
-        },null,"D:\\ww.xls","");*/
+        },null,"D:\\ww.xlsx","");
     }
 
-    public static String importDBFromExcel(ExcelService excelService,ExcelTempConfig tempConfig,String fileName,String excelTmpFileName) throws Exception{
-        return importDBFromExcel(excelService,true,tempConfig,50,new DefaultExcelData(),fileName,excelTmpFileName);
+    public static ExcelProcess importDBFromExcel(ExcelService excelService,ExcelTempConfig tempConfig,String fileName,String excelTmpFileName) throws Exception{
+        return importDBFromExcel(excelService,tempConfig,new DefaultExcelData(),fileName,excelTmpFileName);
     }
 
-    public static String importDBFromExcel(ExcelService excelService,String fileName,String excelTmpFileName) throws Exception{
-        return importDBFromExcel(excelService,true,null,50,new DefaultExcelData(),fileName,excelTmpFileName);
+    public static ExcelProcess importDBFromExcel(ExcelService excelService,String fileName,String excelTmpFileName) throws Exception{
+        return importDBFromExcel(excelService,null,new DefaultExcelData(),fileName,excelTmpFileName);
     }
     /**
      *
@@ -53,7 +50,8 @@ public class ExcelImportTool {
      * @param excelTmpFileName 模板名字带路径
      * @return
      */
-    public static String importDBFromExcel(ExcelService excelService,boolean isCheckBeforeUpdate,ExcelTempConfig tempConfig,int batchUpdateCount,SuplerExcelData suplerExcelData,String fileName,String excelTmpFileName) throws Exception {
+    public static ExcelProcess importDBFromExcel(ExcelService excelService,ExcelTempConfig tempConfig,SuplerExcelData suplerExcelData,String fileName,String excelTmpFileName) throws Exception {
+        long ss = System.currentTimeMillis();
         ExcelTempConfig autoTempConfig = getAutoExcelTempConfig(fileName);
         if(autoTempConfig != null){
             tempConfig = autoTempConfig;
@@ -67,125 +65,31 @@ public class ExcelImportTool {
             throw new AppException("模板不存在："+excelTmpFileName);
         }
 
-        final ExcelTempConfig excelTempConfig = tempConfig;
+        System.out.println("--->"+(System.currentTimeMillis()-ss)+" ms");
+        ss = System.currentTimeMillis();
+        System.out.println("=====>>>>>>>>");
+
         File file = new File(fileName);
         if(!file.exists()){
             throw new AppException("文件不存在："+fileName);
         }
-
-        final Map<String,SuplerExcelData> tmpMap = new HashMap<>();
-        final ExcelDbDesc dbHead = new ExcelDbDesc();
-        final List<String> errorRows = new LinkedList<>();
-
-        RowListener listener = (row, rowNum) -> {
-            if(rowNum >=  excelTempConfig.getDataLineNum()){
-                if(dbHead.getDbArray() == null){
-                    errorRows.add("模板:"+excelTmpFileName+" 配置选项第一行第二列不匹配，检查是否模板正确");
-                    return false;
-                }else if(errorRows.size() > 20){
-                    return false;
-                }
-
-                try {
-                    Map<String,String> map = new HashMap<>();
-                    ExcelTempConfig.ExcelDbData excelDbData;
-
-                    StringBuilder errorMsg = null;
-                    for(int i = 0;i<row.length;i++){
-                        excelDbData = dbHead.getDbArray()[i];
-                        if(excelDbData == null){
-                            continue;
-                        }
-
-                        if(excelTempConfig.isCheckColumValueRight() && !excelDbData.getExcelDataTypeEnum().getDataType().isMatch(row[i])){
-                            if(errorMsg == null){
-                                errorMsg = new StringBuilder("第"+rowNum+"行出错，详细列数:");
-                            }
-                            errorMsg.append(i+1).append(",");
-                            continue;
-                        }
-                        map.put(excelDbData.getColumNum(),excelDbData.getExcelDataTypeEnum().getDataType().value(row[i]));
-                    }
-
-                    if(errorMsg != null){
-                        errorMsg.deleteCharAt(errorMsg.length()-1);
-                        errorRows.add(errorMsg.toString());
-                    }
-                    SuplerExcelData entity = suplerExcelData.Instance(map,excelTempConfig);
-                    tmpMap.put(entity.getUniqueId(),entity);
-
-
-                }catch (Exception ex){
-                    ex.printStackTrace();
-                    errorRows.add("第"+rowNum+"行出错："+ex.getMessage());
-                    return true;
-                }
-
-                if(tmpMap.size() == batchUpdateCount){
-                    _importDBFromExcel(tmpMap,isCheckBeforeUpdate,excelService,excelTempConfig);
-                    tmpMap.clear();
-                }
-                return true;
-            }else if(rowNum == excelTempConfig.getHeadDataLineNum()){//
-                dbHead.setDbArray(getDbArray(excelTempConfig,row));
-                return true;
+        ExcelReadWrite excelReadWrite = new POIReadData();
+        if(file.length()>maxSize){
+            if(!fileName.endsWith(".xlsx")){
+                throw new AppException(fileName+"请另存为:xlsx格式");
             }
+            excelReadWrite = new ReadBigExcel();
+        }
+        ExcelProcess excelProcess = new ExcelProcess();
+        TaskPools.addTask(excelProcess,excelService,tempConfig,suplerExcelData,fileName,excelTmpFileName,excelReadWrite);
 
-            return true;
-        };
-
-        try {
-            if(file.length()>maxSize){
-                if(fileName.endsWith(".xls")){
-                    throw new AppException(fileName+"请另存为:"+fileName+"x");
-                }
-
-                new ReadBigExcel().processOneSheet(fileName,listener,0);
-            }else {
-                new POIReadData().read(fileName,listener,0);
-            }
-        }catch (TransformationException ex){
-            ex.printStackTrace();
+        while (!excelProcess.isOver()){
+            Thread.sleep(100);
         }
 
-
-        if(!tmpMap.isEmpty()){
-            _importDBFromExcel(tmpMap,isCheckBeforeUpdate,excelService,excelTempConfig);
-        }
-        return null;
-    }
-
-    private static void _importDBFromExcel(Map<String, SuplerExcelData> tmpMap, boolean isCheckBeforeUpdate, ExcelService excelService, ExcelTempConfig excelTempConfig) {
-        StringBuilder sql = new StringBuilder();
-        if(isCheckBeforeUpdate){
-            sql.append("select ").append(excelTempConfig.getIdColumName()).append("  from  ").append(excelTempConfig.getTableName());
-            sql.append("  where ").append(excelTempConfig.getIdColumName()).append("  in(").append(StringTool.getStringFromCollection(tmpMap.keySet())).append(")");
-            List<String> uniqueIds = excelService.query(sql.toString());
-            if(uniqueIds != null && !uniqueIds.isEmpty()){
-                for(String uniqueId:uniqueIds){
-                    tmpMap.get(uniqueId).setNew(false);
-                }
-            }
-        }
-
-       List<String> sqls = new LinkedList<>();
-        for(SuplerExcelData data:tmpMap.values()){
-            sqls.add(data.getUpdateSql());
-        }
-        excelService.excute(sqls);
-    }
-
-    private static ExcelTempConfig.ExcelDbData[] getDbArray(ExcelTempConfig config, String[] row) {
-        ExcelTempConfig.ExcelDbData[] tmpArray = new ExcelTempConfig.ExcelDbData[row.length];
-        for(int i = 0;i<row.length;i++){
-            ExcelTempConfig.ExcelDbData data = config.getHeadDataMap().get(getHeadDesc(row[i]));
-            if(data == null){
-                continue;
-            }
-            tmpArray[i] = data;
-        }
-
-        return tmpArray;
+        System.out.println("=====>>>>>>>>"+excelProcess.getMsg());
+        System.out.println(System.currentTimeMillis()-ss+" ms");
+        return excelProcess;
     }
 
     /**
@@ -194,11 +98,15 @@ public class ExcelImportTool {
      * @return
      */
     public static ExcelTempConfig getExcelTempConfig(String tempFileName){
+        if(StringTool.isEmpty(tempFileName)){
+            return null;
+        }
+
         List<String[]> readList =  new LinkedList<>();
         new POIReadData().read(tempFileName, (row, rowNum) -> {
             readList.add(row);
             return true;
-        }, 5);
+        }, ExcelTempConfig.LineMaxCount);
         if(readList.isEmpty()){
             return null;
         }
@@ -208,10 +116,12 @@ public class ExcelImportTool {
 
     static ExcelTempConfig getAutoExcelTempConfig(String fileName){
         List<String[]> readList =  new LinkedList<>();
-        if(!new POIReadData().read(fileName,"config", (row, rowNum) -> {
+        new POIReadData().read(fileName,"config", (row, rowNum) -> {
             readList.add(row);
             return true;
-        }, 5)){
+        }, ExcelTempConfig.LineMaxCount);
+
+        if(readList.isEmpty()){
             return null;
         }
         return initExcelTempConfig(fileName,readList);
@@ -224,11 +134,7 @@ public class ExcelImportTool {
         String[] headDescv = readList.get(0);
         ExcelTempConfig tempConfig = new ExcelTempConfig();
         try {
-            tempConfig.setTableName(headDescv[0]);
-            tempConfig.setHeadDataLineNum(Integer.valueOf(headDescv[1]));
-            tempConfig.setDataLineNum(Integer.valueOf(headDescv[2]));
-            tempConfig.setIdColumName(headDescv[3]);
-            tempConfig.setCheckColumValueRight(headDescv.length < 5?true:Boolean.valueOf(headDescv[4].trim()));
+            tempConfig.setConfigHeadRow(headDescv);
         }catch (Exception e){
             throw new TransformationException(fileName+"模板数据第一行数据不正确:"+ JsonUtil.getJsonFromBean(headDescv)+"  "+e.getMessage());
         }
@@ -268,7 +174,7 @@ public class ExcelImportTool {
         return desc.replaceAll("\\([^}]*\\)","");
     }
 
-    private static class ExcelDbDesc{
+    static class ExcelDbDesc{
         private ExcelTempConfig.ExcelDbData[] dbArray = null;
 
         public ExcelTempConfig.ExcelDbData[] getDbArray() {

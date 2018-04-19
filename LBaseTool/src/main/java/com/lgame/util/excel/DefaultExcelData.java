@@ -8,6 +8,7 @@ import java.util.Map;
  */
 public class DefaultExcelData implements SuplerExcelData {
     private Map<String,String> dataEntity = new HashMap<>();
+    private int row;
     private String tableName;
     private boolean isNew = true;
     private String uniqueColumName;
@@ -44,12 +45,21 @@ public class DefaultExcelData implements SuplerExcelData {
         this.tableName = tableName;
     }
 
+    public int getRow() {
+        return row;
+    }
+
+    public void setRow(int row) {
+        this.row = row;
+    }
+
     @Override
-    public SuplerExcelData Instance(Map<String,String> dataEntity, ExcelTempConfig config) {
+    public SuplerExcelData Instance(int row,Map<String,String> dataEntity, ExcelTempConfig config) {
         DefaultExcelData defaultExcelData = new DefaultExcelData();
         defaultExcelData.setTableName(config.getTableName());
         defaultExcelData.setDataEntity(dataEntity);
         defaultExcelData.setUniqueColumName(config.getIdColumName());
+        defaultExcelData.setRow(row);
         return defaultExcelData;
     }
 

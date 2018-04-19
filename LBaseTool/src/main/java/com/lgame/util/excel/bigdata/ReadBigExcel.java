@@ -1,8 +1,10 @@
 package com.lgame.util.excel.bigdata;
+import java.io.IOException;
 import java.io.InputStream;
 import java.util.Iterator;
 
 import com.lgame.util.excel.DefaultRowListener;
+import com.lgame.util.excel.ExcelReadWrite;
 import com.lgame.util.excel.RowListener;
 import com.lgame.util.exception.TransformationException;
 import org.apache.poi.ss.usermodel.BuiltinFormats;
@@ -25,62 +27,54 @@ import org.xml.sax.helpers.XMLReaderFactory;
  * Created by leroy:656515489@qq.com
  * 2018/4/17.
  */
-public class ReadBigExcel {
-    /**
-     *
-     * @param filename
-     * @param listen
-     * @param maxColum 读取最大列数，如果0则表示自动获得最大列数
-     * @throws Exception
-     */
-    public void processOneSheet(String filename,RowListener listen,int maxColum) throws Exception {
+public class ReadBigExcel extends ExcelReadWrite {
 
-        OPCPackage pkg = OPCPackage.open(filename);
-        XSSFReader r = new XSSFReader( pkg );
-        SharedStringsTable sst = r.getSharedStringsTable();
-        XMLReader parser = fetchSheetParser(sst,listen,r.getStylesTable(),maxColum);
+    @Override
+    public boolean  read(String fileName,String sheetName,RowListener listener,int endLineNum,int maxColumNum){
+        OPCPackage pkg = null;
+        XSSFReader r = null;
+        SharedStringsTable sst = null;
+        XMLReader parser = null;
+        InputStream sheet2 = null;
+        try {
+            pkg = OPCPackage.open(fileName);
 
-        // To look up the Sheet Name / Sheet Order / rID,
-        //  you need to process the core Workbook stream.
-        // Normally it's of the form rId# or rSheet#
-        InputStream sheet2 = r.getSheet("rId2");
-        InputSource sheetSource = new InputSource(sheet2);
-        parser.parse(sheetSource);
-        sheet2.close();
-    }
+            r = new XSSFReader( pkg );
+            sst = r.getSharedStringsTable();
+            parser = fetchSheetParser(sst,listener,r.getStylesTable(),maxColumNum,endLineNum);
 
-    /**
-     *
-     * @param filename
-     * @param listen
-     * @param maxColum 读取最大列数，如果0则表示自动获得最大列数
-     * @throws Exception
-     */
-    public void processAllSheets(String filename, RowListener listen, int maxColum) throws Exception {
-        OPCPackage pkg = OPCPackage.open(filename);
-        XSSFReader r = new XSSFReader(pkg);
-        SharedStringsTable sst = r.getSharedStringsTable();
+            // To look up the Sheet Name / Sheet Order / rID,
+            //  you need to process the core Workbook stream.
+            // Normally it's of the form rId# or rSheet#
 
-        XMLReader parser = fetchSheetParser(sst,listen,r.getStylesTable(),maxColum);
-        Iterator<InputStream> sheets = r.getSheetsData();
-        while(sheets.hasNext()) {
-            System.out.println("Processing new sheet:\n");
-            InputStream sheet = sheets.next();
-            InputSource sheetSource = new InputSource(sheet);
-            try {
-                parser.parse(sheetSource);
-            }catch (Exception ex){
-                ex.printStackTrace();
-                return;
+            sheet2 = sheetName == null?null:r.getSheet(sheetName);
+            if(sheet2 == null){
+                Iterator<InputStream> sheets = r.getSheetsData();
+                if(sheets.hasNext()) {
+                    sheet2 = sheets.next();
+                }
             }
-            sheet.close();
-            System.out.println("");
+
+            InputSource sheetSource = new InputSource(sheet2);
+            parser.parse(sheetSource);
+        }catch (Exception ex){
+            ex.printStackTrace();
+        }finally {
+            if(sheet2!=null){
+                try {
+                    sheet2.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+
         }
+        return true;
     }
 
-    public XMLReader fetchSheetParser(SharedStringsTable sst,RowListener listen,StylesTable stylesTable,int maxColum) throws SAXException {
+    public XMLReader fetchSheetParser(SharedStringsTable sst,RowListener listen,StylesTable stylesTable,int maxColum,int endLineNum) throws SAXException {
         XMLReader parser =  XMLReaderFactory.createXMLReader( "org.apache.xerces.parsers.SAXParser" );
-        ContentHandler handler = new SheetHandler(sst,listen,stylesTable,maxColum);
+        ContentHandler handler = new SheetHandler(sst,listen,stylesTable,maxColum,endLineNum);
         parser.setContentHandler(handler);
         return parser;
     }
@@ -98,12 +92,13 @@ public class ReadBigExcel {
         private int curColumIdex;//当前列索引
         private int maxColum;
         private int curRow;//当前行号
+        private int endLineNum;
 
-        private SheetHandler(SharedStringsTable sst,RowListener rowListen,StylesTable stylesTable,int maxColum) {
+        private SheetHandler(SharedStringsTable sst,RowListener rowListen,StylesTable stylesTable,int maxColum,int endLineNum) {
             this.sst = sst;
             this.rowListen = rowListen;
-            System.out.println(sst.getUniqueCount()+"==="+sst.getCount());
             this.maxColum = maxColum;
+            this.endLineNum = endLineNum > 0?endLineNum:99999999;
             this.stylesTable = stylesTable;
         }
 
@@ -115,6 +110,9 @@ public class ReadBigExcel {
 
         public void startElement(String uri, String localName, String name,
                                  Attributes attributes) throws SAXException {
+            if(curRow > endLineNum){
+                return;
+            }
             // c => cell
             if(name.equals("c")) {
                 // Print the cell reference
@@ -125,21 +123,6 @@ public class ReadBigExcel {
                 } else {
                     nextIsString = false;
                 }
-                String cellStyleStr = attributes.getValue("s");
-                if (cellStyleStr != null) {
-                    int styleIndex = Integer.parseInt(cellStyleStr);
-                    XSSFCellStyle style = stylesTable.getStyleAt(styleIndex);
-                    int formatIndex = style.getDataFormat();
-                    String formatString = style.getDataFormatString();
-                    if ("m/d/yy" == formatString) {
-                        // full format is "yyyy-MM-dd hh:mm:ss.SSS";
-                        formatString = "yyyy-MM-dd";
-                    }
-                    if (formatString == null) {
-                        formatString = BuiltinFormats.getBuiltinFormat(formatIndex);
-                    }
-                }
-
                 curColumIdex = this.getRowIndex(attributes.getValue("r"));
                 //System.out.println("  startElement: "+attributes.getValue("r") + " - ");
             }else if(name.equals("row")){
@@ -163,6 +146,9 @@ public class ReadBigExcel {
                 throws SAXException {
             // Process the last contents as required.
             // Do now, as characters() may be called more than once
+            if(curRow > endLineNum){
+                return;
+            }
 
             if(nextIsString) {
                 int idx = Integer.parseInt(lastContents);
@@ -186,6 +172,10 @@ public class ReadBigExcel {
 
         public void characters(char[] ch, int start, int length)
                 throws SAXException {
+            if(curRow > endLineNum){
+                return;
+            }
+
             lastContents += new String(ch, start, length);
         }
 
@@ -206,6 +196,6 @@ public class ReadBigExcel {
 
     public static void main(String[] args) throws Exception {
         ReadBigExcel example = new ReadBigExcel();
-        example.processAllSheets("D:/TaokeDetail-2018-04-10.xlsx",new DefaultRowListener(),10);
+        example.read("D:/TaokeDetail-2018-04-10.xlsx",new DefaultRowListener(),10);
     }
 }
