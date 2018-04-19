@@ -26,73 +26,75 @@ public class ExcelProcess implements TaskIndieThread{
 
         final Map<String,SuplerExcelData> tmpMap = new HashMap<>();
         final ExcelImportTool.ExcelDbDesc dbHead = new ExcelImportTool.ExcelDbDesc();
+        RowListener listener = new DefaultRowListener(){
+            @Override
+            public boolean read(String[] row, int rowNum) {
+                if(rowNum >=  excelTempConfig.getDataLineNum()){
+                    if(dbHead.getDbArray() == null){
+                        errorRows.add("模板:"+excelTmpFileName+" 配置选项第一行第二列不匹配，检查是否模板正确");
+                        return false;
+                    }
+                    dataAllCount++;
+                    excuteLineNum = rowNum;
 
+                    try {
+                        Map<String,String> map = new HashMap<>();
+                        ExcelTempConfig.ExcelDbData excelDbData;
 
-        RowListener listener = (row, rowNum) -> {
-            if(rowNum >=  excelTempConfig.getDataLineNum()){
-                if(dbHead.getDbArray() == null){
-                    errorRows.add("模板:"+excelTmpFileName+" 配置选项第一行第二列不匹配，检查是否模板正确");
-                    return false;
-                }
-                dataAllCount++;
-                excuteLineNum = rowNum;
-
-                try {
-                    Map<String,String> map = new HashMap<>();
-                    ExcelTempConfig.ExcelDbData excelDbData;
-
-                    StringBuilder errorMsg = null;
-                    for(int i = 0;i<row.length;i++){
-                        excelDbData = dbHead.getDbArray()[i];
-                        if(excelDbData == null){
-                            continue;
-                        }
-
-                        if(excelTempConfig.isCheckColumValueRight() && !excelDbData.getExcelDataTypeEnum().getDataType().isMatch(row[i])){
-                            if(errorMsg == null){
-                                errorMsg = new StringBuilder("第"+rowNum+"行出错，详细列数:");
+                        StringBuilder errorMsg = null;
+                        for(int i = 0;i<row.length;i++){
+                            excelDbData = dbHead.getDbArray()[i];
+                            if(excelDbData == null){
+                                continue;
                             }
-                            errorMsg.append(i+1).append(",");
-                            continue;
-                        }
-                        map.put(excelDbData.getColumNum(),excelDbData.getExcelDataTypeEnum().getDataType().value(row[i]));
-                    }
 
-                    if(errorMsg != null){
-                        errorMsg.deleteCharAt(errorMsg.length()-1);
-                        errorRows.add(errorMsg.toString());
-                        if(errorRows.size() > 20){
-                            return false;
+                            if(excelTempConfig.isCheckColumValueRight() && !excelDbData.getExcelDataTypeEnum().getDataType().isMatch(row[i])){
+                                if(errorMsg == null){
+                                    errorMsg = new StringBuilder("第"+rowNum+"行出错，详细列数:");
+                                }
+                                errorMsg.append(i+1).append(",");
+                                continue;
+                            }
+                            map.put(excelDbData.getColumNum(),excelDbData.getExcelDataTypeEnum().getDataType().value(row[i]));
                         }
-                    }
 
-                    if(map.isEmpty()){
+                        if(errorMsg != null){
+                            errorMsg.deleteCharAt(errorMsg.length()-1);
+                            errorRows.add(errorMsg.toString());
+                            if(errorRows.size() > 20){
+                                return false;
+                            }
+                        }
+
+                        if(map.isEmpty()){
+                            return true;
+                        }
+                        SuplerExcelData entity = suplerExcelData.Instance(rowNum,map,excelTempConfig);
+                        boolean iscontain = tmpMap.put(entity.getUniqueId(),entity) != null;
+                        if(iscontain){
+                            dataAllCount--;
+                        }
+                    }catch (Exception ex){
+                        ex.printStackTrace();
+                        faileCount.getAndAdd(1);
+                        errorRows.add("第"+rowNum+"行出错："+ex.getMessage());
                         return true;
                     }
-                    SuplerExcelData entity = suplerExcelData.Instance(rowNum,map,excelTempConfig);
-                    boolean iscontain = tmpMap.put(entity.getUniqueId(),entity) != null;
-                    if(iscontain){
-                        dataAllCount--;
+
+                    if(tmpMap.size() == excelTempConfig.getUpdateBatchCount()){
+                        _importDBFromExcel(rowNum,tmpMap,excelService,excelTempConfig);
+                        tmpMap.clear();
                     }
-                }catch (Exception ex){
-                    ex.printStackTrace();
-                    faileCount.getAndAdd(1);
-                    errorRows.add("第"+rowNum+"行出错："+ex.getMessage());
+                    return true;
+                }else if(rowNum == excelTempConfig.getHeadDataLineNum()){//
+                    dbHead.setDbArray(getDbArray(excelTempConfig,row));
                     return true;
                 }
 
-                if(tmpMap.size() == excelTempConfig.getUpdateBatchCount()){
-                    _importDBFromExcel(rowNum,tmpMap,excelService,excelTempConfig);
-                    tmpMap.clear();
-                }
-                return true;
-            }else if(rowNum == excelTempConfig.getHeadDataLineNum()){//
-                dbHead.setDbArray(getDbArray(excelTempConfig,row));
                 return true;
             }
-
-            return true;
         };
+
         try {
             excelReadWrite.read(fileName,listener,0);
         }catch (Exception ex){

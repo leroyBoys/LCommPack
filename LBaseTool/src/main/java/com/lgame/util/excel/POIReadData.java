@@ -293,7 +293,7 @@ public class POIReadData extends ExcelReadWrite{
      */
     public static void main(String[] args) throws Exception {
         POIReadData poi = new POIReadData();
-        poi.read("d:/提示信息配置表.xlsx", (row, rowNum) -> {System.out.println(Arrays.toString(row));return true;});
+      //  poi.read("d:/提示信息配置表.xlsx", (row, rowNum) -> {System.out.println(Arrays.toString(row));return true;});
     }
 
     /**

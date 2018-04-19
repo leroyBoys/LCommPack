@@ -10,4 +10,10 @@ public interface RowListener {
      * @param rowNum 行号
      */
     boolean read(String[] row,int rowNum);
+
+    /**
+     * 结束
+     * @param rowNum
+     */
+    void overDocument(int rowNum);
 }

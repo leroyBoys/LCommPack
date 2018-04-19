@@ -18,7 +18,7 @@ import java.util.Map;
  * Created by Administrator on 2018/4/16.
  */
 public class ExcelImportTool {
-    private final static long maxSize = 1;//1024*1024*50;
+    private final static long maxSize = 1;
 
     public static void main(String[] args) throws Exception {
         importDBFromExcel(new ExcelService() {
@@ -86,7 +86,6 @@ public class ExcelImportTool {
         while (!excelProcess.isOver()){
             Thread.sleep(100);
         }
-
         System.out.println("=====>>>>>>>>"+excelProcess.getMsg());
         System.out.println(System.currentTimeMillis()-ss+" ms");
         return excelProcess;
@@ -103,10 +102,14 @@ public class ExcelImportTool {
         }
 
         List<String[]> readList =  new LinkedList<>();
-        new POIReadData().read(tempFileName, (row, rowNum) -> {
-            readList.add(row);
-            return true;
-        }, ExcelTempConfig.LineMaxCount);
+        new POIReadData().read(tempFileName,new DefaultRowListener(){
+            @Override
+            public boolean read(String[] row, int rowNum) {
+                readList.add(row);
+                return true;
+            }
+        },ExcelTempConfig.LineMaxCount);
+
         if(readList.isEmpty()){
             return null;
         }
@@ -116,9 +119,13 @@ public class ExcelImportTool {
 
     static ExcelTempConfig getAutoExcelTempConfig(String fileName){
         List<String[]> readList =  new LinkedList<>();
-        new ReadBigExcel().read(fileName,"2", (row, rowNum) -> {
-            readList.add(row);
-            return true;
+        new ReadBigExcel().read(fileName,"config",new DefaultRowListener(){
+      //  new ReadBigExcel().read(fileName,"2",new DefaultRowListener(){
+            @Override
+            public boolean read(String[] row, int rowNum) {
+                readList.add(row);
+                return true;
+            }
         }, ExcelTempConfig.LineMaxCount);
 
         if(readList.isEmpty()){

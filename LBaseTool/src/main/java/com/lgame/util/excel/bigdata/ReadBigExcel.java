@@ -7,12 +7,14 @@ import com.lgame.util.excel.DefaultRowListener;
 import com.lgame.util.excel.ExcelReadWrite;
 import com.lgame.util.excel.RowListener;
 import com.lgame.util.exception.TransformationException;
-import org.apache.poi.ss.usermodel.BuiltinFormats;
+import com.lgame.util.thread.TaskIndieThread;
+import com.lgame.util.thread.TaskPools;
+import org.apache.poi.openxml4j.opc.PackageAccess;
+import org.apache.poi.util.SAXHelper;
 import org.apache.poi.xssf.eventusermodel.XSSFReader;
 import org.apache.poi.xssf.model.SharedStringsTable;
 import org.apache.poi.openxml4j.opc.OPCPackage;
 import org.apache.poi.xssf.model.StylesTable;
-import org.apache.poi.xssf.usermodel.XSSFCellStyle;
 import org.apache.poi.xssf.usermodel.XSSFRichTextString;
 import org.xml.sax.Attributes;
 import org.xml.sax.ContentHandler;
@@ -21,58 +23,79 @@ import org.xml.sax.SAXException;
 import org.xml.sax.XMLReader;
 import org.xml.sax.helpers.DefaultHandler;
 import org.xml.sax.helpers.XMLReaderFactory;
+
+import javax.xml.parsers.ParserConfigurationException;
+
 /**
  *  xlsx
  * Created by leroy:656515489@qq.com
  * 2018/4/17.
  */
 public class ReadBigExcel extends ExcelReadWrite {
-
     @Override
     public boolean  read(String fileName,String sheetName,RowListener listener,int endLineNum,int maxColumNum){
-        OPCPackage pkg = null;
-        XSSFReader r = null;
-        SharedStringsTable sst = null;
-        XMLReader parser = null;
-        InputStream sheet2 = null;
         try {
-            pkg = OPCPackage.open(fileName);
+            try (OPCPackage pkg = OPCPackage.open(fileName, PackageAccess.READ)) {
+                XSSFReader r = new XSSFReader(pkg);
+                SharedStringsTable sst = r.getSharedStringsTable();
 
-            r = new XSSFReader( pkg );
-            sst = r.getSharedStringsTable();
-            parser = fetchSheetParser(sst,listener,r.getStylesTable(),maxColumNum,endLineNum);
+                XMLReader parser = fetchSheetParser(sst,listener,maxColumNum,endLineNum);
 
-            // To look up the Sheet Name / Sheet Order / rID,
-            //  you need to process the core Workbook stream.
-            // Normally it's of the form rId1,rId1 or rSheet#
-            sheet2 = sheetName == null?null:r.getSheet("rId"+sheetName);
-            if(sheet2 == null){
-                Iterator<InputStream> sheets = r.getSheetsData();
-                if(sheets.hasNext()) {
-                    sheet2 = sheets.next();
+                XSSFReader.SheetIterator sheets = (XSSFReader.SheetIterator) r.getSheetsData();
+                while (sheets.hasNext()) {
+                    try (InputStream sheet = sheets.next()) {
+                        if(sheetName == null||sheetName.trim().equals(sheets.getSheetName().trim())){
+                            InputSource sheetSource = new InputSource(sheet);
+                            parser.parse(sheetSource);
+                            break;
+                        }
+                    }
+                    System.out.println("");
                 }
             }
 
-            InputSource sheetSource = new InputSource(sheet2);
-            parser.parse(sheetSource);
         }catch (Exception ex){
             ex.printStackTrace();
         }finally {
-            if(sheet2!=null){
-                try {
-                    sheet2.close();
-                } catch (IOException e) {
-                    e.printStackTrace();
+        }
+        return true;
+    }
+    public boolean  readAllSheet(String fileName,String sheetName,RowListener listener,int endLineNum,int maxColumNum){
+        try {
+            try (OPCPackage pkg = OPCPackage.open(fileName, PackageAccess.READ)) {
+                XSSFReader r = new XSSFReader(pkg);
+                SharedStringsTable sst = r.getSharedStringsTable();
+
+                XMLReader parser = fetchSheetParser(sst,listener,maxColumNum,endLineNum);
+
+                XSSFReader.SheetIterator sheets = (XSSFReader.SheetIterator) r.getSheetsData();
+                while (sheets.hasNext()) {
+                    try (InputStream sheet = sheets.next()) {
+                        if(sheetName == null||sheetName.trim().equals(sheets.getSheetName().trim())){
+                            InputSource sheetSource = new InputSource(sheet);
+                            parser.parse(sheetSource);
+                            break;
+                        }
+                    }
+                    System.out.println("");
                 }
             }
 
+        }catch (Exception ex){
+            ex.printStackTrace();
+        }finally {
         }
         return true;
     }
 
-    public XMLReader fetchSheetParser(SharedStringsTable sst,RowListener listen,StylesTable stylesTable,int maxColum,int endLineNum) throws SAXException {
-        XMLReader parser =  XMLReaderFactory.createXMLReader( "org.apache.xerces.parsers.SAXParser" );
-        ContentHandler handler = new SheetHandler(sst,listen,stylesTable,maxColum,endLineNum);
+    public XMLReader fetchSheetParser(SharedStringsTable sst,RowListener listen,int maxColum,int endLineNum) throws SAXException {
+        XMLReader parser = null;
+        try {
+            parser = SAXHelper.newXMLReader();
+        } catch (ParserConfigurationException e) {
+            e.printStackTrace();
+        }
+        ContentHandler handler = new SheetHandler(sst,listen,maxColum,endLineNum);
         parser.setContentHandler(handler);
         return parser;
     }
@@ -80,11 +103,10 @@ public class ReadBigExcel extends ExcelReadWrite {
     /**
      * See org.xml.sax.helpers.DefaultHandler javadocs
      */
-    private static class SheetHandler extends DefaultHandler {
+    private class SheetHandler extends DefaultHandler {
         private SharedStringsTable sst;
         private String lastContents;
         private boolean nextIsString;
-        private StylesTable stylesTable;
         private RowListener rowListen;
         private String[] row = null;
         private int curColumIdex;//当前列索引
@@ -92,18 +114,16 @@ public class ReadBigExcel extends ExcelReadWrite {
         private int curRow;//当前行号
         private int endLineNum;
 
-        private SheetHandler(SharedStringsTable sst,RowListener rowListen,StylesTable stylesTable,int maxColum,int endLineNum) {
+        private SheetHandler(SharedStringsTable sst,RowListener rowListen,int maxColum,int endLineNum) {
             this.sst = sst;
             this.rowListen = rowListen;
             this.maxColum = maxColum;
             this.endLineNum = endLineNum > 0?endLineNum:99999999;
-            this.stylesTable = stylesTable;
         }
 
-        private SheetHandler(SharedStringsTable sst,RowListener rowListen,StylesTable stylesTable) {
-            this.sst = sst;
-            this.stylesTable = stylesTable;
-            this.rowListen = rowListen;
+        @Override
+        public void endDocument() throws SAXException {
+            rowListen.overDocument(curRow);
         }
 
         public void startElement(String uri, String localName, String name,
@@ -193,7 +213,14 @@ public class ReadBigExcel extends ExcelReadWrite {
     }
 
     public static void main(String[] args) throws Exception {
-        ReadBigExcel example = new ReadBigExcel();
-        example.read("D:/TaokeDetail-2018-04-10.xlsx",new DefaultRowListener(),10);
+
+
+        TaskPools.addTask(new TaskIndieThread() {
+            @Override
+            public void doExcute(Object... objects) {
+                ReadBigExcel example = new ReadBigExcel();
+                example.read("D:/ww.xlsx",null,new DefaultRowListener(),-1,-1);
+            }
+        });
     }
 }
