@@ -1,9 +1,6 @@
 package com.lgame.util.excel;
 
 import com.lgame.util.comm.StringTool;
-import com.lgame.util.excel.bigdata.ReadBigExcel;
-import com.lgame.util.exception.AppException;
-import com.lgame.util.exception.TransformationException;
 import com.lgame.util.thread.TaskIndieThread;
 
 import java.util.HashMap;

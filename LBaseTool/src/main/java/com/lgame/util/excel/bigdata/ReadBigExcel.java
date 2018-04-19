@@ -23,7 +23,6 @@ import org.xml.sax.helpers.DefaultHandler;
 import org.xml.sax.helpers.XMLReaderFactory;
 /**
  *  xlsx
- *  日期，boolean请使用string，否则自行处理（日期一般为时间戳，获得数据后自行转化处理）
  * Created by leroy:656515489@qq.com
  * 2018/4/17.
  */
@@ -45,9 +44,8 @@ public class ReadBigExcel extends ExcelReadWrite {
 
             // To look up the Sheet Name / Sheet Order / rID,
             //  you need to process the core Workbook stream.
-            // Normally it's of the form rId# or rSheet#
-
-            sheet2 = sheetName == null?null:r.getSheet(sheetName);
+            // Normally it's of the form rId1,rId1 or rSheet#
+            sheet2 = sheetName == null?null:r.getSheet("rId"+sheetName);
             if(sheet2 == null){
                 Iterator<InputStream> sheets = r.getSheetsData();
                 if(sheets.hasNext()) {

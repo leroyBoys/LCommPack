@@ -119,12 +119,12 @@ public class POIReadData extends ExcelReadWrite{
             if (POIReadData.isExcel2007(fileName)) {
                 isExcel2003 = false;
             }
+
             /**
              * 调用本类提供的根据流读取的方法
              */
             File file = new File(fileName);
             is = new FileInputStream(file);
-
             isSuc = read(is,sheetName, isExcel2003,listener,endLineNum,maxColumNum);
             is.close();
         } catch (Exception ex) {
@@ -154,6 +154,7 @@ public class POIReadData extends ExcelReadWrite{
         /**
          * 根据版本选择创建Workbook的方式
          */
+
         Workbook wb = isExcel2003 ? new HSSFWorkbook(inputStream) : new XSSFWorkbook(inputStream);
         return read(wb,sheetName,listener,endLineNum,maxColumNum);
     }
@@ -165,6 +166,7 @@ public class POIReadData extends ExcelReadWrite{
      * @返回值：List<List<String>>
      */
     private boolean read(Workbook wb,String sheetName,RowListener listener,int endLineNum,int maxColumNum) {
+
         /**
          * 得到第一个shell
          */

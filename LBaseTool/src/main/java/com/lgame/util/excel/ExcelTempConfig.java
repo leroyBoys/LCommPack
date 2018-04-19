@@ -100,14 +100,14 @@ public class ExcelTempConfig {
         this.setDataLineNum(Integer.valueOf(headDescv[2]));
         this.setIdColumName(headDescv[3]);
 
-        if(headDescv.length > 4){
+        if(headDescv.length > 4 && !StringTool.isEmpty(headDescv[4])){
             this.isCheckDbBeforeUpdate = Boolean.valueOf(headDescv[4].trim());
         }
 
-        if(headDescv.length > 5){
+        if(headDescv.length > 5 && !StringTool.isEmpty(headDescv[5])){
             this.isCheckColumValueRight = Boolean.valueOf(headDescv[5].trim());
         }
-        if(headDescv.length > 6){
+        if(headDescv.length > 6 && !StringTool.isEmpty(headDescv[6])){
             this.updateBatchCount = Math.max(Integer.valueOf(headDescv[6].trim()),updateBatchCount);
         }
     }

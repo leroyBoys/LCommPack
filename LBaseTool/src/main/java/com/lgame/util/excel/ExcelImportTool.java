@@ -116,7 +116,7 @@ public class ExcelImportTool {
 
     static ExcelTempConfig getAutoExcelTempConfig(String fileName){
         List<String[]> readList =  new LinkedList<>();
-        new POIReadData().read(fileName,"config", (row, rowNum) -> {
+        new ReadBigExcel().read(fileName,"2", (row, rowNum) -> {
             readList.add(row);
             return true;
         }, ExcelTempConfig.LineMaxCount);
