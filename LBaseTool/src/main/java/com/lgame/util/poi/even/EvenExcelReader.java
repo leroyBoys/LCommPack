@@ -25,8 +25,7 @@ public class EvenExcelReader extends PoiReader {
     @Override
     public boolean read(String fileName, String sheetName, RowListener listener, int endLineNum, int maxColumNum) {
         if(ExcelHelper.isExcel2003(fileName)){
-            System.out.println("请另存为xlsx");
-            return false;
+            return  new Excel2003Reader().read(fileName,sheetName,listener,endLineNum,maxColumNum);
         }
         try {
             try (OPCPackage pkg = OPCPackage.open(fileName, PackageAccess.READ)) {
@@ -58,8 +57,7 @@ public class EvenExcelReader extends PoiReader {
     @Override
     public boolean read(String fileName, int sheetIdex, RowListener listener, int endLineNum, int maxColumNum) {
         if(ExcelHelper.isExcel2003(fileName)){
-            System.out.println("请另存为xlsx");
-            return false;
+            return  new Excel2003Reader().read(fileName,sheetIdex,listener,endLineNum,maxColumNum);
         }
         try {
             try (OPCPackage pkg = OPCPackage.open(fileName, PackageAccess.READ)) {

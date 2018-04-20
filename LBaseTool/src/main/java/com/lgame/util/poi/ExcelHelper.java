@@ -41,7 +41,7 @@ public class ExcelHelper {
                 System.out.println("=--->"+sqls.size());
                 return 0;
             }
-        },"D:/ww.xlsx");
+        },"D:/w.xls");
     }
 
     public static ExcelProcess importDBFromExcel(DbService dbService, String fileName) throws AppException {
@@ -168,7 +168,7 @@ public class ExcelHelper {
             String[] dbTypes = readList.size()>3? readList.get(3):null;
             Map<String,ExcelDbData> map = new HashMap<>();
             for(int i=0;i<headList.length;i++){
-                if(StringTool.isEmpty(dbHeadColum[i])){
+                if(dbHeadColum.length - 1 < i || StringTool.isEmpty(dbHeadColum[i])){
                     continue;
                 }
 
@@ -181,6 +181,7 @@ public class ExcelHelper {
 
             tempConfig.setHeadDataMap(map);
         }catch (Exception e){
+            e.printStackTrace();
             throw new TransformationException(fileName+"模板数据第二，三,四行数据不正确:"+ e.getMessage());
         }
 
