@@ -5,11 +5,31 @@
  */
 package com.lgame.util;
 
+import com.lgame.util.time.DateTimeTool;
+
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
+
 /**
  * 将Exception转成String
  * @author leroy_boy
  */
 public class PrintTool {
+    private final static Map<String,Long> timeMap = new HashMap<>();
+
+    public static void outTime(String flag,String str){
+        flag = flag == null?"_":flag;
+        final Long lastTime = timeMap.get(flag);
+        final long curTime = System.currentTimeMillis();
+        if(lastTime == null){
+            System.out.println(DateTimeTool.getDateTime(new Date())+":"+str);
+        }else {
+            System.out.println(DateTimeTool.getDateTime(new Date())+":"+str+":"+(curTime-lastTime)+" ms");
+        }
+        timeMap.put(flag,curTime);
+    }
+
 
     public static String getException(Exception e) {
         StringBuilder bs = new StringBuilder();

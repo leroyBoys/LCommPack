@@ -1,39 +1,33 @@
-package com.lgame.util.excel.bigdata;
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.Iterator;
+package com.lgame.util.poi.even;
 
-import com.lgame.util.excel.DefaultRowListener;
-import com.lgame.util.excel.ExcelReadWrite;
-import com.lgame.util.excel.RowListener;
 import com.lgame.util.exception.TransformationException;
-import com.lgame.util.thread.TaskIndieThread;
-import com.lgame.util.thread.TaskPools;
+import com.lgame.util.poi.ExcelHelper;
+import com.lgame.util.poi.interfac.PoiReader;
+import com.lgame.util.poi.interfac.RowListener;
+import org.apache.poi.hssf.util.CellReference;
+import org.apache.poi.openxml4j.opc.OPCPackage;
 import org.apache.poi.openxml4j.opc.PackageAccess;
 import org.apache.poi.util.SAXHelper;
 import org.apache.poi.xssf.eventusermodel.XSSFReader;
 import org.apache.poi.xssf.model.SharedStringsTable;
-import org.apache.poi.openxml4j.opc.OPCPackage;
-import org.apache.poi.xssf.model.StylesTable;
 import org.apache.poi.xssf.usermodel.XSSFRichTextString;
-import org.xml.sax.Attributes;
-import org.xml.sax.ContentHandler;
-import org.xml.sax.InputSource;
-import org.xml.sax.SAXException;
-import org.xml.sax.XMLReader;
+import org.xml.sax.*;
 import org.xml.sax.helpers.DefaultHandler;
-import org.xml.sax.helpers.XMLReaderFactory;
 
 import javax.xml.parsers.ParserConfigurationException;
+import java.io.InputStream;
 
 /**
- *  xlsx
  * Created by leroy:656515489@qq.com
- * 2018/4/17.
+ * 2018/4/20.
  */
-public class ReadBigExcel extends ExcelReadWrite {
+public class EvenExcelReader extends PoiReader {
     @Override
-    public boolean  read(String fileName,String sheetName,RowListener listener,int endLineNum,int maxColumNum){
+    public boolean read(String fileName, String sheetName, RowListener listener, int endLineNum, int maxColumNum) {
+        if(ExcelHelper.isExcel2003(fileName)){
+            System.out.println("请另存为xlsx");
+            return false;
+        }
         try {
             try (OPCPackage pkg = OPCPackage.open(fileName, PackageAccess.READ)) {
                 XSSFReader r = new XSSFReader(pkg);
@@ -60,27 +54,27 @@ public class ReadBigExcel extends ExcelReadWrite {
         }
         return true;
     }
-    public boolean  readAllSheet(String fileName,String sheetName,RowListener listener,int endLineNum,int maxColumNum){
+
+    @Override
+    public boolean read(String fileName, int sheetIdex, RowListener listener, int endLineNum, int maxColumNum) {
+        if(ExcelHelper.isExcel2003(fileName)){
+            System.out.println("请另存为xlsx");
+            return false;
+        }
         try {
             try (OPCPackage pkg = OPCPackage.open(fileName, PackageAccess.READ)) {
                 XSSFReader r = new XSSFReader(pkg);
                 SharedStringsTable sst = r.getSharedStringsTable();
 
-                XMLReader parser = fetchSheetParser(sst,listener,maxColumNum,endLineNum);
-
-                XSSFReader.SheetIterator sheets = (XSSFReader.SheetIterator) r.getSheetsData();
-                while (sheets.hasNext()) {
-                    try (InputStream sheet = sheets.next()) {
-                        if(sheetName == null||sheetName.trim().equals(sheets.getSheetName().trim())){
-                            InputSource sheetSource = new InputSource(sheet);
-                            parser.parse(sheetSource);
-                            break;
-                        }
+                XMLReader parser = fetchSheetParser(sst, listener, maxColumNum, endLineNum);
+                try (InputStream sheet = r.getSheet("rId" + (sheetIdex + 1))) {
+                    if (sheet == null) {
+                        return false;
                     }
-                    System.out.println("");
+                    InputSource sheetSource = new InputSource(sheet);
+                    parser.parse(sheetSource);
                 }
             }
-
         }catch (Exception ex){
             ex.printStackTrace();
         }finally {
@@ -88,7 +82,7 @@ public class ReadBigExcel extends ExcelReadWrite {
         return true;
     }
 
-    public XMLReader fetchSheetParser(SharedStringsTable sst,RowListener listen,int maxColum,int endLineNum) throws SAXException {
+    public XMLReader fetchSheetParser(SharedStringsTable sst, RowListener listen, int maxColum, int endLineNum) throws SAXException {
         XMLReader parser = null;
         try {
             parser = SAXHelper.newXMLReader();
@@ -99,7 +93,6 @@ public class ReadBigExcel extends ExcelReadWrite {
         parser.setContentHandler(handler);
         return parser;
     }
-
     /**
      * See org.xml.sax.helpers.DefaultHandler javadocs
      */
@@ -114,7 +107,7 @@ public class ReadBigExcel extends ExcelReadWrite {
         private int curRow;//当前行号
         private int endLineNum;
 
-        private SheetHandler(SharedStringsTable sst,RowListener rowListen,int maxColum,int endLineNum) {
+        private SheetHandler(SharedStringsTable sst, RowListener rowListen, int maxColum, int endLineNum) {
             this.sst = sst;
             this.rowListen = rowListen;
             this.maxColum = maxColum;
@@ -131,10 +124,7 @@ public class ReadBigExcel extends ExcelReadWrite {
             if(curRow > endLineNum){
                 return;
             }
-            // c => cell
             if(name.equals("c")) {
-                // Print the cell reference
-                // Figure out if the value is an index in the SST
                 String cellType = attributes.getValue("t");
                 if(cellType != null && cellType.equals("s")) {
                     nextIsString = true;
@@ -142,7 +132,6 @@ public class ReadBigExcel extends ExcelReadWrite {
                     nextIsString = false;
                 }
                 curColumIdex = this.getRowIndex(attributes.getValue("r"));
-                //System.out.println("  startElement: "+attributes.getValue("r") + " - ");
             }else if(name.equals("row")){
                 if(maxColum <= 0){
                     try {
@@ -177,7 +166,7 @@ public class ReadBigExcel extends ExcelReadWrite {
             // v => contents of a cell
             // Output after we've seen the string contents
             if(name.equals("v")) {
-              //  System.out.println("endElement:"+lastContents);
+                //  System.out.println("endElement:"+lastContents);
                 if(curColumIdex+1<= maxColum){
                     row[curColumIdex] = lastContents;
                 }
@@ -201,6 +190,7 @@ public class ReadBigExcel extends ExcelReadWrite {
         //得到列索引，每一列c元素的r属性构成为字母加数字的形式，字母组合为列索引，数字组合为行索引，
         //如AB45,表示为第（A-A+1）*26+（B-A+1）*26列，45行
         public int getRowIndex(String rowStr){
+         //   return CellReference.convertColStringToIndex(rowStr);
             rowStr = rowStr.replaceAll("[^A-Z]", "");
             byte[] rowAbc = rowStr.getBytes();
             int len = rowAbc.length;
@@ -212,15 +202,4 @@ public class ReadBigExcel extends ExcelReadWrite {
         }
     }
 
-    public static void main(String[] args) throws Exception {
-
-
-        TaskPools.addTask(new TaskIndieThread() {
-            @Override
-            public void doExcute(Object... objects) {
-                ReadBigExcel example = new ReadBigExcel();
-                example.read("D:/ww.xlsx",null,new DefaultRowListener(),-1,-1);
-            }
-        });
-    }
 }

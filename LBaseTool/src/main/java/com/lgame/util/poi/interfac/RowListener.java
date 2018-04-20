@@ -1,4 +1,4 @@
-package com.lgame.util.excel;
+package com.lgame.util.poi.interfac;
 
 /**
  * Created by Administrator on 2018/4/17.
@@ -9,7 +9,7 @@ public interface RowListener {
      * @param row
      * @param rowNum 行号
      */
-    boolean read(String[] row,int rowNum);
+    boolean read(String[] row, int rowNum);
 
     /**
      * 结束

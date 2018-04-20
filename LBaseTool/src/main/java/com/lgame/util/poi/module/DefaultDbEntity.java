@@ -1,12 +1,15 @@
-package com.lgame.util.excel;
+package com.lgame.util.poi.module;
+
+import com.lgame.util.poi.interfac.DbEntity;
 
 import java.util.HashMap;
 import java.util.Map;
 
 /**
- * Created by Administrator on 2018/4/16.
+ * Created by leroy:656515489@qq.com
+ * 2018/4/20.
  */
-public class DefaultExcelData implements SuplerExcelData {
+public class DefaultDbEntity implements DbEntity {
     private Map<String,String> dataEntity = new HashMap<>();
     private int row;
     private String tableName;
@@ -19,6 +22,16 @@ public class DefaultExcelData implements SuplerExcelData {
 
     public boolean isNew() {
         return isNew;
+    }
+
+    @Override
+    public DbEntity Instance(int row, Map<String, String> dataEntity, ExcelConfig config) {
+        DefaultDbEntity defaultExcelData = new DefaultDbEntity();
+        defaultExcelData.setTableName(config.getTableName());
+        defaultExcelData.setDataEntity(dataEntity);
+        defaultExcelData.setUniqueColumName(config.getIdColumName());
+        defaultExcelData.setRow(row);
+        return defaultExcelData;
     }
 
     public void setNew(boolean aNew) {
@@ -51,16 +64,6 @@ public class DefaultExcelData implements SuplerExcelData {
 
     public void setRow(int row) {
         this.row = row;
-    }
-
-    @Override
-    public SuplerExcelData Instance(int row,Map<String,String> dataEntity, ExcelTempConfig config) {
-        DefaultExcelData defaultExcelData = new DefaultExcelData();
-        defaultExcelData.setTableName(config.getTableName());
-        defaultExcelData.setDataEntity(dataEntity);
-        defaultExcelData.setUniqueColumName(config.getIdColumName());
-        defaultExcelData.setRow(row);
-        return defaultExcelData;
     }
 
     @Override

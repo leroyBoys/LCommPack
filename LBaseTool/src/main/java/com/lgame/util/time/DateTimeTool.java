@@ -93,6 +93,7 @@ public class DateTimeTool {
         try {
             newDate = dateFormat.parse(dateValue);
         } catch (ParseException pe) {
+            pe.printStackTrace();
             newDate = null;
         }
 
@@ -294,21 +295,118 @@ public class DateTimeTool {
     }
 
     /**
-     * 将日期字符串转化为日期。失败返回null。(慎用效率很慢)
+     * 通用（不知道日期格式）将日期字符串转化为日期。失败返回null。(慎用效率较慢)
      *
      * @param date 日期字符串
      * @return 日期
      */
     public static Date getDateTime(String date) {
-        date = date.replaceAll("\\/|\\-|年|月|日","").replaceAll("时|分|秒",":");
-        int length = date.split(":").length;
-        String strFormat = "yyyyMMdd";
-        if(length == 2){
-            strFormat+=" HH:mm";
-        }else if(length == 3){
-            strFormat+=" HH:mm:ss";
+        if(date == null||date.trim().isEmpty()){
+            return null;
         }
-        return DateTimeTool.parseDate(strFormat,date);
+
+        int length = date.length();
+        int matchCount = 0;
+        while (true){
+            if(--length < 0){
+                break;
+            }
+            char targetChar = date.charAt(length);
+            if(targetChar>'9' || targetChar<'0'){
+                matchCount++;
+            }
+        }
+
+        if(matchCount == 0){
+            return new Date(Long.valueOf(date));
+        }
+
+        length = date.length();
+        final int newLength = length-matchCount;
+        char[] chars = new char[newLength];
+        matchCount = newLength;
+
+        while (true){
+            if(--length < 0){
+                break;
+            }
+
+            char targetChar = date.charAt(length);
+            if(targetChar>'9' || targetChar<'0'){
+            }else {
+                chars[--matchCount]=targetChar;
+            }
+        }
+
+        if(newLength == 14){
+            return DateTimeTool.parseDate("yyyyMMddHHmmss",new String(chars));
+        }else if(newLength == 8){
+            return DateTimeTool.parseDate("yyyyMMdd",new String(chars));
+        }else if(newLength == 12){
+            return DateTimeTool.parseDate("yyyyMMddHHmm",new String(chars));
+        }else if(newLength == 10){
+            return DateTimeTool.parseDate("yyyyMMddHH",new String(chars));
+        }else if(newLength>14){
+            return DateTimeTool.parseDate("yyyyMMddHHmmss",new String(chars,0,14));
+        }
+        return null;
+    }
+
+    /**
+     * 通用（不知道日期格式）将日期字符串转化为日期。失败返回null。(慎用效率较慢)
+     * @param date
+     * @return
+     */
+    public static long getDateTimes(String date) {
+        if(date == null||date.trim().isEmpty()){
+            return -1;
+        }
+
+        int length = date.length();
+        int matchCount = 0;
+        while (true){
+            if(--length < 0){
+                break;
+            }
+            char targetChar = date.charAt(length);
+            if(targetChar>'9' || targetChar<'0'){
+                matchCount++;
+            }
+        }
+
+        if(matchCount == 0){
+            return Long.valueOf(date);
+        }
+
+        length = date.length();
+        final int newLength = length-matchCount;
+        char[] chars = new char[newLength];
+        matchCount = newLength;
+
+        while (true){
+            if(--length < 0){
+                break;
+            }
+
+            char targetChar = date.charAt(length);
+            if(targetChar>'9' || targetChar<'0'){
+            }else {
+                chars[--matchCount]=targetChar;
+            }
+        }
+
+        if(newLength == 14){
+            return DateTimeTool.parseDate("yyyyMMddHHmmss",new String(chars)).getTime();
+        }else if(newLength == 8){
+            return DateTimeTool.parseDate("yyyyMMdd",new String(chars)).getTime();
+        }else if(newLength == 12){
+            return DateTimeTool.parseDate("yyyyMMddHHmm",new String(chars)).getTime();
+        }else if(newLength == 10){
+            return DateTimeTool.parseDate("yyyyMMddHH",new String(chars)).getTime();
+        }else if(newLength>14){
+            return DateTimeTool.parseDate("yyyyMMddHHmmss",new String(chars,0,14)).getTime();
+        }
+        return -1;
     }
 
     /**
