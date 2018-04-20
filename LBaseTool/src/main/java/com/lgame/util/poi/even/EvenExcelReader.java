@@ -192,13 +192,16 @@ public class EvenExcelReader extends PoiReader {
         public int getRowIndex(String rowStr){
          //   return CellReference.convertColStringToIndex(rowStr);
             rowStr = rowStr.replaceAll("[^A-Z]", "");
-            byte[] rowAbc = rowStr.getBytes();
+            return CellReference.convertColStringToIndex(rowStr);
+
+           /* byte[] rowAbc = rowStr.getBytes();
             int len = rowAbc.length;
             float num = 0;
             for (int i=0;i<len;i++){
                 num += (rowAbc[i]-'A'+1)*Math.pow(26,len-i-1 );
             }
-            return (int) num-1;
+
+            return (int) num-1;*/
         }
     }
 

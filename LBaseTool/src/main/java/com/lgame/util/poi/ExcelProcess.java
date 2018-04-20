@@ -9,10 +9,7 @@ import com.lgame.util.poi.module.ExcelDbData;
 import com.lgame.util.thread.BaseThreadPools;
 import com.lgame.util.thread.TaskIndieThread;
 
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -89,6 +86,7 @@ public class ExcelProcess {
                         if(errorMsg != null){
                             errorMsg.deleteCharAt(errorMsg.length()-1);
                             addErrorMsg(errorMsg.toString());
+                            faileCount.getAndAdd(1);
                             if(errorRows.size() > 20){
                                 return false;
                             }
@@ -221,7 +219,7 @@ public class ExcelProcess {
     }
 
     public String getMsg() {
-        return "终止行号:"+excuteLineNum+";完成总数据:"+dataAllCount+",更新:"+sucUpdateCount+",新增："+sucInsertCount+",失败："+faileCount+" 重复数据:"+repeateCount;
+        return "终止行号:"+excuteLineNum+";完成总数据:"+dataAllCount+",更新:"+sucUpdateCount+",新增："+sucInsertCount+",失败："+faileCount+" 重复数据:"+repeateCount+"  "+ Arrays.toString(errorRows.toArray());
     }
 
     public boolean isOver() {
