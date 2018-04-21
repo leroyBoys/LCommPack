@@ -29,6 +29,7 @@ public class ExcelProcess {
     private int excuteLineNum;//进行到当前行号
     private List<String> errorRows = new LinkedList<>();//错误信息
     private String importMsg;//结束提示信息
+    private int process;//进度百分比10000为100%
     protected ExcelProcess(){}
     public final BaseThreadPools user_save_pools = new BaseThreadPools(4, 4,
             0L, TimeUnit.MILLISECONDS,new LinkedBlockingQueue<>());//线程池
@@ -75,7 +76,7 @@ public class ExcelProcess {
                             value = dataCheckService.getValue(excelDbData.getDataTypeEnum(),row[i].trim());
                             if(ExcelDbData.isError(value)){
                                 if(errorMsg == null){
-                                    errorMsg = new StringBuilder("第"+rowNum+"行出错，详细列数:");
+                                    errorMsg = new StringBuilder(rowNum+":");
                                 }
                                 errorMsg.append(i+1).append(",");
                                 continue;
@@ -87,7 +88,7 @@ public class ExcelProcess {
                             errorMsg.deleteCharAt(errorMsg.length()-1);
                             addErrorMsg(errorMsg.toString());
                             faileCount.getAndAdd(1);
-                            if(errorRows.size() > 20){
+                            if(errorRows.size() > 2000){
                                 return false;
                             }
                         }
@@ -127,6 +128,7 @@ public class ExcelProcess {
                 if(!tmpMap.isEmpty()){
                     _importDBFromExcel(dataAllCount,tmpMap,dbService,config);
                 }
+                initProcess();
             }
         };
 
@@ -135,7 +137,6 @@ public class ExcelProcess {
         }catch (Exception ex){
             ex.printStackTrace();
         }
-
         user_save_pools.shutdown();
         while (!user_save_pools.isTerminated()) {
             System.out.println("入库进程>>队列剩余："+user_save_pools.getQueue().size()+".. 正在入库:"+user_save_pools.getActiveCount());
@@ -153,6 +154,18 @@ public class ExcelProcess {
         PrintTool.outTime("1","over");
     }
 
+    private void initProcess() {
+        process = (sucUpdateCount.get()+sucUpdateCount.get())*10000/(dataAllCount-faileCount.get());
+
+    }
+
+    public double getProcess(){
+        if(process == 0){
+            return 2.0;
+        }
+        this.initProcess();
+        return process;
+    }
     private void addErrorMsg(String msg){
         synchronized (errorRows){
             errorRows.add(msg);
@@ -173,7 +186,7 @@ public class ExcelProcess {
                     uniqueIds = dbService.queryExistIds(sql.toString());
                 }catch (Exception ex){
                     ex.printStackTrace();
-                    addErrorMsg("第"+(all-rowNum)+"-"+rowNum+" 列导入数据库出错;"+ex.getMessage());
+                    addErrorMsg("第"+(rowNum-all)+"-"+rowNum+" 列导入数据库出错;"+ex.getMessage());
                     faileCount.getAndAdd(all);
                     return;
                 }
@@ -199,7 +212,7 @@ public class ExcelProcess {
                 }
             }catch (Exception ex){
                 ex.printStackTrace();
-                addErrorMsg("第"+(all-rowNum)+"-"+rowNum+" 列导入数据库出错;"+ex.getMessage());
+                addErrorMsg("第"+(rowNum-all)+"-"+rowNum+" 列导入数据库出错;"+ex.getMessage());
                 faileCount.getAndAdd(all);
             }
         });
@@ -219,7 +232,7 @@ public class ExcelProcess {
     }
 
     public String getMsg() {
-        return "终止行号:"+excuteLineNum+";完成总数据:"+dataAllCount+",更新:"+sucUpdateCount+",新增："+sucInsertCount+",失败："+faileCount+" 重复数据:"+repeateCount+"  "+ Arrays.toString(errorRows.toArray());
+        return "终止行号:"+excuteLineNum+";完成总数据:"+dataAllCount+",更新:"+sucUpdateCount+",新增："+sucInsertCount+",失败："+faileCount+"("+errorRows.size()+")"+" 重复数据:"+repeateCount+"  "+ Arrays.toString(errorRows.toArray());
     }
 
     public boolean isOver() {

@@ -36,6 +36,11 @@ public class Excel2003Reader  extends PoiReader implements HSSFListener {
     {
         new Excel2003Reader().read("D:/w.xls","config",new DefaultRowListener(),0,0);
     }
+
+    public int getTotalRows() {
+        return allRowNum;
+    }
+
     public boolean read(String fileName, String sheetName, RowListener listener, int endLineNum, int maxColumNum) {
         this.targetSheetName = sheetName;
         excute(fileName,listener,endLineNum,maxColumNum);

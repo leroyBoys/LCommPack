@@ -102,7 +102,7 @@ public class EvenExcelReader extends PoiReader {
         private String[] row = null;
         private int curColumIdex;//当前列索引
         private int maxColum;
-        private int curRow;//当前行号
+        private int curRow;//前行当号
         private int endLineNum;
 
         private SheetHandler(SharedStringsTable sst, RowListener rowListen, int maxColum, int endLineNum) {

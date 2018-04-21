@@ -41,7 +41,7 @@ public class ExcelHelper {
                 System.out.println("=--->"+sqls.size());
                 return 0;
             }
-        },"D:/w.xls");
+        },"D:/w.xlsx");
     }
 
     public static ExcelProcess importDBFromExcel(DbService dbService, String fileName) throws AppException {
