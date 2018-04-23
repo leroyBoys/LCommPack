@@ -138,14 +138,17 @@ public class SqlPool implements SqlDataSource {
             rs =  ps.executeQuery();
             ResultSetMetaData rsMeta = rs.getMetaData();
 
+            String[] columsArray = null;
             LinkedList<Map<String, Object>> rows = new LinkedList<Map<String, Object>>();
             while (rs.next()){
-                Map<String, Object> row = new LinkedHashMap<String, Object>();
 
-                for (int i = 0, size = rsMeta.getColumnCount(); i < size; ++i) {
-                    String columName = rsMeta.getColumnLabel(i + 1);
+                if(columsArray == null){
+                    columsArray  = initColumsArray(rsMeta);
+                }
+                HashMap<String, Object> row = new HashMap<>(columsArray.length);
+                for (int i = 0, size = columsArray.length; i < size; ++i) {
                     Object value = rs.getObject(i + 1);
-                    row.put(columName, value);
+                    row.put(columsArray[i], value);
                 }
 
                 rows.add(row);
@@ -157,6 +160,14 @@ public class SqlPool implements SqlDataSource {
             this.close(ps, cn, rs);
         }
         return null;
+    }
+
+    private String[] initColumsArray(ResultSetMetaData rsMeta) throws SQLException {
+        String[] array = new String[rsMeta.getColumnCount()];
+        for (int i = 0, size = array.length; i < size; ++i) {
+            array[i] = rsMeta.getColumnLabel(i + 1);
+        }
+        return array;
     }
 
     /**
