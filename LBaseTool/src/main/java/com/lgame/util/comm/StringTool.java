@@ -81,7 +81,7 @@ public class StringTool {
         str = str.trim();
         int len = str.length();
         if (len == 0 || len % 2 == 1) {
-            return null;
+            return str.getBytes();
         }
 
         byte[] b = new byte[len / 2];
