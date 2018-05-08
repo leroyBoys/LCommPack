@@ -7,6 +7,7 @@ import java.util.*;
 import sun.misc.Unsafe;
 
 /**
+ *  获得对象占用的内存大小
  * Created by leroy:656515489@qq.com
  * 2018/4/28.
  */
