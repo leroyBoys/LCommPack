@@ -71,9 +71,13 @@ public class MoreJdbcColumsArray extends JdbcColumsArray{
             }
             //可以对一对多的对象也做缓存，这里暂时不做了，以后再扩展
           //  tmpMap = resultData.getFieldReultByFile(relationData.getFieldName());
-            reationObj = relationData.createNew();
+            reationObj = relationData.getFieldClass().newInstance();
 
             tmpSet = relationFieldNameMap.get(relationData.getFieldName());
+            if(tmpSet == null){
+                continue;
+            }
+
             for(String colum:tmpSet){
                 ScanEntitysTool.doExute(reationTable,relationData.getTargetColum(colum),reationObj,rs.getObject(colum));
             }
