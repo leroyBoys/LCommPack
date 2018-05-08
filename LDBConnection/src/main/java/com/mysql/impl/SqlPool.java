@@ -13,6 +13,7 @@ import java.util.concurrent.ConcurrentHashMap;
  * Created by leroy:656515489@qq.com
  * 2017/4/13.
  */
+@Deprecated
 public class SqlPool implements SqlDataSource {
     private SqlDataSource pool;
     private DataSourceType sourceType = DataSourceType.Druid;

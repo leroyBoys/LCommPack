@@ -496,6 +496,20 @@ public class RedisConnection {
         return res;
     }
 
+    public Long hset(byte[] key, byte[] field, byte[] value) {
+        Jedis jedis = null;
+        Long res = null;
+        try {
+            jedis = jedisPool.getResource();
+            res = jedis.hset(key, field, value);
+        } catch (Exception e) {
+            logException(e);
+        } finally {
+            returnResource(jedisPool, jedis);
+        }
+        return res;
+    }
+
     /**
      * <p>通过key给field设置指定的值,如果key不存在则先创建,如果field已经存在,返回0</p>
      *
@@ -549,6 +563,20 @@ public class RedisConnection {
     public String hget(String key, String field) {
         Jedis jedis = null;
         String res = null;
+        try {
+            jedis = jedisPool.getResource();
+            res = jedis.hget(key, field);
+        } catch (Exception e) {
+            logException(e);
+        } finally {
+            returnResource(jedisPool, jedis);
+        }
+        return res;
+    }
+
+    public byte[] hget(byte[] key, byte[] field) {
+        Jedis jedis = null;
+        byte[] res = null;
         try {
             jedis = jedisPool.getResource();
             res = jedis.hget(key, field);
