@@ -84,14 +84,83 @@ public class DbPool implements SqlDataSource {
         return false;
     }
 
+    /**
+     *
+     * @param tableName
+     * @param datas
+     * @param columNames 要插入数据的列名集合(与columValues 顺序对应)
+     * @param columValues 要插入数据的列名对应值（或者函数或者固定值）集合(与columValues 顺序对应)
+     * @param commitLimitCount 最大提交数量（根据mysql.cnf中 max_allowed_packet调整）如果小于等于0则为默认5000
+     * @param
+     * @return
+     */
+    public  boolean InsertBatch(String tableName,List<Map<String,String>> datas,String[] columNames,String[] columValues,int commitLimitCount) {
+        if(commitLimitCount <= 0){
+            commitLimitCount = this.getDefaultLimitCount();
+        }
+
+        StringBuilder sb = new StringBuilder("INSERT INTO  ");
+        sb.append(tableName).append(" (");
+        for(int i = 0;i<columNames.length;i++){
+            if(i != 0){
+                sb.append(",");
+            }
+            sb.append("`").append(columNames[i]).append("`");
+        }
+        sb.append(") values ");
+        String sql = sb.toString();
+
+        String str;
+        List<String> sqls = new LinkedList<>();
+        int i = 0;
+        for(Map<String,String> map:datas){
+            if(i++ != 0){
+                sb.append(",");
+            }
+
+            sb.append("(");
+            for(int j = 0;j<columNames.length;j++){
+                if(j != 0){
+                    sb.append(",");
+                }
+
+                str = columValues[j];
+                if(str.endsWith("()")){
+                    sb.append(str);
+                    continue;
+                }
+
+                sb.append("'");
+                str = map.get(str);
+                if(str == null){
+                    str = columValues[j];
+                }
+                sb.append(str);
+                sb.append("'");
+            }
+            sb.append(")");
+
+            if(i > commitLimitCount){
+                sqls.add(sb.toString());
+                sb=new StringBuilder(sql);
+                i=0;
+            }
+        }
+
+        if(i > 0){
+            sqls.add(sb.toString());
+        }
+
+        return ExecuteUpdates(sqls);
+    }
+
     public boolean ExecuteUpdates(List<String> cmds) {
         Connection cn = null;
         Statement ps = null;
         try {
             cn = getConnection();
             cn.setAutoCommit(false);
-            ps = cn.createStatement(ResultSet.TYPE_SCROLL_SENSITIVE,
-                    ResultSet.CONCUR_READ_ONLY);
+            ps = cn.createStatement();
             for (String cmd : cmds) {
                 ps.addBatch(cmd);
             }
@@ -364,6 +433,10 @@ public class DbPool implements SqlDataSource {
         ps = null;
         cn = null;
         rs = null;
+    }
+
+    public int getDefaultLimitCount() {
+        return 5000;
     }
 
     public enum DataSourceType{
