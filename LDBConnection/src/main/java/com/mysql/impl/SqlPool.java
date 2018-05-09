@@ -1,13 +1,12 @@
 package com.mysql.impl;
 
-import com.logger.log.SystemLogger;
+import com.lgame.util.PrintTool;
 import com.mysql.DbCallBack;
 import com.mysql.DbFactoryCache;
 import com.mysql.SqlDataSource;
 
 import java.sql.*;
 import java.util.*;
-import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * Created by leroy:656515489@qq.com
@@ -61,7 +60,7 @@ public class SqlPool implements SqlDataSource {
             SetParameter(ps, p);
             ps.execute();
         } catch (Exception e) {
-            SystemLogger.error(this.getClass(),e);
+            PrintTool.error(this.getClass(),e);
         } finally {
             this.close(ps, cn);
         }
@@ -76,7 +75,7 @@ public class SqlPool implements SqlDataSource {
             SetParameter(ps, p);
             return ps.executeUpdate() > 0;
         } catch (Exception e) {
-            SystemLogger.error(this.getClass(),e);
+            PrintTool.error(this.getClass(),e);
         } finally {
             this.close(ps, cn);
         }
@@ -97,7 +96,7 @@ public class SqlPool implements SqlDataSource {
             cn.commit();
             return true;
         } catch (Exception e) {
-            SystemLogger.error(this.getClass(),e);
+            PrintTool.error(this.getClass(),e);
         } finally {
             this.close(ps, cn);
         }
@@ -118,7 +117,7 @@ public class SqlPool implements SqlDataSource {
                 return (Long) rs.getObject(1);
             }
         } catch (Exception e) {
-            SystemLogger.error(this.getClass(),e);
+            PrintTool.error(this.getClass(),e);
         } finally {
             close(ps, cn, rs);
         }
@@ -126,7 +125,6 @@ public class SqlPool implements SqlDataSource {
     }
 
     public LinkedList<Map<String, Object>> ExecuteQuery(String cmd, Object... p) {
-        System.out.println("cmd:" + cmd);
         Connection cn = null;
         PreparedStatement ps = null;
         ResultSet rs = null;
@@ -156,7 +154,7 @@ public class SqlPool implements SqlDataSource {
             }
             return rows;
         } catch (Exception e) {
-            SystemLogger.error(this.getClass(),e);
+            PrintTool.error(this.getClass(),e);
         } finally {
             this.close(ps, cn, rs);
         }
@@ -194,7 +192,7 @@ public class SqlPool implements SqlDataSource {
             }
             return null;
         } catch (Exception e) {
-            SystemLogger.error(this.getClass(),e);
+            PrintTool.error(this.getClass(),e);
         } finally {
             this.close(ps, cn, rs);
         }
@@ -214,7 +212,7 @@ public class SqlPool implements SqlDataSource {
             rs =  ps.executeQuery();
            return callBack.doInPreparedStatement(rs);
         } catch (Exception e) {
-            SystemLogger.error(this.getClass(),e);
+            PrintTool.error(this.getClass(),e);
         } finally {
             this.close(ps, cn, rs);
         }
@@ -241,7 +239,7 @@ public class SqlPool implements SqlDataSource {
             }
             return rows;
         } catch (Exception e) {
-            SystemLogger.error(this.getClass(),e);
+            PrintTool.error(this.getClass(),e);
         } finally {
             this.close(ps, cn, rs);
         }
@@ -277,7 +275,7 @@ public class SqlPool implements SqlDataSource {
             }
             return dbFactory.create(rs);
         } catch (Exception e) {
-            SystemLogger.error(this.getClass(),e);
+            PrintTool.error(this.getClass(),e);
         } finally {
             this.close(ps, cn, rs);
         }
@@ -302,14 +300,14 @@ public class SqlPool implements SqlDataSource {
             }
 
         } catch (Exception e) {
-            SystemLogger.error(this.getClass(),e);
+            PrintTool.error(this.getClass(),e);
         }
         try {
             if (cn != null) {
                 cn.close();
             }
         } catch (Exception e) {
-            SystemLogger.error(this.getClass(),e);
+            PrintTool.error(this.getClass(),e);
         }
         ps = null;
         cn = null;
@@ -321,14 +319,14 @@ public class SqlPool implements SqlDataSource {
                 ps.close();
             }
         } catch (Exception e) {
-            SystemLogger.error(this.getClass(),e);
+            PrintTool.error(this.getClass(),e);
         }
         try {
             if (cn != null) {
                 cn.close();
             }
         } catch (Exception e) {
-            SystemLogger.error(this.getClass(),e);
+            PrintTool.error(this.getClass(),e);
         }
 
         try {

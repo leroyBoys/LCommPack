@@ -43,7 +43,7 @@ public class JdbcColumsArray {
             try {
                 dbTable.getColumInit(columsArray[i]).set(t,rs,i + 1);
             }catch (Exception ex){
-                PrintTool.error(dbTable.getName()+"  doExuteOnlyOne:columName:"+columsArray[i]+" not find from config");
+                PrintTool.error(dbTable.getName()+"  doExuteOnlyOne:columName:"+columsArray[i]+" not find from config",ex);
             }
         }
         return t;
