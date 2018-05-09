@@ -72,16 +72,9 @@ public class ScanEntitysTool {
         return sb.toString();
     }
 
-    public static void scan(String pack) throws Exception {
-       PrintTool.outTime("ScanEntitysTool","begin scan dbEntity");
-
+    public static void scanClass(Set<Class<?>> classs){
+        PrintTool.outTime("ScanEntitysTool","begin scan dbEntity");
         JavaStringCompiler javaStringCompiler = new JavaStringCompiler();
-
-        Set<Class<?>> classs = ClassScanner.getClasses(pack);
-        if(classs.isEmpty()){
-            PrintTool.outTime("ScanEntitysTool","over scan dbEntity");
-            return;
-        }
 
         Map<DBTable,Set<RelationData>> relations = new HashMap<>(classs.size());
         Set<RelationData> tmpSet;
@@ -172,6 +165,16 @@ public class ScanEntitysTool {
             }
         }
         PrintTool.outTime("ScanEntitysTool","over scan dbEntity");
+    }
+
+    public static void scan(String pack) throws Exception {
+        Set<Class<?>> classs = ClassScanner.getClasses(pack);
+        if(classs.isEmpty()){
+            PrintTool.outTime("ScanEntitysTool","over scan dbEntity");
+            return;
+        }
+
+        scanClass(classs);
     }
 
     private static String getKey(String flag,Class clas,String columName){
