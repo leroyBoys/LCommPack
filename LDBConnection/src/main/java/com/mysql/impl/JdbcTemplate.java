@@ -14,12 +14,12 @@ import java.util.*;
  * Created by leroy:656515489@qq.com
  * 2017/4/13.
  */
-public class DbPool implements SqlDataSource {
-    private final static  Map<String,JdbcColumsArray> cmd_jdbcColumsArrayCache = new HashMap<>();
+public class JdbcTemplate implements SqlDataSource {
+    private final static Map<String,JdbcColumsArray> cmd_jdbcColumsArrayCache = new HashMap<>();
     private SqlDataSource pool;
     private DataSourceType sourceType = DataSourceType.Druid;
 
-    public DbPool(Properties properties){
+    public JdbcTemplate(Properties properties){
         initPool(properties);
     }
 
@@ -37,12 +37,12 @@ public class DbPool implements SqlDataSource {
         }
     }
 
-    public DbPool(DataSourceType sourceType){
+    public JdbcTemplate(DataSourceType sourceType){
         this.sourceType = sourceType;
         initPool(null);
     }
 
-    public DbPool(DataSourceType sourceType, Properties properties){
+    public JdbcTemplate(DataSourceType sourceType, Properties properties){
         this.sourceType = sourceType;
         initPool(properties);
     }
