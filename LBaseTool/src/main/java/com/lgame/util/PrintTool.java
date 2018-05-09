@@ -53,11 +53,16 @@ public class PrintTool {
         System.err.println(info);
     }
 
-    public static void error(Object... info){
+    /*public static void error(Object... info){
         System.out.println(info);
-    }
+    }*/
 
     public static void error(String info,Exception e){
+        e.printStackTrace();
+        System.out.println(info+":"+getException(e));
+    }
+
+    public static void error(Class info,Exception e){
         e.printStackTrace();
         System.out.println(info+":"+getException(e));
     }

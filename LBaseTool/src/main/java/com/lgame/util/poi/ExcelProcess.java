@@ -62,7 +62,7 @@ public class ExcelProcess {
                     excuteLineNum = rowNum;
 
                     try {
-                        Map<String,String> map = new HashMap<>();
+                        Map<String,String> map = new HashMap<>(row.length);
                         ExcelDbData excelDbData;
 
                         StringBuilder errorMsg = null;
