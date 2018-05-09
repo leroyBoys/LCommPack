@@ -6,7 +6,7 @@
 
     <groupId>LCommPack</groupId>
     <artifactId>LDBConnection</artifactId>
-    <version>1.0</version>
+    <version>1.1</version>
 
     <properties>
         <junit.version>4.12</junit.version>
@@ -56,12 +56,6 @@
             <version>1.0</version>
         </dependency>
 
-
-        <dependency>
-            <groupId>LCommPack</groupId>
-            <artifactId>LBaseLog</artifactId>
-            <version>1.0</version>
-        </dependency>
         <!-- hikariCP 线程池 over-->
     </dependencies>
 </project>
