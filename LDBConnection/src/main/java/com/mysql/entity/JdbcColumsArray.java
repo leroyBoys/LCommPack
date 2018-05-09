@@ -1,10 +1,10 @@
 package com.mysql.entity;
 
-import com.mysql.compiler.ScanEntitysTool;
+import com.lgame.util.PrintTool;
+import com.mysql.compiler.ColumInit;
 
 import java.sql.ResultSet;
 import java.util.Map;
-import java.util.Set;
 
 /**
  * Created by leroy:656515489@qq.com
@@ -12,7 +12,7 @@ import java.util.Set;
  */
 public class JdbcColumsArray {
     protected String[] columsArray = null;
-    protected Map<String,Set<String>> relationFieldNameMap;
+    protected Map<String,Map<String,ColumInit>> relationFieldNameMap;
 
 
     public JdbcColumsArray(String[] array) {
@@ -27,23 +27,24 @@ public class JdbcColumsArray {
         return columsArray.length;
     }
 
-    public Map<String, Set<String>> getRelationFieldNameMap() {
+    public Map<String, Map<String,ColumInit>> getRelationFieldNameMap() {
         return relationFieldNameMap;
     }
 
     public <T> T doExute(DBTable dbTable, ResultSet rs, Class<T> tClass,QueryResultData<T> resultData) throws Exception {
-        T t = tClass.newInstance();
+        T t = doExuteOnlyOne(dbTable,rs,tClass);
         resultData.add(t);
-        for (int i = 0, size = columsArray.length; i < size; ++i) {
-            ScanEntitysTool.doExute(dbTable,get(i),t,rs.getObject(i + 1));
-        }
         return t;
     }
 
     public <T> T doExuteOnlyOne(DBTable dbTable, ResultSet rs, Class<T> tClass) throws Exception {
         T t = tClass.newInstance();
         for (int i = 0, size = columsArray.length; i < size; ++i) {
-            ScanEntitysTool.doExute(dbTable,get(i),t,rs.getObject(i + 1));
+            try {
+                dbTable.getColumInit(columsArray[i]).set(t,rs,i + 1);
+            }catch (Exception ex){
+                PrintTool.error(dbTable.getName()+"  doExuteOnlyOne:columName:"+columsArray[i]+" not find from config");
+            }
         }
         return t;
     }

@@ -6,6 +6,7 @@ import com.mysql.entity.*;
 
 import java.lang.reflect.Field;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
@@ -18,7 +19,7 @@ public class ScanEntitysTool {
 
     private static String getSetClass(String methodContent,String className){
         StringBuilder sb = new StringBuilder("package com.mysql.compiler;\n public class  ");
-        sb.append(className).append(" implements ColumInit {\n");
+        sb.append(className).append(" extends ColumInit {\n");
         sb.append("@Override\n public void  set(Object obj, Object v) {\n");
         sb.append(methodContent).append("}\n}\n");
 
@@ -82,6 +83,8 @@ public class ScanEntitysTool {
             return;
         }
 
+        Map<DBTable,Set<RelationData>> relations = new HashMap<>(classs.size());
+        Set<RelationData> tmpSet;
         Field[] fields;
         String newClassName;
         Map<String, byte[]> tmpcompilers;
@@ -90,7 +93,9 @@ public class ScanEntitysTool {
         DbColum dbColum;
         DBDesc dbDesc;
         DBRelations dbRelations;
-        DBRelation[] dbRelationArray;
+        RelationData relationData;
+        SqlTypeToJava sqlTypeToJava;
+
         String columName;
         for(Class cls:classs){
 
@@ -103,6 +108,8 @@ public class ScanEntitysTool {
                 columInitMap.put(cls,dbTable);
             }
 
+            tmpSet = new HashSet<>(fields.length);
+            relations.put(dbTable,tmpSet);
             for(Field field:fields){
                 try {
                     dbColum = field.getAnnotation(DbColum.class);
@@ -124,6 +131,13 @@ public class ScanEntitysTool {
                         if(dbColum.isPrimaryKey()){
                             dbTable.setIdColumName(columName);
                         }
+                        sqlTypeToJava = SqlTypeToJava.get(field.getType());
+                        if(sqlTypeToJava == null){
+                            PrintTool.error(field.getType().getName()+" not find match sqlTypeToJava");
+                            continue;
+                        }
+                        columInit.setSqlTypeToJava(sqlTypeToJava);
+                        continue;
                     }
 
                     if(dbRelations != null){
@@ -133,11 +147,9 @@ public class ScanEntitysTool {
 
                         relationGetIntace = (RelationGetIntace) javaStringCompiler.loadClass("com.mysql.compiler."+newClassName,tmpcompilers).newInstance();
 
-                        dbRelationArray = dbRelations.map();
-                        RelationData relationData = new RelationData(field.getName(),dbRelations,dbRelationArray.length,field,relationGetIntace,columInit);
-                        for(int i =0,size=dbRelationArray.length;i<size;i++){
-                            dbTable.addRelationData(dbRelationArray[i],relationData);
-                        }
+                        relationData = new RelationData(field.getName(),dbRelations,dbRelations.map().length,field,relationGetIntace,columInit);
+                        dbTable.addRelationData(relationData);
+                        tmpSet.add(relationData);
                     }
 
                 } catch (Exception e) {
@@ -146,84 +158,24 @@ public class ScanEntitysTool {
             }
         }
 
-        PrintTool.outTime("ScanEntitysTool","over scan dbEntity");
-    }
-
-    public static void scan(Class cls) throws Exception {
-        JavaStringCompiler javaStringCompiler = new JavaStringCompiler();
-        Field[] fields = cls.getDeclaredFields();
-        String newClassName;
-        Map<String, byte[]> tmpcompilers;
-        ColumInit columInit;
-        DbColum dbColum;
-        DBDesc dbDesc = (DBDesc) cls.getAnnotation(DBDesc.class);
-        DBRelations dbRelations;
+        DBTable dbTable;
         DBRelation[] dbRelationArray;
-        String columName;
-        RelationGetIntace relationGetIntace;
+        for(Map.Entry<DBTable,Set<RelationData>> entry:relations.entrySet()){
 
-        DBTable dbTable = columInitMap.get(cls);
-        if(dbTable == null){
-            dbTable = new DBTable(dbDesc.name());
-            columInitMap.put(cls,dbTable);
-        }else {
-            return;
-        }
-
-        for(Field field:fields){
-            try {
-                dbColum = field.getAnnotation(DbColum.class);
-                dbRelations = field.getAnnotation(DBRelations.class);
-                if(dbColum == null && dbRelations == null){
-                    continue;
+            for(RelationData relationDa:entry.getValue()){
+                dbRelationArray = relationDa.getReltaion().map();
+                dbTable = columInitMap.get(relationDa.getFieldClass());
+                for(int i = 0,size = dbRelationArray.length;i<size;i++){
+                    relationDa.put(dbRelationArray[i].colum(),dbTable.getColumInit(dbRelationArray[i].targetColum()));
+                    entry.getKey().putColumRelationMap(dbRelationArray[i].colum(),relationDa);
                 }
-
-                newClassName = getKey("Set",cls,field.getName());//classFinal+""+field.getName();
-                tmpcompilers = javaStringCompiler.compile(newClassName+".java",
-                        getSetClass(getMethod(cls,field.getType(),field.getName()),newClassName));
-
-                columInit = (ColumInit) javaStringCompiler.loadClass("com.mysql.compiler."+newClassName,tmpcompilers).newInstance();
-
-                if(dbColum != null){
-                    columName = dbColum.name().isEmpty()?field.getName():dbColum.name();
-                    dbTable.addColum(columName,field.getName());
-                    dbTable.addColumInit(columName,columInit);
-                    if(dbColum.isPrimaryKey()){
-                        dbTable.setIdColumName(columName);
-                    }
-                }
-
-                if(dbRelations != null){
-                    newClassName = getKey("Get",cls,field.getName());//classFinal+""+field.getName();
-                    tmpcompilers = javaStringCompiler.compile(newClassName+".java",
-                            getGetClass(getMethod_relation(cls,field.getName()),newClassName));
-
-                    relationGetIntace = (RelationGetIntace) javaStringCompiler.loadClass("com.mysql.compiler."+newClassName,tmpcompilers).newInstance();
-
-                    dbRelationArray = dbRelations.map();
-                    RelationData relationData = new RelationData(field.getName(),dbRelations,dbRelationArray.length,field,relationGetIntace,columInit);
-                    for(int i =0,size=dbRelationArray.length;i<size;i++){
-                        dbTable.addRelationData(dbRelationArray[i],relationData);
-                    }
-                }
-
-            } catch (Exception e) {
-                e.printStackTrace();
             }
         }
+        PrintTool.outTime("ScanEntitysTool","over scan dbEntity");
     }
 
     private static String getKey(String flag,Class clas,String columName){
         return flag+"_"+clas.getSimpleName()+"_"+columName;
-    }
-
-    public static boolean doExute(DBTable dbTable,String columName,Object obj,Object metho_v){
-        try {
-            return dbTable.doExute(columName,obj,metho_v);
-        }catch (Exception ex){
-            PrintTool.error("dbTableName:"+dbTable.getName()+"   columName:"+columName,ex);
-        }
-        return false;
     }
 
     public static DBTable getDBTable(Class cls){

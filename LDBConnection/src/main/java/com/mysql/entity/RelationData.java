@@ -18,9 +18,9 @@ public class RelationData {
     private RelationGetIntace relationGetIntace;
     private ColumInit columInit;
     private NewInstance newInstance;
-    private DBRelations.Reltaion reltaion;
+    private DBRelations reltaion;
     private int count;
-    private Map<String,String> colums_target_map;
+    private Map<String,ColumInit> colums_target_map;
 
     public RelationData(String fieldName, DBRelations dbRelations, int count,Field field,RelationGetIntace relationGetIntace,ColumInit columInit) {
         this.fieldName = fieldName;
@@ -28,7 +28,7 @@ public class RelationData {
         this.columInit = columInit;
         this.relationGetIntace = relationGetIntace;
         colums_target_map = new HashMap<>(count);
-        reltaion = dbRelations.relation();
+        reltaion = dbRelations;
         if(dbRelations.relation()== DBRelations.Reltaion.OneToMany){
             Type type = field.getGenericType();
             ParameterizedType types =(ParameterizedType)type;
@@ -49,8 +49,12 @@ public class RelationData {
         }
     }
 
+    public DBRelations getReltaion() {
+        return reltaion;
+    }
+
     public boolean isOneToMany(){
-        return reltaion == DBRelations.Reltaion.OneToMany;
+        return reltaion.relation() == DBRelations.Reltaion.OneToMany;
     }
 
     public String getFieldName() {
@@ -65,11 +69,11 @@ public class RelationData {
         return count;
     }
 
-    public void put(String colum, String targeColum) {
-        colums_target_map.put(colum,targeColum);
+    public void put(String colum, ColumInit targeColumInit) {
+        colums_target_map.put(colum,targeColumInit);
     }
 
-    public Map<String, String> getColums_target_map() {
+    public Map<String, ColumInit> getColums_target_map() {
         return colums_target_map;
     }
 
@@ -96,14 +100,6 @@ public class RelationData {
     @Override
     public int hashCode() {
         return (fieldName!=null?fieldName.hashCode():1)*31;
-    }
-
-    public Object createNew() throws Exception {
-        return newInstance.create();
-    }
-
-    public String getTargetColum(String colum) {
-        return colums_target_map.get(colum);
     }
 
     public static class NewInstance{

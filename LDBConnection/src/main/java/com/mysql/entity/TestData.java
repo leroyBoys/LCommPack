@@ -12,9 +12,9 @@ public class TestData {
     @DbColum(name = "id",isPrimaryKey = true)
     private int id;
     @DbColum()
-    private Integer num;
+    private String num;
     @DbColum()
-    private Date date;
+    private String date;
     @DbColum()
     private String name;
     @DbColum()
@@ -47,11 +47,11 @@ public class TestData {
         this.id = id;
     }
 
-    public Integer getNum() {
+    public String getNum() {
         return num;
     }
 
-    public void setNum(Integer num) {
+    public void setNum(String num) {
         this.num = num;
     }
 
@@ -63,11 +63,11 @@ public class TestData {
         this.name = name;
     }
 
-    public Date getDate() {
+    public String getDate() {
         return date;
     }
 
-    public void setDate(Date date) {
+    public void setDate(String date) {
         this.date = date;
     }
 

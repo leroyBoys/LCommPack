@@ -61,20 +61,13 @@ public class DBTable {
         columInitMap.put(columName,columInit);
     }
 
-    public boolean doExute(String columName, Object obj, Object metho_v) {
-        ColumInit columInit = columInitMap.get(columName);
-        if(columInit == null){
-            return false;
+    public void putColumRelationMap(String columName, RelationData relationData) {
+        if(!columRelationMap.containsKey(columName)){
+            columRelationMap.put(columName,relationData);
         }
-        columInit.set(obj,metho_v);
-        return true;
     }
 
-    public void addRelationData(DBRelation dbRelation, RelationData relationData) {
-        columRelationMap.put(dbRelation.colum(),relationData);
-        relationData.put(dbRelation.colum(),dbRelation.targetColum());
-        if(!fieldRelationMap.containsKey(relationData.getFieldName())){
-            fieldRelationMap.put(relationData.getFieldName(),relationData);
-        }
+    public void addRelationData(RelationData relationData) {
+        fieldRelationMap.put(relationData.getFieldName(),relationData);
     }
 }

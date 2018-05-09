@@ -17,7 +17,7 @@ import java.util.Set;
  */
 public class MoreJdbcColumsArray extends JdbcColumsArray{
 
-    public MoreJdbcColumsArray(String[] array, Map<String,Set<String>> relationFieldNameMap) {
+    public MoreJdbcColumsArray(String[] array, Map<String,Map<String,ColumInit>> relationFieldNameMap) {
         super(array);
         this.relationFieldNameMap = relationFieldNameMap;
     }
@@ -40,46 +40,43 @@ public class MoreJdbcColumsArray extends JdbcColumsArray{
         String columName;
         RelationData relationData;
         Object reationObj;
-        DBTable reationTable;
 
-        Set<String> tmpSet;
+        Map<String,ColumInit> tmpMap;
         Set<String> objMap = new HashSet<>(columsArray.length);
         for (int i = 0, size = columsArray.length; i < size; ++i) {
             columName = get(i);
 
             ColumInit columInit = dbTable.getColumInit(columName);
             if(columInit!= null && isNew){
-                obj = rs.getObject(i + 1);
-                columInit.set(t,obj);
+                try {
+                    columInit.set(t,rs,i+1);
+                }catch (Exception ex){
+                    PrintTool.error(dbTable.getName()+" columName:"+columsArray[i]+" "+ex.getMessage(),ex);
+                }
                 continue;
             }
 
             relationData = dbTable.getRelationMap(columName);
             if(relationData == null){
-                PrintTool.error(dbTable.getName()+":columName:"+columName+" not find from config");
+                if(isNew){
+                    PrintTool.error(dbTable.getName()+":columName:"+columName+" not find from config relationData");
+                }
                 continue;
             }else if(objMap.contains(relationData.getFieldName())){
                 continue;
             }
 
             objMap.add(relationData.getFieldName());
-
-            reationTable = ScanEntitysTool.getDBTable(relationData.getFieldClass());
-            if(reationTable == null){
-                PrintTool.error(dbTable.getName()+":relation--class"+relationData.getFieldClass().getName()+" not find from config");
-                continue;
-            }
             //可以对一对多的对象也做缓存，这里暂时不做了，以后再扩展
-          //  tmpMap = resultData.getFieldReultByFile(relationData.getFieldName());
             reationObj = relationData.getFieldClass().newInstance();
 
-            tmpSet = relationFieldNameMap.get(relationData.getFieldName());
-            if(tmpSet == null){
+            tmpMap = relationFieldNameMap.get(relationData.getFieldName());
+            if(tmpMap == null){
                 continue;
             }
 
-            for(String colum:tmpSet){
-                ScanEntitysTool.doExute(reationTable,relationData.getTargetColum(colum),reationObj,rs.getObject(colum));
+            for(Map.Entry<String,ColumInit> entry:tmpMap.entrySet()){
+                entry.getValue().set(reationObj,rs,entry.getKey());
             }
 
             if(relationData.isOneToMany()){
