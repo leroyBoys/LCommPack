@@ -6,7 +6,7 @@ import com.module.GameServer;
 import com.mysql.DbCallBack;
 import com.mysql.compiler.ScanEntitysTool;
 import com.mysql.entity.TestData;
-import com.mysql.impl.DbPool;
+import com.mysql.impl.JdbcTemplate;
 
 import java.lang.reflect.Method;
 import java.sql.ResultSet;
@@ -86,7 +86,7 @@ public class Test {
         String sql = "SELECT `test_data`.* ,`testone`.`name` AS toname FROM `test_data` LEFT JOIN `testone` ON  test_data.`id`=testone.`id`";
         int size = 1;
        // DbPool db = new DbPool(PropertiesTool.loadProperty("druid_db.properties"));
-        DbPool db = new DbPool(DbPool.DataSourceType.Hikari,PropertiesTool.loadProperty("hikari_db.properties"));
+        JdbcTemplate db = new JdbcTemplate(JdbcTemplate.DataSourceType.Hikari,PropertiesTool.loadProperty("hikari_db.properties"));
 
         PrintTool.outTime("11","===>");
         for(int i = 0; i<size; ++i){
@@ -263,7 +263,7 @@ public class Test {
     }
 
     private void tttDB() throws Exception {
-        DbPool db = new DbPool(PropertiesTool.loadProperty("druid_db.properties"));
+        JdbcTemplate db = new JdbcTemplate(PropertiesTool.loadProperty("druid_db.properties"));
 
         long sum = 0;
 

@@ -169,7 +169,7 @@ public class ScanEntitysTool {
     public static void scan(String pack) throws Exception {
         Set<Class<?>> classs = ClassScanner.getClasses(pack);
         if(classs.isEmpty()){
-            PrintTool.outTime("ScanEntitysTool","over scan dbEntity");
+            PrintTool.info(pack+" not find db class");
             return;
         }
 
