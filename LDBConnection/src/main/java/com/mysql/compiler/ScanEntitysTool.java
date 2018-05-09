@@ -42,7 +42,6 @@ public class ScanEntitysTool {
             }
         }
 
-
         char fistChar = fieldName.charAt(0);
         char toUpperCase = fistChar;
         if(fistChar >= 'a' && fistChar <= 'z'){
