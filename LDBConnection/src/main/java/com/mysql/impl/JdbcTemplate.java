@@ -260,6 +260,7 @@ public class JdbcTemplate implements SqlDataSource {
             }
             relationData = dbTable.getRelationMap(str);
             if(relationData == null){
+                array[i] = null;
                 continue;
             }
 

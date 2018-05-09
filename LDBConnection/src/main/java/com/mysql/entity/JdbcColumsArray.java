@@ -40,6 +40,9 @@ public class JdbcColumsArray {
     public <T> T doExuteOnlyOne(DBTable dbTable, ResultSet rs, Class<T> tClass) throws Exception {
         T t = tClass.newInstance();
         for (int i = 0, size = columsArray.length; i < size; ++i) {
+            if(columsArray[i] == null){
+                continue;
+            }
             try {
                 dbTable.getColumInit(columsArray[i]).set(t,rs,i + 1);
             }catch (Exception ex){

@@ -45,6 +45,9 @@ public class MoreJdbcColumsArray extends JdbcColumsArray{
         Set<String> objMap = new HashSet<>(columsArray.length);
         for (int i = 0, size = columsArray.length; i < size; ++i) {
             columName = get(i);
+            if(columName == null){
+                continue;
+            }
 
             ColumInit columInit = dbTable.getColumInit(columName);
             if(columInit!= null && isNew){
