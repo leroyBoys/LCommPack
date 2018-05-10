@@ -80,7 +80,7 @@ public class JdbcTemplate implements SqlDataSource {
             SetParameter(ps, p);
             return ps.executeUpdate() > 0;
         } catch (Exception e) {
-            PrintTool.error(this.getClass(),e);
+            PrintTool.error(cmd+(p==null?"":Arrays.toString(p)),e);
         } finally {
             this.close(ps, cn);
         }
@@ -171,7 +171,7 @@ public class JdbcTemplate implements SqlDataSource {
             cn.commit();
             return true;
         } catch (Exception e) {
-            PrintTool.error(this.getClass(),e);
+            PrintTool.error(JdbcTemplate.class,e);
         } finally {
             this.close(ps, cn);
         }
