@@ -3,16 +3,12 @@ import com.lgame.util.comm.StringTool;
 import com.lgame.util.file.PropertiesTool;
 import com.lgame.util.json.JsonTool;
 import com.module.GameServer;
-import com.mysql.DbCallBack;
 import com.mysql.compiler.ScanEntitysTool;
-import com.mysql.entity.TestData;
 import com.mysql.impl.JdbcTemplate;
+import com.test.TestData;
 
 import java.lang.reflect.Method;
-import java.sql.ResultSet;
-import java.sql.SQLException;
 import java.util.HashMap;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
@@ -61,78 +57,20 @@ public class Test {
         System.out.println( res.getDeepSize() );*/
     }
 
-    public void thres111() throws Exception {
-
-        System.out.println(1<<7);
-        System.out.println("a:"+outChar('a'));
-        System.out.println("z:"+outChar('z'));
-        System.out.println("-------------");
-        System.out.println("A:"+outChar('A'));
-        System.out.println("Z:"+outChar('Z'));
-        System.out.println("-------------");
-        System.out.println("1:"+outChar('1'));
-        System.out.println("9:"+outChar('9'));
-    }
-
-    private int outChar(char c){
-        return (int)c;
-    }
-
     public static void testJdkReflect() throws Exception {
         ScanEntitysTool.scan("com.mysql.entity");
-        //String sql = "SELECT * FROM `test_data`";
-        //String sql = "SELECT `test_data`.* ,`testone`.`name` AS toname FROM `test_data`,`testone` WHERE  test_data.`id`=testone.`id`";
+        String sql = "SELECT * FROM `test_data`";
+        JdbcTemplate db = new JdbcTemplate(JdbcTemplate.DataSourceType.Druid,PropertiesTool.loadProperty("druid_db.properties"));
 
-        String sql = "SELECT `test_data`.* ,`testone`.`name` AS toname FROM `test_data` LEFT JOIN `testone` ON  test_data.`id`=testone.`id`";
-        int size = 1;
-       // DbPool db = new DbPool(PropertiesTool.loadProperty("druid_db.properties"));
-        JdbcTemplate db = new JdbcTemplate(JdbcTemplate.DataSourceType.Hikari,PropertiesTool.loadProperty("hikari_db.properties"));
-
-        PrintTool.outTime("11","===>");
-        for(int i = 0; i<size; ++i){
-            List<TestData> testDatas = db.ExecuteQuery(sql, new DbCallBack<List<TestData>>() {
-                @Override
-                public List<TestData> doInPreparedStatement(ResultSet rs) {
-                    List<TestData> ret = new LinkedList<>();
-                    try {
-                        while (rs.next()){
-                     /*       TestData testData = new TestData();
-                            testData.setId(rs.getInt("id"));
-                            testData.setNum(rs.getInt("num"));
-                            testData.setDate( rs.getObject("date").toString());
-
-                            testData.setGood(rs.getBoolean("isGood"));
-                            testData.setVisid(rs.getBoolean("visid"));
-                            testData.setMydouble(rs.getDouble("mydouble"));
-                            testData.setName(rs.getString("name"));
-                            ret.add(testData);*/
-                        }
-                    } catch (SQLException e) {
-                        e.printStackTrace();
-                    }
-                    return ret;
-                }
-            });
-          //  testDatas.get(0).getId();
-
-
-        }
-
-        PrintTool.outTime("11","===>");
 
 
         PrintTool.outTime("1","===>");
-        for(int i = 0; i<size; ++i){
-            List<TestData> testDatas =  db.ExecuteQuery(TestData.class,sql);
-         //  testDatas.get(0).getId();
 
-            System.out.println(JsonTool.getJsonFromBean(testDatas));
-        }
+        List<TestData> testDatas =  db.ExecuteQuery(TestData.class,sql);
+        System.out.println(JsonTool.getJsonFromBean(testDatas));
+
 
         PrintTool.outTime("1","===>");
-
-
-
 
     }
 

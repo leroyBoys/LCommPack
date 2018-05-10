@@ -9,7 +9,7 @@ import java.util.*;
 public class QueryResultData<T> {
     private LinkedList<T> dataList = new LinkedList<>();
     private final Map<Integer,T> result_now = new LinkedHashMap<>();
-    private final Map<String,Map<Integer,Object>> fieldName_ObjMap = new LinkedHashMap<>();
+    //private final Map<String,Map<Integer,Object>> fieldName_ObjMap = new LinkedHashMap<>();
 
     public T getReultById(int id){
         return result_now.get(id);
@@ -23,7 +23,7 @@ public class QueryResultData<T> {
         dataList.add(t);
     }
 
-    public Map<Integer,Object> getFieldReultByFile(String field){
+  /*  public Map<Integer,Object> getFieldReultByFile(String field){
         Map<Integer,Object> map = fieldName_ObjMap.get(field);
         if(map == null){
             map = new LinkedHashMap<>();
@@ -31,12 +31,12 @@ public class QueryResultData<T> {
         }
         return map;
     }
-
+*/
     public List<T> getResult(){
         return dataList;
     }
 
-    public T getOnlyOneResult(){
+  /*  public T getOnlyOneResult(){
         return dataList.getFirst();
-    }
+    }*/
 }

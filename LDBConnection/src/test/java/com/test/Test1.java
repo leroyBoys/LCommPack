@@ -1,13 +1,17 @@
-package com.mysql.entity;
+package com.test;
+
+import com.mysql.entity.DBDesc;
+import com.mysql.entity.DbColum;
 
 /**
  * Created by leroy:656515489@qq.com
  * 2018/5/4.
  */
-@DBDesc(name = "testone")
-public class TestOne {
+@DBDesc(name = "test1")
+public class Test1 {
     @DbColum
     private int id;
+    private int TestData;
     @DbColum
     private String name;
 

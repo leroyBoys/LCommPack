@@ -1,6 +1,10 @@
-package com.mysql.entity;
+package com.test;
 
-import java.util.Date;
+import com.mysql.entity.DBDesc;
+import com.mysql.entity.DBRelation;
+import com.mysql.entity.DBRelations;
+import com.mysql.entity.DbColum;
+
 import java.util.List;
 
 /**
