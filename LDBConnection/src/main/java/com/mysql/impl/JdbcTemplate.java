@@ -268,7 +268,7 @@ public class JdbcTemplate implements SqlDataSource {
             }
 
             if(!relationFieldNames.containsKey(relationData.getFieldName())){
-                relationFieldNames.put(relationData.getFieldName(),new HashMap<>());
+                relationFieldNames.put(relationData.getFieldName(),new HashMap<String,ColumInit>());
             }
         }
 
