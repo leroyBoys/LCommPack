@@ -39,7 +39,6 @@ public class PrintTool {
         }
     }
 
-
     public static String getException(Exception e) {
         StringBuilder bs = new StringBuilder();
         StackTraceElement[] a = e.getStackTrace();

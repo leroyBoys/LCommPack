@@ -73,6 +73,11 @@ public class ExcelDbData {
             public boolean isMatch(String value) {
                 return true;
             }
+
+            @Override
+            public String value(String value) {
+                return value == null?value:value.replace('\'','\"');
+            }
         }),
         Date("date", new DataMatch() {
             @Override
