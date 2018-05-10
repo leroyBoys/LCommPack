@@ -16,10 +16,7 @@ import com.lgame.util.poi.module.ExcelDbData;
 import com.lgame.util.poi.user.UserExcelReader;
 
 import java.io.File;
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * Created by leroy:656515489@qq.com
@@ -39,6 +36,11 @@ public class ExcelHelper {
             @Override
             public int excute(List<String> sqls) {
                 System.out.println("=--->"+sqls.size());
+                return 0;
+            }
+
+            @Override
+            public int insertBatchs(String tableName, List<Map<String, String>> datas, String[] columNames, String[] columValues, int commitLimitCount) {
                 return 0;
             }
         },"D:/w.xlsx");
@@ -167,6 +169,8 @@ public class ExcelHelper {
             String[] dbHeadColum = readList.get(2);
             String[] dbTypes = readList.size()>3? readList.get(3):null;
             Map<String,ExcelDbData> map = new HashMap<>();
+
+            Set<String> columSet = new HashSet<>(headList.length);
             for(int i=0;i<headList.length;i++){
                 if(dbHeadColum.length - 1 < i || StringTool.isEmpty(dbHeadColum[i])){
                     continue;
@@ -177,9 +181,14 @@ public class ExcelHelper {
                     excelDataTypeEnum = ExcelDbData.DataTypeEnum.getDataTypeEnum(dbTypes[i].trim());
                 }
                 map.put(getHeadDesc(headList[i]),new ExcelDbData(dbHeadColum[i],excelDataTypeEnum));
+                columSet.add(dbHeadColum[i]);
             }
 
             tempConfig.setHeadDataMap(map);
+
+            String[] dbColumArray = new String[columSet.size()];
+            columSet.toArray(dbColumArray);
+            tempConfig.setColumArray(dbColumArray);
         }catch (Exception e){
             e.printStackTrace();
             throw new TransformationException(fileName+"模板数据第二，三,四行数据不正确:"+ e.getMessage());

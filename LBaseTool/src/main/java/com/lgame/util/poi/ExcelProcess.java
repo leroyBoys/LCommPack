@@ -199,11 +199,23 @@ public class ExcelProcess {
             }
 
             List<String> sqls = new LinkedList<>();
+            List<Map<String,String>> insertMapList = new LinkedList<>();
             for(DbEntity data:tmpMap.values()){
+                if(data.isNew()){
+                    insertMapList.add(data.getDataEntity());
+                    continue;
+                }
                 sqls.add(data.getUpdateSql());
             }
             try {
-                dbService.excute(sqls);
+                if(!insertMapList.isEmpty()){
+                    dbService.insertBatchs(config.getTableName(),insertMapList,config.getColumArray(),config.getColumArray(),0);
+                }
+
+                if(!sqls.isEmpty()){
+                    dbService.excute(sqls);
+                }
+
                 if(update != 0){
                     sucUpdateCount.getAndAdd(update);
                 }

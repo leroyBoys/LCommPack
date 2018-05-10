@@ -31,6 +31,7 @@ public class ExcelConfig {
      *  头部数据与数据库对应字段映射，如果为空表示头部数据即数据库字段
      */
     private Map<String,ExcelDbData> headDataMap = new HashMap<>();
+    private String[] columArray;
 
     private ExcelDbData[] headDataArray = null;
 
@@ -83,6 +84,14 @@ public class ExcelConfig {
 
     public String getIdColumName() {
         return idColumName;
+    }
+
+    public String[] getColumArray() {
+        return columArray;
+    }
+
+    public void setColumArray(String[] columArray) {
+        this.columArray = columArray;
     }
 
     public void setIdColumName(String idColumName) {

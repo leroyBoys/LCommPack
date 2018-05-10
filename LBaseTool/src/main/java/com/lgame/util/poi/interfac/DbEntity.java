@@ -17,6 +17,8 @@ public interface DbEntity {
      */
     public DbEntity Instance(int row, Map<String,String> dataEntity, ExcelConfig config);
     public void setNew(boolean isNew);
+    public boolean isNew();
+    public Map<String, String> getDataEntity();
     public String getUniqueId();
     public String getUpdateSql();
 }
