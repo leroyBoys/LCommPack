@@ -5,10 +5,7 @@ import com.lgame.util.compiler.JavaStringCompiler;
 import com.mysql.entity.*;
 
 import java.lang.reflect.Field;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 /**
  * Created by leroy:656515489@qq.com
@@ -166,10 +163,24 @@ public class ScanEntitysTool {
         PrintTool.outTime("ScanEntitysTool","over scan dbEntity");
     }
 
-    public static void scan(String pack) throws Exception {
-        Set<Class<?>> classs = ClassScanner.getClasses(pack);
-        if(classs.isEmpty()){
-            PrintTool.info(pack+" not find db class");
+    public static void scan(String... packs) throws Exception {
+        Set<Class<?>> classs = null;
+
+        for(String pack:packs){
+            Set<Class<?>> cls = ClassScanner.getClasses(pack);
+            if(cls.isEmpty()){
+               continue;
+            }
+
+            if(classs == null){
+                classs = cls;
+            }else {
+                classs.addAll(cls);
+            }
+        }
+
+        if(classs == null){
+            PrintTool.info(Arrays.toString(packs)+" not find db class");
             return;
         }
 
