@@ -15,7 +15,7 @@ public class ScanEntitysTool {
     private final static  Map<Class,DBTable> columInitMap = new HashMap<>();
 
     private static String getSetClass(String methodContent,String className){
-        StringBuilder sb = new StringBuilder("package com.mysql.compiler;\n public class  ");
+        StringBuilder sb = new StringBuilder("package com.mysql.compiler;\n @SuppressWarnings(\"unchecked\") \n public class  ");
         sb.append(className).append(" extends ColumInit {\n");
         sb.append("@Override\n public void  set(Object obj, Object v) {\n");
         sb.append(methodContent).append("}\n}\n");
@@ -24,7 +24,7 @@ public class ScanEntitysTool {
     }
 
     private static String getGetClass(String methodContent,String className){
-        StringBuilder sb = new StringBuilder("package com.mysql.compiler;\n public class  ");
+        StringBuilder sb = new StringBuilder("package com.mysql.compiler;\n  @SuppressWarnings(\"unchecked\") \n public class  ");
         sb.append(className).append(" implements RelationGetIntace {\n");
         sb.append("@Override\n public Object  get(Object obj) {\n");
         sb.append(methodContent).append("}\n}\n");

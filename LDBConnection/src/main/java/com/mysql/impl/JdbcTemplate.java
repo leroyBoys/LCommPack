@@ -26,13 +26,16 @@ public class JdbcTemplate implements SqlDataSource {
     private void initPool(Properties properties){
         switch (sourceType){
             case Druid:
-                pool = new DruidDataSourceImpl(properties);
+                pool = properties==null? new DruidDataSourceImpl():new DruidDataSourceImpl(properties);
                 break;
             case Hikari:
-                pool = new HikariDataSourceImpl(properties);
+                pool = properties==null?new HikariDataSourceImpl():new HikariDataSourceImpl(properties);
+                break;
+            case C3P0:
+                pool = properties==null?new C3P0DataSourceImpl():new C3P0DataSourceImpl(properties);
                 break;
             default:
-                pool = new DruidDataSourceImpl(properties);
+                pool = properties==null? new DruidDataSourceImpl():new DruidDataSourceImpl(properties);
                 break;
         }
     }
@@ -441,6 +444,6 @@ public class JdbcTemplate implements SqlDataSource {
     }
 
     public enum DataSourceType{
-        Druid,Hikari
+        Druid,Hikari,C3P0
     }
 }
