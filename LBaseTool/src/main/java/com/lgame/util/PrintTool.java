@@ -9,6 +9,7 @@ import com.lgame.util.time.DateTimeTool;
 
 import java.util.Date;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 
 /**
@@ -16,18 +17,26 @@ import java.util.Map;
  * @author leroy_boy
  */
 public class PrintTool {
-    private final static Map<String,Long> timeMap = new HashMap<>();
+    private final static LinkedHashMap<String,Long> timeMap = new LinkedHashMap<>(50);
 
     public static void outTime(String flag,String str){
-        flag = flag == null?"_":flag;
-        final Long lastTime = timeMap.get(flag);
-        final long curTime = System.currentTimeMillis();
-        if(lastTime == null){
-            System.out.println(DateTimeTool.getDateTime(new Date())+":"+str);
-        }else {
-            System.out.println(DateTimeTool.getDateTime(new Date())+":"+str+":"+(curTime-lastTime)+" ms");
+        try {
+            flag = flag == null?"_":flag;
+            final Long lastTime = timeMap.get(flag);
+            final long curTime = System.currentTimeMillis();
+            if(lastTime == null){
+                System.out.println(DateTimeTool.getDateTime(new Date())+":"+str);
+            }else {
+                System.out.println(DateTimeTool.getDateTime(new Date())+":"+str+":"+(curTime-lastTime)+" ms");
+            }
+
+            timeMap.put(flag,curTime);
+
+            if(timeMap.size() >= 50){
+                timeMap.remove(timeMap.keySet().iterator().next());
+            }
+        }catch (Exception e){
         }
-        timeMap.put(flag,curTime);
     }
 
 

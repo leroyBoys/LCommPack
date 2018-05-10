@@ -3,7 +3,6 @@ package com.lgame.util.poi;
 import com.lgame.util.PrintTool;
 import com.lgame.util.comm.StringTool;
 import com.lgame.util.poi.interfac.*;
-import com.lgame.util.poi.module.DefaultDbEntity;
 import com.lgame.util.poi.module.DefaultRowListener;
 import com.lgame.util.poi.module.ExcelConfig;
 import com.lgame.util.poi.module.ExcelDbData;
@@ -11,7 +10,9 @@ import com.lgame.util.thread.BaseThreadPools;
 import com.lgame.util.thread.TaskIndieThread;
 
 import java.util.*;
-import java.util.concurrent.*;
+import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import static com.lgame.util.poi.ExcelHelper.getHeadDesc;
@@ -165,13 +166,13 @@ public class ExcelProcess {
         System.out.println(importMsg);
         ExcelHelper.excelProcessMap.remove(fileName);
 
-        PrintTool.outTime("1","over");
+        PrintTool.outTime(ExcelProcess.class.getName(),"over");
     }
 
     private void initProcess() {
         int i = dataAllCount-faileCount.get();
         if(i != 0){
-            process = (sucUpdateCount.get()+sucUpdateCount.get())*10000/i;
+            process = ((sucUpdateCount.get()+sucInsertCount.get())*10000)/i;
         }
     }
 
@@ -325,7 +326,7 @@ public class ExcelProcess {
     }
 
     public String getMsg() {
-        return "终止行号:"+excuteLineNum+";完成总数据:"+dataAllCount+",更新:"+sucUpdateCount+",新增："+sucInsertCount+",失败："+faileCount+"("+errorRows.size()+")"+" 重复数据:"+repeateCount+"  "+ Arrays.toString(errorRows.toArray());
+        return "终止行号:"+excuteLineNum+";完成总数据:"+dataAllCount+",更新:"+sucUpdateCount+",新增："+sucInsertCount+",失败："+faileCount+"("+errorRows.size()+")"+" 重复数据:"+repeateCount+"  "+ Arrays.toString(errorRows.toArray())+Arrays.toString(sqlErrorRows.toArray());
     }
 
     public boolean isOver() {

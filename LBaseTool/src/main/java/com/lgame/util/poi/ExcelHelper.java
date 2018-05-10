@@ -79,8 +79,7 @@ public class ExcelHelper {
             throw new AppException("模板数据找不到："+excelTmpFileName);
         }
 
-        PrintTool.outTime("1","loadHead fileName:"+fileName);
-
+        PrintTool.outTime(ExcelProcess.class.getName(),"loadHead fileName:"+fileName);
 
         File file = new File(fileName);
         if(!file.exists()){
@@ -92,8 +91,6 @@ public class ExcelHelper {
             poiReader = new EvenExcelReader();
         }
 
-        PrintTool.outTime("1","22222");
-
         excelProcess = new ExcelProcess();
         excelProcessMap.put(fileName,excelProcess);
         PoiReader finalPoiReader = poiReader;
@@ -103,8 +100,6 @@ public class ExcelHelper {
                 () -> finalExcelProcess.excute(dbService, finalConfig,dbEntity,fileName,excelTmpFileName,finalPoiReader)
         ).start();
 
-
-        PrintTool.outTime("1","ssss");
         return excelProcess;
     }
 
