@@ -122,8 +122,8 @@ public class ScanEntitysTool {
                         }
                         sqlTypeToJava = SqlTypeToJava.get(field.getType());
                         if(sqlTypeToJava == null){
-                            PrintTool.error(field.getType().getName()+" not find match sqlTypeToJava");
-                            continue;
+                            PrintTool.error(field.getType().getName()+" not find match sqlTypeToJava default SqlTypeToJava");
+                            sqlTypeToJava = new SqlTypeToJava();
                         }
                         columInit.setSqlTypeToJava(sqlTypeToJava);
                         continue;
