@@ -19,7 +19,7 @@ import java.util.Properties;
  * 2017/4/13.
  */
 public class C3P0DataSourceImpl implements SqlDataSource{
-    private ComboPooledDataSource dds = null;
+    private DataSource  dds = null;
 
     /**
      * 默认配置文件名字：hikari_db.properties
@@ -35,12 +35,11 @@ public class C3P0DataSourceImpl implements SqlDataSource{
     private void init(Properties properties){
 
         try {
-            dds = new ComboPooledDataSource();
+            //设置连接数据库的配置信息
+            DataSource ds_unpooled = DataSources
+                    .unpooledDataSource(properties.getProperty("url"), properties.getProperty("username"), properties.getProperty("password"));
 
-            dds.setDriverClass(properties.getProperty("driverClassName"));
-            dds.setJdbcUrl(properties.getProperty("url"));      // test为mysql中的数据库
-            dds.setUser(properties.getProperty("username"));
-            dds.setPassword(properties.getProperty("password"));
+            dds = DataSources.pooledDataSource(ds_unpooled, properties);
         } catch (Exception e) {
             e.printStackTrace();
         }
