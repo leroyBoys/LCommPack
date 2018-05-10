@@ -75,6 +75,12 @@ public class Excel2003Reader  extends PoiReader implements HSSFListener {
             // process our events based on the document input stream
             factory.processEvents(req, din);
             listener.overDocument(curRowNum);
+        }catch (TransformationException e){
+            if(e.isShowException()){
+                e.printStackTrace();
+            }else{
+                System.out.println(fileName+"  "+e.getMessage());
+            }
         }catch (Exception e){
             e.printStackTrace();
         }finally {
@@ -101,9 +107,9 @@ public class Excel2003Reader  extends PoiReader implements HSSFListener {
     protected void readNewSheet(){
         if(!isLoadOver){
             if(targetSheetIdex < 0){
-                throw new TransformationException("没有找到名字为"+targetSheetName+"的sheet");
+                throw new TransformationException("没有找到名字为"+targetSheetName+"的sheet",false);
             }else if(targetSheetIdex > curSheetIdex){
-                throw new TransformationException("没有找到idex为"+targetSheetIdex+"的sheet");
+                throw new TransformationException("没有找到idex为"+targetSheetIdex+"的sheet",false);
             }
             curSheetIdex = -1;
             isLoadOver = true;

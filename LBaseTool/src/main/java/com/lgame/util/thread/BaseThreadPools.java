@@ -24,6 +24,19 @@ public class BaseThreadPools extends ThreadPoolExecutor {
     }
 
     /**
+     *
+     * @param corePoolSize
+     * @param maximumPoolSize
+     * @param keepAliveTime
+     * @param unit
+     * @param workQueue
+     * @param handler 队列满 时候处理策略，默认抛出异常，也可以继续添加
+     */
+    public BaseThreadPools(int corePoolSize, int maximumPoolSize, long keepAliveTime, TimeUnit unit, BlockingQueue<Runnable> workQueue,RejectedExecutionHandler handler) {
+        super(corePoolSize, maximumPoolSize, keepAliveTime, unit, workQueue,handler);
+    }
+
+    /**
      * 关闭线程池（阻塞）直到全部线程结束，此时不能有新的线程添加
      * @param handler
      */

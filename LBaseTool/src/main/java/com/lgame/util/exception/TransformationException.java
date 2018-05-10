@@ -11,9 +11,19 @@ package com.lgame.util.exception;
  */
 public class TransformationException extends RuntimeException {
 
+    private boolean isShowException = true;
     private static final long serialVersionUID = 5216161678584333499L;
 
     public TransformationException() {
+    }
+
+    public TransformationException(String message,boolean  isShowException) {
+        super(message);
+        this.isShowException = isShowException;
+    }
+
+    public boolean isShowException() {
+        return isShowException;
     }
 
     public TransformationException(String message) {

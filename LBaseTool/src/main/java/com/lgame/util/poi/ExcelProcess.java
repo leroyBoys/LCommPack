@@ -11,8 +11,7 @@ import com.lgame.util.thread.BaseThreadPools;
 import com.lgame.util.thread.TaskIndieThread;
 
 import java.util.*;
-import java.util.concurrent.LinkedBlockingQueue;
-import java.util.concurrent.TimeUnit;
+import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import static com.lgame.util.poi.ExcelHelper.getHeadDesc;
@@ -33,8 +32,16 @@ public class ExcelProcess {
     private String importMsg;//结束提示信息
     private int process;//进度百分比10000为100%
     protected ExcelProcess(){}
+
+    private BlockingQueue<Runnable> workQueue = new LinkedBlockingQueue<>();
     public final BaseThreadPools user_save_pools = new BaseThreadPools(4, 4,
-            0L, TimeUnit.MILLISECONDS,new LinkedBlockingQueue<>());//线程池
+            0L, TimeUnit.MILLISECONDS,workQueue , (r, executor) -> {
+                try {
+                    workQueue.put(r);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            });//线程池
 
     public void addTask(final TaskIndieThread st, final Object... objects) {
         user_save_pools.execute(() -> {
@@ -98,6 +105,7 @@ public class ExcelProcess {
                         if(map.isEmpty()){
                             return true;
                         }
+
                         DbEntity entity = dbEntity.Instance(rowNum,map,config);
                         if(tmpMap.put(entity.getUniqueId(),entity) != null){
                             dataAllCount--;
@@ -212,8 +220,8 @@ public class ExcelProcess {
                 }
             }
 
-            List<String> updateSqls = new LinkedList<>();
-            List<Map<String,String>> insertMapList = new LinkedList<>();
+            List<String> updateSqls = new ArrayList<>(update);
+            List<Map<String,String>> insertMapList = new ArrayList<>(all-update);
             for(DbEntity data:tmpMap.values()){
                 if(data.isNew()){
                     insertMapList.add(data.getDataEntity());
@@ -224,8 +232,8 @@ public class ExcelProcess {
             try {
                 if(!insertMapList.isEmpty()){
                     if(!dbService.insertBatchs(config.getTableName(),insertMapList,config.getColumArray(),config.getColumArray(),0)){
-                        Map<String,Integer> map = new HashMap<>(all-update);
-                        List<String> insertSqls = new LinkedList<>();
+                        Map<String,Integer> map = new HashMap<>(insertMapList.size());
+                        List<String> insertSqls = new ArrayList<>(insertMapList.size());
                         for(DbEntity data:tmpMap.values()){
                             if(data.isNew()){
                                 map.put(data.getUpdateSql(), data.getRow());
@@ -270,38 +278,37 @@ public class ExcelProcess {
      * @param dbService
      */
     private void updateExceuteWithOutError(Map<String,Integer> tmpMap,List<String> updateSqls, DbService dbService,AtomicInteger updateCount) {
-        final int size = updateSqls.size()/2;
-        if(size < 10){
-            for(String sql:updateSqls){
-                if(!dbService.excute(sql)){
-                    faileCount.getAndAdd(1);
-                    addErrorMsg("第"+tmpMap.get(sql)+"行出错");
-                    addSqlErrorMsg(sql);
-                }else {
-                    updateCount.getAndAdd(1);
+        addTask(objects -> {
+            final int size = updateSqls.size()>>1;
+            if(size < 10){
+                for(String sql:updateSqls){
+                    if(!dbService.excute(sql)){
+                        faileCount.getAndAdd(1);
+                        addErrorMsg("第"+tmpMap.get(sql)+"行出错");
+                        addSqlErrorMsg(sql);
+                    }else {
+                        updateCount.getAndAdd(1);
+                    }
                 }
+                return;
             }
-            return;
-        }
 
-        List<String> sqls = new LinkedList<>();
-        for(String sql:updateSqls){
-            sqls.add(sql);
-            if(sqls.size() == size){
-                if(!dbService.excute(sqls)){
-                    updateExceuteWithOutError(tmpMap,sqls,dbService,updateCount);
-                }else {
-                    updateCount.getAndAdd(sqls.size());
-                }
-                sqls = new LinkedList<>();
+            List<String> sqls = updateSqls.subList(0,size);
+            if(!dbService.excute(sqls)){
+                updateExceuteWithOutError(tmpMap,sqls,dbService,updateCount);
+            }else {
+                updateCount.getAndAdd(sqls.size());
             }
-        }
 
-        if(!dbService.excute(sqls)){
-            updateExceuteWithOutError(tmpMap,sqls,dbService,updateCount);
-        }else {
-            updateCount.getAndAdd(sqls.size());
-        }
+            sqls = updateSqls.subList(size,updateSqls.size());
+            if(!dbService.excute(sqls)){
+                updateExceuteWithOutError(tmpMap,sqls,dbService,updateCount);
+            }else {
+                updateCount.getAndAdd(sqls.size());
+            }
+
+        });
+
     }
 
     private ExcelDbData[] getDbArray(ExcelConfig config, String[] row) {
