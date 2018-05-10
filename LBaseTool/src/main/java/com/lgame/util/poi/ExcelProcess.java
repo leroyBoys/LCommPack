@@ -243,7 +243,7 @@ public class ExcelProcess {
                         }
                         updateExceuteWithOutError(map,insertSqls,dbService,sucInsertCount);
                     }else {
-                        sucInsertCount.getAndAdd(tmpMap.size());
+                        sucInsertCount.getAndAdd(insertMapList.size());
                     }
                 }
 
