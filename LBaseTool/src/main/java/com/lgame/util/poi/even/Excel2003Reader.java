@@ -187,7 +187,6 @@ public class Excel2003Reader  extends PoiReader implements HSSFListener {
                 }else if(bsr.getSheetname().trim().equals(targetSheetName)){
                     targetSheetIdex = curSheetIdex;
                 }
-
                 break;
             case RowRecord.sid:
                 RowRecord rowrec = (RowRecord) record;
@@ -261,3 +260,4 @@ public class Excel2003Reader  extends PoiReader implements HSSFListener {
         }
     }
 }
+

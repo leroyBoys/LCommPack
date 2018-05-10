@@ -8,6 +8,7 @@ import java.util.Map;
  */
 public interface DbService {
     public List<String> queryExistIds(String sql);
-    public int excute(List<String> sqls);
-    public int insertBatchs(String tableName, List<Map<String,String>> datas, String[] columNames, String[] columValues, int commitLimitCount);
+    public boolean excute(String sql);
+    public boolean excute(List<String> sqls);
+    public boolean insertBatchs(String tableName, List<Map<String,String>> datas, String[] columNames, String[] columValues, int commitLimitCount);
 }

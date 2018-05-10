@@ -25,7 +25,7 @@ public class ExcelConfig {
     private String idColumName;//第一行第四列：唯一值列名
     private boolean isCheckDbBeforeUpdate = true;//第一行第五列：导入时候是否检测数据库是否存在这个记录
     private boolean isCheckColumValueRight = true;//第一行第六列：导入时候是否检测数值是否正确
-    private int updateBatchCount = 30;//第一行第7列：批量插入数量
+    private int updateBatchCount = 500;//第一行第7列：批量插入数量
 
     /**
      *  头部数据与数据库对应字段映射，如果为空表示头部数据即数据库字段

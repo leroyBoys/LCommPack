@@ -4,6 +4,7 @@ import com.lgame.util.comm.RegexUtils;
 import com.lgame.util.comm.StringTool;
 import com.lgame.util.time.DateTimeTool;
 
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -79,10 +80,14 @@ public class ExcelDbData {
 
             @Override
             public String value(String value) {
-                if(RegexUtils.isNumeric(value)){
+              /*  if(RegexUtils.isNumeric(value)){
                     return super.value(value);
                 }
-                return String.valueOf(DateTimeTool.getDateTimes(value));
+                return String.valueOf(DateTimeTool.getDateTimes(value));*/
+                if(RegexUtils.isNumeric(value)){
+                    return DateTimeTool.getDateTime(new Date(Long.valueOf(value)));
+                }
+                return value;
             }
         }),
         ;

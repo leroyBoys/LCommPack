@@ -15,6 +15,7 @@ public class DefaultDbEntity implements DbEntity {
     private String tableName;
     private boolean isNew = true;
     private String uniqueColumName;
+    private String sql;
 
     public Map<String, String> getDataEntity() {
         return dataEntity;
@@ -68,7 +69,10 @@ public class DefaultDbEntity implements DbEntity {
 
     @Override
     public String getUpdateSql() {
-        return isNew?getAddSql(dataEntity,tableName):getUpdateSql(dataEntity,tableName);
+        if(sql == null){
+            sql = isNew?getAddSql(dataEntity,tableName):getUpdateSql(dataEntity,tableName);
+        }
+        return sql;
     }
 
     @Override
@@ -111,7 +115,7 @@ public class DefaultDbEntity implements DbEntity {
      * @param tableName
      * @return
      */
-    protected String getAddSql(Map<String, String> obj, String tableName){
+    public static String getAddSql(Map<String, String> obj, String tableName){
         StringBuilder sql = new StringBuilder();
         StringBuilder names = new StringBuilder();
         StringBuilder values = new StringBuilder();

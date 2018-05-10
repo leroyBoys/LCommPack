@@ -148,7 +148,7 @@ public class StringTool {
     public static String getStringFromCollection(Collection<String> strings) {
         StringBuilder sb = new StringBuilder();
         for(String str:strings){
-            sb.append("'").append(str).append("'");
+            sb.append("'").append(str).append("'").append(",");
         }
         sb.deleteCharAt(sb.length()-1);
         return sb.toString();

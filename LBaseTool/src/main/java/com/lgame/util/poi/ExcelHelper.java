@@ -34,14 +34,19 @@ public class ExcelHelper {
             }
 
             @Override
-            public int excute(List<String> sqls) {
-                System.out.println("=--->"+sqls.size());
-                return 0;
+            public boolean excute(String sql) {
+                return false;
             }
 
             @Override
-            public int insertBatchs(String tableName, List<Map<String, String>> datas, String[] columNames, String[] columValues, int commitLimitCount) {
-                return 0;
+            public boolean excute(List<String> sqls) {
+                System.out.println("=--->"+sqls.size());
+                return false;
+            }
+
+            @Override
+            public boolean insertBatchs(String tableName, List<Map<String, String>> datas, String[] columNames, String[] columValues, int commitLimitCount) {
+                return false;
             }
         },"D:/w.xlsx");
     }
@@ -74,7 +79,7 @@ public class ExcelHelper {
             throw new AppException("模板数据找不到："+excelTmpFileName);
         }
 
-        PrintTool.outTime("1","loadHead");
+        PrintTool.outTime("1","loadHead fileName:"+fileName);
 
 
         File file = new File(fileName);
@@ -114,6 +119,7 @@ public class ExcelHelper {
             return null;
         }
 
+        System.out.println("read:tempFileName:"+tempFileName);
         List<String[]> readList =  new LinkedList<>();
         new UserExcelReader().read(tempFileName,new DefaultRowListener(){
             @Override
@@ -177,7 +183,7 @@ public class ExcelHelper {
                 }
 
                 ExcelDbData.DataTypeEnum excelDataTypeEnum = ExcelDbData.DataTypeEnum.Str;
-                if(dbTypes != null && !StringTool.isEmpty(dbTypes[i])){
+                if(dbTypes != null && dbTypes.length-1>=i && !StringTool.isEmpty(dbTypes[i])){
                     excelDataTypeEnum = ExcelDbData.DataTypeEnum.getDataTypeEnum(dbTypes[i].trim());
                 }
                 map.put(getHeadDesc(headList[i]),new ExcelDbData(dbHeadColum[i],excelDataTypeEnum));
