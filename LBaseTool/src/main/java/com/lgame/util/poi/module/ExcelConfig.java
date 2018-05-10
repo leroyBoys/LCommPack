@@ -26,6 +26,7 @@ public class ExcelConfig {
     private boolean isCheckDbBeforeUpdate = true;//第一行第五列：导入时候是否检测数据库是否存在这个记录
     private boolean isCheckColumValueRight = true;//第一行第六列：导入时候是否检测数值是否正确
     private int updateBatchCount = 500;//第一行第7列：批量插入数量
+    private Map<String,ExcelColumConverter> excelColumConverterMap = new HashMap<>(10);
 
     /**
      *  头部数据与数据库对应字段映射，如果为空表示头部数据即数据库字段
@@ -35,7 +36,7 @@ public class ExcelConfig {
 
     private ExcelDbData[] headDataArray = null;
 
-    public void setConfigHeadRow(String[] headDescv) {
+    public final void setConfigHeadRow(String[] headDescv) {
         this.setTableName(headDescv[0]);
         this.setHeadDataLineNum(Integer.valueOf(headDescv[1]));
         this.setDataLineNum(Integer.valueOf(headDescv[2]));
@@ -84,6 +85,14 @@ public class ExcelConfig {
 
     public String getIdColumName() {
         return idColumName;
+    }
+
+    public Map<String, ExcelColumConverter> getExcelColumConverterMap() {
+        return excelColumConverterMap;
+    }
+
+    public void setExcelColumConverterMap(Map<String, ExcelColumConverter> excelColumConverterMap) {
+        this.excelColumConverterMap = excelColumConverterMap;
     }
 
     public String[] getColumArray() {
@@ -136,5 +145,15 @@ public class ExcelConfig {
 
     public Map<String, ExcelDbData> getHeadDataMap() {
         return headDataMap;
+    }
+
+    public ExcelColumConverter getExcelColumConverter(String colum) {
+        return excelColumConverterMap.get(colum);
+    }
+
+    public static class ExcelColumConverter{
+        public String converter(String value){
+            return value;
+        }
     }
 }

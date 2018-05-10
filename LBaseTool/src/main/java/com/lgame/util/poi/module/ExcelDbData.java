@@ -16,15 +16,16 @@ public class ExcelDbData {
     private static final String errorData = "!_e";
     private String columName;
     private DataTypeEnum dataTypeEnum;
-
-    public ExcelDbData(String columName, DataTypeEnum dataTypeEnum) {
-        this.columName = columName;
-        this.dataTypeEnum = dataTypeEnum;
-    }
-
+    private ExcelConfig.ExcelColumConverter columConverter;
 
     public String getColumName() {
         return columName;
+    }
+
+    public ExcelDbData(String columName, DataTypeEnum dataTypeEnum,ExcelConfig.ExcelColumConverter columConverter) {
+        this.columName = columName;
+        this.dataTypeEnum = dataTypeEnum;
+        this.columConverter = columConverter;
     }
 
     public DataTypeEnum getDataTypeEnum() {
@@ -39,8 +40,9 @@ public class ExcelDbData {
         return errorData;
     }
 
-
-
+    public String getValue(String value) {
+        return columConverter.converter(value);
+    }
 
     public abstract static class DataMatch{
         public abstract boolean isMatch(String value);

@@ -91,7 +91,7 @@ public class ExcelProcess {
                                 errorMsg.append(i+1).append(",");
                                 continue;
                             }
-                            map.put(excelDbData.getColumName(),value);
+                            map.put(excelDbData.getColumName(),excelDbData.getValue(value));
                         }
 
                         if(errorMsg != null){

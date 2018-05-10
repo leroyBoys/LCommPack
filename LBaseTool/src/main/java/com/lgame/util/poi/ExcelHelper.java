@@ -52,10 +52,35 @@ public class ExcelHelper {
     }
 
     public static ExcelProcess importDBFromExcel(DbService dbService, String fileName) throws AppException {
-        return importDBFromExcel(dbService,null, new DefaultDbEntity(),fileName,null);
+        return importDBFromExcel(dbService,null, new DefaultDbEntity(),fileName,null,null);
     }
 
-    public static synchronized ExcelProcess importDBFromExcel(DbService dbService, ExcelConfig config, DbEntity dbEntity, String fileName, String excelTmpFileName) throws AppException {
+    /**
+     *
+     * @param dbService 数据库操作接口
+     * @param config db配置（从excelTmpFileName或者config sheet读取的内容）
+     * @param fileName 读取的excel
+     * @param excelTmpFileName db配置映射 excel
+     * @param excelColumConverterMap 根据数据库列名做相应的格式化
+     * @return
+     * @throws AppException
+     */
+    public static ExcelProcess importDBFromExcel(DbService dbService, ExcelConfig config, String fileName, String excelTmpFileName,Map<String,ExcelConfig.ExcelColumConverter> excelColumConverterMap) throws AppException {
+        return importDBFromExcel(dbService,config, new DefaultDbEntity(),fileName,excelTmpFileName,excelColumConverterMap);
+    }
+
+    /**
+     *
+     * @param dbService 数据库操作接口
+     * @param config db配置（从excelTmpFileName或者config sheet读取的内容）
+     * @param dbEntity 对应的数据库类（可使用null，自动生成）
+     * @param fileName 读取的excel
+     * @param excelTmpFileName db配置映射 excel
+     * @param excelColumConverterMap 根据数据库列名做相应的格式化
+     * @return
+     * @throws AppException
+     */
+    public static synchronized ExcelProcess importDBFromExcel(DbService dbService, ExcelConfig config, DbEntity dbEntity, String fileName, String excelTmpFileName,Map<String,ExcelConfig.ExcelColumConverter> excelColumConverterMap) throws AppException {
         if(!validateExcel(fileName)){
             throw new AppException("文件名不是excel格式"+fileName);
         }
@@ -66,13 +91,13 @@ public class ExcelHelper {
 
         PrintTool.outTime("1","loadHead");
 
-        ExcelConfig autoTempConfig = getAutoExcelTempConfig(fileName);
+        ExcelConfig autoTempConfig = getAutoExcelTempConfig(fileName,excelColumConverterMap);
         if(autoTempConfig != null){
             config = autoTempConfig;
         }
 
         if(config == null){
-            config = getExcelTempConfig(excelTmpFileName);
+            config = getExcelTempConfig(excelTmpFileName,excelColumConverterMap);
         }
 
         if(config == null){
@@ -94,6 +119,7 @@ public class ExcelHelper {
         excelProcess = new ExcelProcess();
         excelProcessMap.put(fileName,excelProcess);
         PoiReader finalPoiReader = poiReader;
+        if(excelColumConverterMap != null) config.setExcelColumConverterMap(excelColumConverterMap);
         ExcelConfig finalConfig = config;
         ExcelProcess finalExcelProcess = excelProcess;
         new Thread(
@@ -109,7 +135,7 @@ public class ExcelHelper {
      * @param tempFileName
      * @return
      */
-    public static ExcelConfig getExcelTempConfig(String tempFileName){
+    public static ExcelConfig getExcelTempConfig(String tempFileName,Map<String,ExcelConfig.ExcelColumConverter> excelColumConverterMap){
         if(StringTool.isEmpty(tempFileName)){
             return null;
         }
@@ -128,10 +154,16 @@ public class ExcelHelper {
             return null;
         }
 
-        return initExcelTempConfig(tempFileName,readList);
+        return initExcelTempConfig(tempFileName,readList,excelColumConverterMap);
     }
 
-    static ExcelConfig getAutoExcelTempConfig(String fileName){
+    /**
+     *
+     * @param fileName
+     * @param excelColumConverterMap 根据数据库列名做相应的格式化
+     * @return
+     */
+    static ExcelConfig getAutoExcelTempConfig(String fileName,Map<String,ExcelConfig.ExcelColumConverter> excelColumConverterMap){
         List<String[]> readList =  new LinkedList<>();
         new EvenExcelReader().read(fileName,ExcelConfig.sheetName,new DefaultRowListener(){
             @Override
@@ -145,10 +177,17 @@ public class ExcelHelper {
             return null;
         }
 
-        return initExcelTempConfig(fileName,readList);
+        return initExcelTempConfig(fileName,readList,excelColumConverterMap);
     }
 
-    private static ExcelConfig initExcelTempConfig(String fileName,List<String[]> readList){
+    /**
+     *
+     * @param fileName
+     * @param readList
+     * @param excelColumConverterMap 根据数据库列名做相应的格式化
+     * @return
+     */
+    private static ExcelConfig initExcelTempConfig(String fileName,List<String[]> readList,Map<String,ExcelConfig.ExcelColumConverter> excelColumConverterMap){
         if(readList.isEmpty()){
             return null;
         }
@@ -156,6 +195,7 @@ public class ExcelHelper {
         String[] headDescv = readList.get(0);
         ExcelConfig tempConfig = new ExcelConfig();
         try {
+            tempConfig.setExcelColumConverterMap(excelColumConverterMap);
             tempConfig.setConfigHeadRow(headDescv);
         }catch (Exception e){
             throw new TransformationException(fileName+"模板数据第一行数据不正确:"+ JsonUtil.getJsonFromBean(headDescv)+"  "+e.getMessage());
@@ -171,6 +211,7 @@ public class ExcelHelper {
             String[] dbTypes = readList.size()>3? readList.get(3):null;
             Map<String,ExcelDbData> map = new HashMap<>();
 
+            ExcelConfig.ExcelColumConverter defaultConverter = new ExcelConfig.ExcelColumConverter();
             Set<String> columSet = new HashSet<>(headList.length);
             for(int i=0;i<headList.length;i++){
                 if(dbHeadColum.length - 1 < i || StringTool.isEmpty(dbHeadColum[i])){
@@ -181,7 +222,10 @@ public class ExcelHelper {
                 if(dbTypes != null && dbTypes.length-1>=i && !StringTool.isEmpty(dbTypes[i])){
                     excelDataTypeEnum = ExcelDbData.DataTypeEnum.getDataTypeEnum(dbTypes[i].trim());
                 }
-                map.put(getHeadDesc(headList[i]),new ExcelDbData(dbHeadColum[i],excelDataTypeEnum));
+
+                ExcelConfig.ExcelColumConverter columConverter = tempConfig.getExcelColumConverter(dbHeadColum[i]);
+                columConverter = columConverter == null?defaultConverter: columConverter;
+                map.put(getHeadDesc(headList[i]),new ExcelDbData(dbHeadColum[i],excelDataTypeEnum,columConverter));
                 columSet.add(dbHeadColum[i]);
             }
 
