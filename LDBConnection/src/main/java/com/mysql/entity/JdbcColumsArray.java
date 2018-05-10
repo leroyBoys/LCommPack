@@ -27,10 +27,6 @@ public class JdbcColumsArray {
         return columsArray.length;
     }
 
-    public Map<String, Map<String,ColumInit>> getRelationFieldNameMap() {
-        return relationFieldNameMap;
-    }
-
     public <T> T doExute(DBTable dbTable, ResultSet rs, Class<T> tClass,QueryResultData<T> resultData) throws Exception {
         T t = doExuteOnlyOne(dbTable,rs,tClass);
         resultData.add(t);
