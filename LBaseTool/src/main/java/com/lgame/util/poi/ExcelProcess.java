@@ -394,12 +394,16 @@ public class ExcelProcess {
         sb.append(excuteLineNum).append(";完成总数据:").append(dataAllCount).append(",更新:").append(sucUpdateCount).append(",新增：").append(sucInsertCount);
         sb.append(",失败：").append(faileCount).append("("+errorRows.size()+")").append(" 重复数据:").append(repeateCount);
         if(errorRows.size() > 10){
-            sb.append(Arrays.toString(errorRows.subList(0,10).toArray()));
+            sb.append(Arrays.toString(errorRows.subList(0,10).toArray())).append(" ....省略数据条目:").append(errorRows.size()-10);
+        }else {
+            sb.append(Arrays.toString(errorRows.toArray()));
         }
 
         if(sqlErrorRows.size() > 10){
             sb.append("errorSql:");
-            sb.append(Arrays.toString(sqlErrorRows.subList(0,10).toArray()));
+            sb.append(Arrays.toString(sqlErrorRows.subList(0,10).toArray())).append(" ....省略数据条目:").append(sqlErrorRows.size()-10);
+        }else {
+            sb.append(Arrays.toString(sqlErrorRows.toArray()));
         }
 
         return sb.toString();
