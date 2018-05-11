@@ -1,9 +1,7 @@
 import com.lgame.util.PrintTool;
-import com.lgame.util.comm.FormatDataTool;
 import com.lgame.util.comm.StringTool;
 import com.lgame.util.file.PropertiesTool;
-import com.lgame.util.json.JsonTool;
-import com.lgame.util.time.DateTimeTool;
+import com.lgame.util.json.JsonUtil;
 import com.module.GameServer;
 import com.mysql.compiler.ScanEntitysTool;
 import com.mysql.impl.JdbcTemplate;
@@ -41,7 +39,6 @@ public class Test {
         System.out.println("db:"+db+"  ip:"+host+"  port:"+port+"  pwd:"+password);
     }
 
-    @org.junit.Test
     public void thres() throws Exception {
         testJdkReflect();
      //   go();
@@ -69,7 +66,7 @@ public class Test {
         PrintTool.outTime("1","===>");
 
         List<TestData> testDatas =  db.ExecuteQuery(TestData.class,sql);
-        System.out.println(JsonTool.getJsonFromBean(testDatas));
+        System.out.println(JsonUtil.getJsonFromBean(testDatas));
 
 
         PrintTool.outTime("1","===>");

@@ -27,6 +27,7 @@ public class Test {
         //扫描包，可以多个包
         ScanEntitysTool.scan("com.test");
         JdbcTemplate db = new JdbcTemplate(JdbcTemplate.DataSourceType.Hikari, PropertiesTool.loadProperty("hikari_db.properties"));
+        /*JdbcTemplate db = new JdbcTemplate(JdbcTemplate.DataSourceType.Druid, PropertiesTool.loadProperty("druid_db.properties"));*/
         PrintTool.outTime("1","===>");///开始计时
 
         Map<String,ExcelConfig.ExcelColumConverter> excelColumConverterMap = new HashMap<>();
