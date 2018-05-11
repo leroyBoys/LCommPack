@@ -3,6 +3,7 @@ package com.lgame.util.poi;
 import com.lgame.util.PrintTool;
 import com.lgame.util.comm.StringTool;
 import com.lgame.util.poi.interfac.*;
+import com.lgame.util.poi.module.DefaultDbEntity;
 import com.lgame.util.poi.module.DefaultRowListener;
 import com.lgame.util.poi.module.ExcelConfig;
 import com.lgame.util.poi.module.ExcelDbData;
@@ -32,6 +33,10 @@ public class ExcelProcess {
     private List<String> sqlErrorRows = new LinkedList<>();//错误信息
     private String importMsg;//结束提示信息
     private int process;//进度百分比10000为100%
+    private Set<String> uniqueKeys = new HashSet<>();
+    private Set<String> errorUniqueKeys = new HashSet<>();
+    private Map<String,DbEntity> repeateContainsMap = new HashMap<>();
+
     protected ExcelProcess(){}
 
     private BlockingQueue<Runnable> workQueue = new LinkedBlockingQueue<>();
@@ -108,9 +113,13 @@ public class ExcelProcess {
                         }
 
                         DbEntity entity = dbEntity.Instance(rowNum,map,config);
-                        if(tmpMap.put(entity.getUniqueId(),entity) != null){
+                        if(uniqueKeys.contains(entity.getUniqueId())){
                             dataAllCount--;
+                            repeateContainsMap.put(entity.getUniqueId(),entity);
                             repeateCount.getAndAdd(1);
+                        }else {
+                            uniqueKeys.add(entity.getUniqueId());
+                            tmpMap.put(entity.getUniqueId(),entity);
                         }
                     }catch (Exception ex){
                         ex.printStackTrace();
@@ -162,11 +171,33 @@ public class ExcelProcess {
             }
         }
 
+        doRepeateData(dbService);
+
         importMsg = getMsg();
         System.out.println(importMsg);
         ExcelHelper.excelProcessMap.remove(fileName);
 
         PrintTool.outTime(ExcelProcess.class.getName(),"over");
+    }
+
+    private void doRepeateData(DbService dbService) {
+        if(repeateContainsMap.isEmpty()){
+            return;
+        }
+
+        List<String> updateSqls = new LinkedList<>();
+        for(Map.Entry<String,DbEntity> entityEntry:repeateContainsMap.entrySet()){
+            if(errorUniqueKeys.contains(entityEntry.getKey())){
+                continue;
+            }
+
+            entityEntry.getValue().setNew(false);
+            updateSqls.add(entityEntry.getValue().getUpdateSql());
+        }
+
+        if(!dbService.excute(updateSqls)){
+            updateExceuteWithOutError(getSqlMapLine(tmpMap,updateSqls.size()),updateSqls,dbService);
+        }
     }
 
     private void initProcess() {
@@ -195,6 +226,12 @@ public class ExcelProcess {
         }
     }
 
+    private void addErrorUniqueKeys(String uniqueId){
+        synchronized (errorUniqueKeys){
+            errorUniqueKeys.add(uniqueId);
+        }
+    }
+
     private void _importDBFromExcel(final int rowNum,final Map<String, DbEntity> tmpMap,final DbService dbService,final ExcelConfig config) {
 
         addTask(objects -> {
@@ -209,7 +246,8 @@ public class ExcelProcess {
                     uniqueIds = dbService.queryExistIds(sql.toString());
                 }catch (Exception ex){
                     ex.printStackTrace();
-                    addErrorMsg("第"+(rowNum-all)+"-"+rowNum+" 列导入数据库出错;"+ex.getMessage());
+                    addErrorMsg("第"+(rowNum-all)+"-"+rowNum+" 查询数据库出错;"+ex.getMessage());
+                    addSqlErrorMsg(sql.toString());
                     faileCount.getAndAdd(all);
                     return;
                 }
@@ -233,11 +271,11 @@ public class ExcelProcess {
             try {
                 if(!insertMapList.isEmpty()){
                     if(!dbService.insertBatchs(config.getTableName(),insertMapList,config.getColumArray(),config.getColumArray(),0)){
-                        Map<String,Integer> map = new HashMap<>(insertMapList.size());
-                        List<String> insertSqls = new ArrayList<>(insertMapList.size());
+                        Map<String,DbEntity> map = new HashMap<>();
+                        List<String> insertSqls = new ArrayList<>();
                         for(DbEntity data:tmpMap.values()){
                             if(data.isNew()){
-                                map.put(data.getUpdateSql(), data.getRow());
+                                map.put(data.getUpdateSql(), data);
                                 insertSqls.add(data.getUpdateSql());
                             }
                         }
@@ -263,11 +301,11 @@ public class ExcelProcess {
         });
     }
 
-    private Map<String,Integer> getSqlMapLine(Map<String, DbEntity> tmpMap,int initSize){
-        Map<String,Integer> map = new HashMap<>(initSize);
+    private Map<String,DbEntity> getSqlMapLine(Map<String, DbEntity> tmpMap,int initSize){
+        Map<String,DbEntity> map = new HashMap<>(initSize);
         for(DbEntity data:tmpMap.values()){
             if(!data.isNew()){
-                map.put(data.getUpdateSql(), data.getRow());
+                map.put(data.getUpdateSql(), data);
             }
         }
         return map;
@@ -278,15 +316,17 @@ public class ExcelProcess {
      * @param tmpMap sql-rowNum
      * @param dbService
      */
-    private void updateExceuteWithOutError(Map<String,Integer> tmpMap,List<String> updateSqls, DbService dbService,AtomicInteger updateCount) {
+    private void updateExceuteWithOutError(Map<String,DbEntity> tmpMap,List<String> updateSqls, DbService dbService,AtomicInteger updateCount) {
         addTask(objects -> {
             final int size = updateSqls.size()>>1;
             if(size < 10){
                 for(String sql:updateSqls){
                     if(!dbService.excute(sql)){
                         faileCount.getAndAdd(1);
-                        addErrorMsg("第"+tmpMap.get(sql)+"行出错");
+                        DbEntity dbEntity = tmpMap.get(sql);
+                        addErrorMsg("第"+dbEntity.getRow()+"行出错");
                         addSqlErrorMsg(sql);
+                        addErrorUniqueKeys(dbEntity.getUniqueId());
                     }else {
                         updateCount.getAndAdd(1);
                     }
@@ -310,6 +350,31 @@ public class ExcelProcess {
 
         });
 
+    }
+
+    private void updateExceuteWithOutError(Map<String,DbEntity> tmpMap,List<String> updateSqls, DbService dbService) {
+
+        final int size = updateSqls.size()>>1;
+        if(size < 10){
+            for(String sql:updateSqls){
+                if(!dbService.excute(sql)){
+                    DbEntity dbEntity = tmpMap.get(sql);
+                    addErrorMsg("第"+dbEntity.getRow()+"行更新出错");
+                    addSqlErrorMsg(sql);
+                }
+            }
+            return;
+        }
+
+        List<String> sqls = updateSqls.subList(0,size);
+        if(!dbService.excute(sqls)){
+            updateExceuteWithOutError(tmpMap,sqls,dbService);
+        }
+
+        sqls = updateSqls.subList(size,updateSqls.size());
+        if(!dbService.excute(sqls)){
+            updateExceuteWithOutError(tmpMap,sqls,dbService);
+        }
     }
 
     private ExcelDbData[] getDbArray(ExcelConfig config, String[] row) {

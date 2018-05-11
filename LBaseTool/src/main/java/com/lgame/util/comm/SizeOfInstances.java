@@ -12,7 +12,7 @@ import sun.misc.Unsafe;
  * 2018/4/28.
  */
 
-public class ClassIntrospector {
+public class SizeOfInstances {
 
     private static final Unsafe unsafe;
     /** Size of any Object reference */
@@ -45,7 +45,7 @@ public class ClassIntrospector {
     }
 
     public static long getSize(Object obj){
-        final ClassIntrospector ci = new ClassIntrospector();
+        final SizeOfInstances ci = new SizeOfInstances();
 
         ObjectInfo res;
 
