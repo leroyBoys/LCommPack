@@ -1,4 +1,3 @@
-/*
 package com.pro;
 
 import com.alibaba.fastjson.JSON;
@@ -13,12 +12,6 @@ import com.lgame.util.time.DateTimeTool;
 import java.util.ArrayList;
 import java.util.List;
 
-*/
-/**
- * Created by leroy:656515489@qq.com
- * 2018/5/11.
- *//*
-
 public class Test {
     static int size = 1;
 
@@ -27,21 +20,18 @@ public class Test {
         protoBuffStf_read();
        // protoBuff();
       //  fastJson();
-      */
-/*
         protoBuffStf_read();
-        protoBuffBaidu_read();*//*
+      //  protoBuffBaidu_read();
 
-        */
-/*protoBuffStf();
-        protoBuff();
+protoBuffStf();
+   //     protoBuff();
         json_read();
-        *//*
+
 
     }
+/*
 
- */
-/*   public List<Products2.Products22> _deserializeProtoBufDataListToProducts22List(
+   public List<Products2.Products22> _deserializeProtoBufDataListToProducts22List(
             List<byte[]> bytesList) {
         long start = System.currentTimeMillis();
         List<Products2.Products22> list = new ArrayList<Products2.Products22>();
@@ -54,11 +44,10 @@ public class Test {
         }
         long end = System.currentTimeMillis();
         return list;
-    }*//*
+    }
 
 
- */
-/*   public List<byte[]> _serializeProtoBufProductsList(
+   public List<byte[]> _serializeProtoBufProductsList(
             List<Products2.Products22.Builder> builderList) {
         if(builderList == null) {
             System.out.println("【ProtoBufSerializeServiceImpl-serializeProtoBufProductsService】builderList==null");
@@ -72,10 +61,9 @@ public class Test {
         return bytesList;
     }
 
-*//*
 
-*/
-/*    public void protoBuff(){
+
+    public void protoBuff(){
         Products2.Products22 products = getProDucts22();
 
         PrintTool.outTime("1","====");
@@ -101,8 +89,9 @@ public class Test {
 
         PrintTool.outTime("1","====over");
         System.out.println(products22.getL3());
-    }*//*
+    }
 
+*/
 
     public void protoBuffStf_read() throws Exception {
         Products products = getProDucts();
@@ -272,4 +261,3 @@ public class Test {
         return products;
     }
 }
-*/
