@@ -3,7 +3,6 @@ package com.lgame.util.poi;
 import com.lgame.util.PrintTool;
 import com.lgame.util.comm.StringTool;
 import com.lgame.util.poi.interfac.*;
-import com.lgame.util.poi.module.DefaultDbEntity;
 import com.lgame.util.poi.module.DefaultRowListener;
 import com.lgame.util.poi.module.ExcelConfig;
 import com.lgame.util.poi.module.ExcelDbData;
@@ -391,7 +390,19 @@ public class ExcelProcess {
     }
 
     public String getMsg() {
-        return "终止行号:"+excuteLineNum+";完成总数据:"+dataAllCount+",更新:"+sucUpdateCount+",新增："+sucInsertCount+",失败："+faileCount+"("+errorRows.size()+")"+" 重复数据:"+repeateCount+"  "+ Arrays.toString(errorRows.toArray())+Arrays.toString(sqlErrorRows.toArray());
+        StringBuffer sb = new StringBuffer("终止行号:");
+        sb.append(excuteLineNum).append(";完成总数据:").append(dataAllCount).append(",更新:").append(sucUpdateCount).append(",新增：").append(sucInsertCount);
+        sb.append(",失败：").append(faileCount).append("("+errorRows.size()+")").append(" 重复数据:").append(repeateCount);
+        if(errorRows.size() > 10){
+            sb.append(Arrays.toString(errorRows.subList(0,10).toArray()));
+        }
+
+        if(sqlErrorRows.size() > 10){
+            sb.append("errorSql:");
+            sb.append(Arrays.toString(sqlErrorRows.subList(0,10).toArray()));
+        }
+
+        return sb.toString();
     }
 
     public boolean isOver() {
