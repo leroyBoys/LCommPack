@@ -18,10 +18,13 @@ import java.util.concurrent.LinkedBlockingQueue;
  */
 public class Test {
     public static void main(String[] args) throws InterruptedException {
-        while (new File("D:\\info.txt").exists()){
+        String str = "asdfosdfsfsasfdsdfaaasdsa";
+        System.out.println(str.replace('a','='));
+
+       /* while (new File("D:\\info.txt").exists()){
             MemDisk.getMemLastInfo();
 
             Thread.sleep(300);
-        }
+        }*/
     }
 }

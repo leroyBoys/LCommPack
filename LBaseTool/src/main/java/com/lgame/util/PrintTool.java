@@ -25,9 +25,9 @@ public class PrintTool {
             final Long lastTime = timeMap.get(flag);
             final long curTime = System.currentTimeMillis();
             if(lastTime == null){
-                System.out.println(DateTimeTool.getDateTime(new Date())+":"+str);
+                System.out.println(DateTimeTool.getDateTime(new Date())+":"+flag+":"+str);
             }else {
-                System.out.println(DateTimeTool.getDateTime(new Date())+":"+str+":"+(curTime-lastTime)+" ms");
+                System.out.println(DateTimeTool.getDateTime(new Date())+":"+flag+":"+str+":"+(curTime-lastTime)+" ms");
             }
 
             timeMap.put(flag,curTime);

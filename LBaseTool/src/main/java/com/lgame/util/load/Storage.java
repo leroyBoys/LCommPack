@@ -6,7 +6,7 @@
 package com.lgame.util.load;
 
 import com.lgame.util.PrintTool;
-import com.lgame.util.json.JsonTool;
+import com.lgame.util.json.JsonUtil;
 import com.lgame.util.load.annotation.Resource;
 
 import java.io.*;
@@ -91,7 +91,7 @@ public class Storage<T> {
                     }
                 }
                 if (offer(obj, dataTable_copy) != null) {
-                    throw new RuntimeException(String.format("重复异常: [%s]", new Object[]{JsonTool.getJsonFromBean(obj)}));
+                    throw new RuntimeException(String.format("重复异常: [%s]", new Object[]{JsonUtil.getJsonFromBean(obj)}));
                 }
                 //index(obj, indexTable_copy);
                 idList_copy.add(this.identifier.getValue(obj));

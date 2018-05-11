@@ -1,9 +1,7 @@
 package com.lgame.util.load.demo.xml;
 
-import com.lgame.util.json.JsonTool;
+import com.lgame.util.json.JsonUtil;
 import com.lgame.util.load.xml.XmlApi;
-import com.lgame.util.load.xml.XmlLoad;
-import org.w3c.dom.Element;
 
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
@@ -50,7 +48,7 @@ public class Test {
         //将java对象转换为XML字符串
         XmlApi.save(hotel,path,true);
         System.out.println("========over");
-       System.out.println(JsonTool.getJsonFromBean(XmlApi.readObjectFromXml(Root.class,path)));
+       System.out.println(JsonUtil.getJsonFromBean(XmlApi.readObjectFromXml(Root.class,path)));
     }
 
    public static class RoomTypeVO {

@@ -6,7 +6,7 @@
 package com.lgame.util.load.demo.json;
 
 
-import com.lgame.util.json.JsonTool;
+import com.lgame.util.json.JsonUtil;
 import com.lgame.util.load.ResourceService;
 import com.lgame.util.load.ResourceServiceImpl;
 
@@ -28,6 +28,6 @@ public class Test {
      */
     public void loadActivity() {
         List<Item> actList = (List<Item>) resourceService.listAll(Item.class);
-        System.out.println(JsonTool.getJsonFromCollection(actList));
+        System.out.println(JsonUtil.getJsonFromBean(actList));
     }
 }
