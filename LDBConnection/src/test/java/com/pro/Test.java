@@ -6,6 +6,7 @@ import com.dyuproject.protostuff.ProtostuffIOUtil;
 import com.dyuproject.protostuff.Schema;
 import com.dyuproject.protostuff.runtime.RuntimeSchema;
 import com.lgame.util.PrintTool;
+import com.lgame.util.json.FastJsonTool;
 import com.lgame.util.json.JsonUtil;
 import com.lgame.util.time.DateTimeTool;
 
@@ -13,20 +14,19 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Test {
-    static int size = 1;
+    static int size = 100000;
 
+    @org.junit.Test
     public void test() throws Exception {
         protoBuffStf();
         protoBuffStf_read();
        // protoBuff();
       //  fastJson();
-        protoBuffStf_read();
       //  protoBuffBaidu_read();
 
-protoBuffStf();
    //     protoBuff();
         json_read();
-
+        json();
 
     }
 /*
@@ -180,7 +180,7 @@ protoBuffStf();
         String str = JsonUtil.getJsonFromBean(products);
         PrintTool.outTime("1","====");
         for(int i = 0;i<size;i++){
-            JsonUtil.getBeanFromJson(str,Products.class);
+            FastJsonTool.getBeanFromJson(str,Products.class);
         }
 
         PrintTool.outTime("1","====over");
