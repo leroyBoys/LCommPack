@@ -1,6 +1,7 @@
 package com.mysql.entity;
 
 import com.mysql.compiler.ColumInit;
+import com.mysql.compiler.RelationGetIntace;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -12,6 +13,7 @@ import java.util.Map;
 public class DBTable {
     private String name;
     private String idColumName;
+    private Map<String,RelationGetIntace> columGetMap = new HashMap<>();
     private Map<String,String> colum_fieldMap = new HashMap<>(5);
     private Map<String,ColumInit> columInitMap = new HashMap<>(5);
     private Map<String,RelationData> columRelationMap = new HashMap<>();
@@ -57,8 +59,9 @@ public class DBTable {
         this.name = name;
     }
 
-    public void addColumInit(String columName, ColumInit columInit) {
+    public void addColumInit(String columName, ColumInit columInit, RelationGetIntace relationGetIntace) {
         columInitMap.put(columName,columInit);
+        columGetMap.put(columName,relationGetIntace);
     }
 
     public void putColumRelationMap(String columName, RelationData relationData) {
@@ -69,5 +72,9 @@ public class DBTable {
 
     public void addRelationData(RelationData relationData) {
         fieldRelationMap.put(relationData.getFieldName(),relationData);
+    }
+
+    public Map<String, RelationGetIntace> getColumGetMap() {
+        return columGetMap;
     }
 }

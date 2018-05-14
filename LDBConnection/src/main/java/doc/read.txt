@@ -1,0 +1,12 @@
+db:
+ 注解：dbDesc 设置表名（默认当前classname）
+
+       DBColum：设置字段（默认与fieldName一致）
+       DBRelations:关联数据关系（DBRelation 集合）
+            DBRelation：关联数据关系详情:colum：当前查询除的colum名字，targetColum：表示colum在关联对象内的对应colum值
+
+       注：dbColum是枚举类型的话，如果是普通枚举，直接执行Enum.value(class,name)方法，效率不高；
+           也可以直接让枚举类实现DBEnum接口 从而灵活控制enum再数据中对应的值，可以用int，也可以用string（高效）
+           目前只支持实体类的查询，只提供实体类单表更新，添加不提供关联表的更新，添加，需要的时候单独写sql
+
+

@@ -1,5 +1,7 @@
 package com.mysql.entity;
 
+import com.mysql.compiler.ScanEntitysTool;
+
 import java.math.BigDecimal;
 import java.sql.*;
 import java.util.HashMap;
@@ -35,6 +37,63 @@ public class SqlTypeToJava {
         sqlTypsMap.put(Timestamp.class,new TimestampToJava());
         sqlTypsMap.put(java.net.URL.class,new URLToJava());
     }
+
+    public static class EnumIntJava extends SqlTypeToJava{
+        protected Class enumClass;
+        public EnumIntJava(Class enumClss){
+            this.enumClass = enumClss;
+        }
+
+        @Override
+        public Object get(ResultSet rs, String colum) throws SQLException {
+            return  ScanEntitysTool.getEnum(enumClass,rs.getInt(colum));
+        }
+
+        public Object get(ResultSet rs,int index) throws SQLException {
+            return  ScanEntitysTool.getEnum(enumClass,rs.getInt(index));
+        }
+    }
+
+    public static class EnumStringJava extends SqlTypeToJava{
+        private Class enumClass;
+        public EnumStringJava(Class enumClss){
+            this.enumClass = enumClss;
+        }
+
+        @Override
+        public Object get(ResultSet rs, String colum) throws SQLException {
+            return  ScanEntitysTool.getEnum(enumClass,rs.getString(colum));
+        }
+
+        public Object get(ResultSet rs,int index) throws SQLException {
+            return  ScanEntitysTool.getEnum(enumClass,rs.getString(index));
+        }
+    }
+
+    public static class EnumDefaultJava extends SqlTypeToJava{
+        protected Class enumClass;
+        public EnumDefaultJava(Class enumClss){
+            this.enumClass = enumClss;
+        }
+
+        @Override
+        public Object get(ResultSet rs, String colum) throws SQLException {
+            String str = rs.getString(colum);
+            if(str == null){
+                return null;
+            }
+            return Enum.valueOf(enumClass,str);
+        }
+
+        public Object get(ResultSet rs,int index) throws SQLException {
+            String str = rs.getString(index);
+            if(str == null){
+                return null;
+            }
+            return Enum.valueOf(enumClass,str);
+        }
+    }
+
 
     public Object get(ResultSet rs,String colum) throws SQLException {
         return rs.getString(colum);
@@ -196,7 +255,7 @@ public class SqlTypeToJava {
         }
     }
 
-    public static class BooleanToJava extends SqlTypeToJava{
+    public static class  BooleanToJava extends SqlTypeToJava{
         @Override
         public Object get(ResultSet rs, String colum) throws SQLException {
             return rs.getBoolean(colum);

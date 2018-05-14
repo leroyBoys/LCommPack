@@ -4,6 +4,7 @@ import com.lgame.util.PrintTool;
 import com.mysql.DbCallBack;
 import com.mysql.SqlDataSource;
 import com.mysql.compiler.ColumInit;
+import com.mysql.compiler.RelationGetIntace;
 import com.mysql.compiler.ScanEntitysTool;
 import com.mysql.entity.*;
 
@@ -56,7 +57,7 @@ public class JdbcTemplate implements SqlDataSource {
     }
 
     public void Execute(String cmd, Object... p) {
-        PrintTool.log("cmd:" + cmd);
+      //  PrintTool.log("cmd:" + cmd);
         Connection cn = null;
         PreparedStatement ps = null;
         try {
@@ -197,6 +198,105 @@ public class JdbcTemplate implements SqlDataSource {
             close(ps, cn, rs);
         }
         return -1;
+    }
+
+    public boolean ExecuteEntity(Object instance) {
+        Connection cn = null;
+        PreparedStatement ps = null;
+        ResultSet rs = null;
+        try {
+            String sql;
+            DBTable table = ScanEntitysTool.getDBTable(instance.getClass());
+            if(table == null){
+                PrintTool.error(" class:"+instance.getClass().getName()+" not config db");
+                return false;
+            }
+
+            Object id = table.getColumGetMap().get(table.getIdColumName()).get(instance);
+            if(id != null && Long.valueOf(id.toString())>0){
+
+                sql = updateSql(instance,table);
+                cn = getConnection();
+                ps = cn.prepareStatement(sql);
+                return ps.executeUpdate() > 0;
+            }else {
+                sql = insertSql(instance,table);
+            }
+            cn = getConnection();
+            ps = cn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
+            ps.executeUpdate();
+            rs = ps.getGeneratedKeys();
+            if (rs.next()) {
+                table.getColumInit(table.getIdColumName()).set(instance,rs,1);
+                return true;
+            }else {
+                return false;
+            }
+        } catch (Exception e) {
+            PrintTool.error(this.getClass(),e);
+        } finally {
+            close(ps, cn, rs);
+        }
+        return false;
+    }
+
+    private String insertSql(Object instance,DBTable table) {
+        StringBuilder sql = new StringBuilder();
+        StringBuilder names = new StringBuilder();
+        StringBuilder values = new StringBuilder();
+        sql.append("insert into ").append(table.getName());
+        names.append("  ( ");
+        values.append("  ( ");
+        int i = 0;
+        Object object;
+        for(Map.Entry<String,RelationGetIntace> entry:table.getColumGetMap().entrySet()){
+            if(entry.getKey() == table.getIdColumName()){
+                continue;
+            }
+
+            if(i > 0){
+                names.append(" , ");
+                values.append(" , ");
+            }
+            names.append("`").append(entry.getKey()).append("`");
+            object =  entry.getValue().get(instance);
+            if(object == null){
+                values.append("null");
+            }else{
+                values.append("'").append(object).append("'");
+            }
+            i++;
+        }
+        names.append("  ) ");
+        values.append("  ) ");
+        sql.append(names).append("  values ").append(values);
+        return sql.toString();
+    }
+
+    private String updateSql(Object instance,DBTable table) {
+        StringBuilder sql = new StringBuilder();
+        sql.append("update ").append(table.getName());
+        sql.append("  set ");
+        int i = 0;
+        Object object;
+        for(Map.Entry<String,RelationGetIntace> entry:table.getColumGetMap().entrySet()){
+            if(entry.getKey() == table.getIdColumName()){
+                continue;
+            }
+            if(i > 0){
+                sql.append(" , ");
+            }
+            object =  entry.getValue().get(instance);
+            sql.append(entry.getKey()).append("=");
+            if(object == null){
+                sql.append("null");
+            }else{
+                sql.append("'").append(object).append("'");
+            }
+            i++;
+        }
+        sql.append("  where id = ").append(table.getColumGetMap().get(table.getIdColumName()).get(instance));
+        return sql.toString();
     }
 
     /**

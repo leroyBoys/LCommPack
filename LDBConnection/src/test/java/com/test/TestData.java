@@ -24,6 +24,12 @@ public class TestData {
     @DbColum()
     private boolean isGood;
 
+    @DbColum(name ="test_enum")
+    private TestEnum testEnum;
+
+    @DbColum(name ="test_enum2")
+    private TestEnum2 testEnum2;
+
     @DBRelations(relation = DBRelations.Reltaion.OneToMany,
             map={
                 @DBRelation(colum = "id",targetColum = "id"),
@@ -71,20 +77,48 @@ public class TestData {
         return date;
     }
 
+    public TestEnum2 getTestEnum2() {
+        return testEnum2;
+    }
+
+    public int db_getTestEnum2() {
+        return testEnum2 == null?0:testEnum2.getDBValue();
+    }
+
+    public void setTestEnum2(TestEnum2 testEnum2) {
+        this.testEnum2 = testEnum2;
+    }
+
     public void setDate(String date) {
         this.date = date;
+    }
+
+    public TestEnum getTestEnum() {
+        return testEnum;
+    }
+
+    public void setTestEnum(TestEnum testEnum) {
+        this.testEnum = testEnum;
     }
 
     public boolean isGood() {
         return isGood;
     }
 
+    public int db_isGood() {
+        return isGood?1:0;
+    }
+
     public void setGood(boolean good) {
         isGood = good;
     }
 
-    public Boolean getVisid() {
+    public Boolean isVisid() {
         return visid;
+    }
+
+    public int db_isVisid() {
+        return visid?1:0;
     }
 
     public List<Test1> getTest1() {

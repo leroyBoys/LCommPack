@@ -2,6 +2,8 @@ import com.lgame.util.PrintTool;
 import com.lgame.util.comm.StringTool;
 import com.lgame.util.file.PropertiesTool;
 import com.lgame.util.json.JsonUtil;
+import com.lgame.util.thread.TaskIndieThread;
+import com.lgame.util.thread.TaskPools;
 import com.module.GameServer;
 import com.mysql.compiler.ScanEntitysTool;
 import com.mysql.impl.JdbcTemplate;
@@ -11,6 +13,7 @@ import java.lang.reflect.Method;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * Created by Administrator on 2017/4/2.
@@ -38,7 +41,7 @@ public class Test {
 
         System.out.println("db:"+db+"  ip:"+host+"  port:"+port+"  pwd:"+password);
     }
-
+    @org.junit.Test
     public void thres() throws Exception {
         testJdkReflect();
      //   go();
@@ -56,18 +59,47 @@ public class Test {
         System.out.println( res.getDeepSize() );*/
     }
 
+
+
     public static void testJdkReflect() throws Exception {
-        ScanEntitysTool.scan("com.mysql.entity");
+        ScanEntitysTool.scan("com.test");
         String sql = "SELECT * FROM `test_data`";
-        JdbcTemplate db = new JdbcTemplate(JdbcTemplate.DataSourceType.Druid,PropertiesTool.loadProperty("druid_db.properties"));
+        JdbcTemplate db = new JdbcTemplate(JdbcTemplate.DataSourceType.Hikari,PropertiesTool.loadProperty("hikari_db.properties"));
 
 
 
         PrintTool.outTime("1","===>");
 
+ /*       for(int i = 0;i<5000;i++){
+            List<TestData> testDatas =  db.ExecuteQuery(TestData.class,sql);
+            //     System.out.println(JsonUtil.getJsonFromBean(testDatas));
+            TestData data = testDatas.get(1);
+            data.setName("张龙赵虎");
+        }
+*/
         List<TestData> testDatas =  db.ExecuteQuery(TestData.class,sql);
-        System.out.println(JsonUtil.getJsonFromBean(testDatas));
+        //     System.out.println(JsonUtil.getJsonFromBean(testDatas));
+        TestData data = testDatas.get(1);
+        data.setName("张龙赵虎");
+        PrintTool.outTime("1","==22=>");
 
+        AtomicInteger integer = new AtomicInteger();
+        int size = 1000;
+        for(int i = 0;i<size;i++){
+            TaskPools.addTask(new TaskIndieThread() {
+                @Override
+                public void doExcute(Object... objects) {
+                    db.ExecuteEntity(data);
+                    //db.Execute("update test_data  set num='99'   where id = 22");
+                    integer.getAndAdd(1);
+                }
+            },i);
+
+        }
+
+        while (integer.get() !=size ){
+            Thread.sleep(10);
+        }
 
         PrintTool.outTime("1","===>");
 

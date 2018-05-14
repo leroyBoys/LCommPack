@@ -2,7 +2,12 @@ package com;
 
 import com.lgame.util.PrintTool;
 import com.module.GameServer;
+import com.test.*;
 
+import java.lang.reflect.Field;
+import java.lang.reflect.Method;
+import java.lang.reflect.ParameterizedType;
+import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -18,10 +23,24 @@ public class Test{
      * @param args
      */
     @SuppressWarnings("static-access")
-    public static void main(String[] args) throws IllegalAccessException, InstantiationException {
+    public static void main(String[] args) throws Exception {
         /*test1();
         test2();
         test22();*/
+
+       /* Type[] types = c.getGenericInterfaces();
+
+
+        Type t = types[0];
+        Type[] st = ((ParameterizedType) t).getActualTypeArguments();
+        Class c22 = (Class) st[0];
+        System.out.println(c22.getName());
+        Class strCl = String.class;
+        System.out.println((c22 == strCl));
+
+        String gs = "hell2";
+        DemoEnum demoEnum = Enum.valueOf(DemoEnum.class,gs);
+        System.out.println(demoEnum.getI());*/
 
     }
 
