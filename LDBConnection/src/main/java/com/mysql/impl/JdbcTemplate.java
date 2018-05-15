@@ -218,7 +218,7 @@ public class JdbcTemplate implements SqlDataSource {
                 sql = updateSql(instance,table);
                 cn = getConnection();
                 ps = cn.prepareStatement(sql);
-                return ps.executeUpdate() > 0;
+                return ps.executeUpdate()>0;
             }else {
                 sql = insertSql(instance,table);
             }

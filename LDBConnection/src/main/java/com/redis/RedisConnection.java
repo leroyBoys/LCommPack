@@ -1,6 +1,12 @@
 package com.redis;
 
+import com.dyuproject.protostuff.LinkedBuffer;
+import com.dyuproject.protostuff.ProtostuffIOUtil;
+import com.lgame.util.PrintTool;
 import com.lgame.util.comm.StringTool;
+import com.lgame.util.comm.TimeCacheManager;
+import com.mysql.compiler.ScanEntitysTool;
+import com.mysql.entity.DBTable;
 import redis.clients.jedis.BinaryClient;
 import redis.clients.jedis.Jedis;
 import redis.clients.jedis.JedisPool;
@@ -59,6 +65,62 @@ public class RedisConnection {
         jedisPool = new JedisPool(config, host, port, timeout, password, db);
     }
 
+    public <T> T ExeuteQuery(Class<T> cls,Object uniqueId){
+        DBTable table = ScanEntitysTool.getDBTable(cls);
+        if(table == null){
+            PrintTool.error(cls.getName()+" not config redis ");
+            return null;
+        }
+
+        String key = key(table,uniqueId);
+        try {
+            byte[] keys = StringTool.hex2byte(key);
+            keys = get(keys);
+            if(keys == null){
+                return null;
+            }
+
+            T t = cls.newInstance();
+            ProtostuffIOUtil.mergeFrom(keys, t, table.getSchema());
+            return t;
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    private String key(DBTable table,Object uniqueid){
+        return table.getName()+"."+uniqueid;
+    }
+
+    public void Exeute(Object obj){
+        DBTable table = ScanEntitysTool.getDBTable(obj.getClass());
+        if(table == null){
+            PrintTool.error(obj.getClass().getName()+" not config redis ");
+            return;
+        }
+
+        String key = key(table,table.getRedisKeyGetInace().get(obj));
+        try {
+            byte[] keys = StringTool.hex2byte(key);
+            this.set(keys, ProtostuffIOUtil.toByteArray(obj, table.getSchema(), LinkedBuffer.allocate(LinkedBuffer.DEFAULT_BUFFER_SIZE)));
+
+            if(table.getRedisCache().expire() > 0){
+                if(table.getRedisCache().expireAt() > 0){
+                    long endTime = TimeCacheManager.getInstance().getCurTime()+table.getRedisCache().expire()*1000;
+                    endTime = Math.min(endTime,table.getRedisCache().expireAt());
+                    this.expireAt(keys,endTime);
+                    return;
+                }
+                this.expire(keys,table.getRedisCache().expire());
+            }else {
+                this.expireAt(keys,table.getRedisCache().expireAt());
+            }
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+    }
+
     /**
      * 设置过期时间
      * @param key
@@ -66,6 +128,9 @@ public class RedisConnection {
      * @return
      */
     public long expire(String key, int seconds) {
+        if(seconds < 1){
+            return 0l;
+        }
         Jedis jedis = null;
         try {
             jedis = jedisPool.getResource();
@@ -85,6 +150,9 @@ public class RedisConnection {
      * @return
      */
     public long expire(byte[] key, int seconds) {
+        if(seconds < 1){
+            return 0l;
+        }
         Jedis jedis = null;
         try {
             jedis = jedisPool.getResource();
@@ -104,6 +172,9 @@ public class RedisConnection {
      * @return
      */
     public long expireAt(String key, long millisecondsTimestamp) {
+        if(millisecondsTimestamp < 1){
+            return 0l;
+        }
         Jedis jedis = null;
         try {
             jedis = jedisPool.getResource();
@@ -123,6 +194,9 @@ public class RedisConnection {
      * @return
      */
     public long expireAt(byte[] key, long millisecondsTimestamp) {
+        if(millisecondsTimestamp < 1){
+            return 0l;
+        }
         Jedis jedis = null;
         try {
             jedis = jedisPool.getResource();

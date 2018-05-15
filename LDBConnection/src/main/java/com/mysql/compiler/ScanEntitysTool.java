@@ -1,5 +1,7 @@
 package com.mysql.compiler;
 
+import com.dyuproject.protostuff.LinkedBuffer;
+import com.dyuproject.protostuff.runtime.RuntimeSchema;
 import com.lgame.util.PrintTool;
 import com.lgame.util.comm.ReflectionTool;
 import com.lgame.util.compiler.JavaStringCompiler;
@@ -79,7 +81,7 @@ public class ScanEntitysTool {
         }
 
         String methodName = fieldName.replaceFirst(String.valueOf(fistChar),prex+toUpperCase);
-        if(!methodsSet.contains(methodName)){
+        if(methodsSet != null && !methodsSet.contains(methodName)){
             throw new TransformationException("method :"+methodName+" not exit!");
         }
 
@@ -145,10 +147,13 @@ public class ScanEntitysTool {
             if(dbTable != null){
                 continue;
             }
+            dbDesc = (DBDesc) cls.getAnnotation(DBDesc.class);
+            if(dbDesc == null){
+                continue;
+            }
 
             methodsSet = initGetMethods(cls.getMethods()) ;
             fields = cls.getDeclaredFields();
-            dbDesc = (DBDesc) cls.getAnnotation(DBDesc.class);
 
             dbTable = new DBTable(dbDesc.name());
             columInitMap.put(cls,dbTable);
@@ -233,6 +238,48 @@ public class ScanEntitysTool {
                     relationDa.put(dbRelationArray[i].colum(),dbTable.getColumInit(dbRelationArray[i].targetColum()));
                     entry.getKey().putColumRelationMap(dbRelationArray[i].colum(),relationDa);
                 }
+            }
+        }
+
+        ///////////redis
+        for(Class cls:classs){
+            RedisCache redisCache = (RedisCache) cls.getAnnotation(RedisCache.class);
+            if(redisCache == null){
+                continue;
+            }
+
+            try {
+                dbTable = columInitMap.get(cls);
+
+                relationGetIntace = null;
+                if(dbTable == null){
+                    dbTable = new DBTable(cls.getSimpleName());
+                    columInitMap.put(cls,dbTable);
+
+                }else {
+                    String colname= dbTable.getColumName(redisCache.keyFieldName());
+                    if(colname != null){
+                        relationGetIntace = dbTable.getColumGetMap().get(colname);
+                    }
+                }
+
+                if(relationGetIntace == null){
+                    Field field = cls.getDeclaredField(redisCache.keyFieldName());
+                    if(field == null){
+                        throw new RuntimeException(cls.getName()+" cant find  field:"+redisCache.keyFieldName()+" for redisCache");
+                    }
+
+                    newClassName = getKey("Set",cls,field.getName());//classFinal+""+field.getName();
+                    tmpcompilers = javaStringCompiler.compile(newClassName+".java",
+                            getGetClass(getMethod_relation(null,cls,field.getType(),field.getName()),newClassName));
+                    relationGetIntace = (RelationGetIntace)javaStringCompiler.loadClass("com.mysql.compiler."+newClassName,tmpcompilers).newInstance();
+                }
+
+                dbTable.setRedisKeyGetInace(relationGetIntace);
+                dbTable.setRedisCache(redisCache);
+                dbTable.setSchema(RuntimeSchema.getSchema(cls));
+            }catch (Exception ex){
+                ex.printStackTrace();
             }
         }
         PrintTool.outTime("ScanEntitysTool","over scan dbEntity");

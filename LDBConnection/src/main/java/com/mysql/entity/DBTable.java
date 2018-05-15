@@ -1,5 +1,6 @@
 package com.mysql.entity;
 
+import com.dyuproject.protostuff.Schema;
 import com.mysql.compiler.ColumInit;
 import com.mysql.compiler.RelationGetIntace;
 
@@ -13,8 +14,11 @@ import java.util.Map;
 public class DBTable {
     private String name;
     private String idColumName;
+    private Schema schema;
+    private RedisCache redisCache;
+    private RelationGetIntace redisKeyGetInace;
     private Map<String,RelationGetIntace> columGetMap = new HashMap<>();
-    private Map<String,String> colum_fieldMap = new HashMap<>(5);
+    private Map<String,String> field_columMap = new HashMap<>(5);
     private Map<String,ColumInit> columInitMap = new HashMap<>(5);
     private Map<String,RelationData> columRelationMap = new HashMap<>();
     private Map<String,RelationData> fieldRelationMap = new HashMap<>();
@@ -31,12 +35,20 @@ public class DBTable {
         this.name = name;
     }
 
-    public void addColum(String columName, String fieldName){
-        colum_fieldMap.put(columName,fieldName);
+    public Schema getSchema() {
+        return schema;
     }
 
-    public String getFieldName(String columName){
-        return colum_fieldMap.get(columName);
+    public void setSchema(Schema schema) {
+        this.schema = schema;
+    }
+
+    public void addColum(String columName, String fieldName){
+        field_columMap.put(fieldName,columName);
+    }
+
+    public String getColumName(String fieldName){
+        return field_columMap.get(fieldName);
     }
 
     public RelationData getRelationMap(String columName){
@@ -59,9 +71,25 @@ public class DBTable {
         this.name = name;
     }
 
+    public RedisCache getRedisCache() {
+        return redisCache;
+    }
+
+    public void setRedisCache(RedisCache redisCache) {
+        this.redisCache = redisCache;
+    }
+
     public void addColumInit(String columName, ColumInit columInit, RelationGetIntace relationGetIntace) {
         columInitMap.put(columName,columInit);
         columGetMap.put(columName,relationGetIntace);
+    }
+
+    public RelationGetIntace getRedisKeyGetInace() {
+        return redisKeyGetInace;
+    }
+
+    public void setRedisKeyGetInace(RelationGetIntace redisKeyGetInace) {
+        this.redisKeyGetInace = redisKeyGetInace;
     }
 
     public void putColumRelationMap(String columName, RelationData relationData) {
