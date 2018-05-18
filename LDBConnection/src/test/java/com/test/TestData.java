@@ -1,33 +1,33 @@
 package com.test;
 
-import com.mysql.entity.DBDesc;
-import com.mysql.entity.DBRelation;
-import com.mysql.entity.DBRelations;
-import com.mysql.entity.DbColum;
+import com.mysql.entity.*;
+import com.redis.entity.RedisCache;
 
+import java.util.Date;
 import java.util.List;
 
 /**
  * Created by leroy:656515489@qq.com
  * 2018/5/2.
  */
-@DBDesc(name="test_data")
+@RedisCache
+@LQDBTable(name="test_data")
 public class TestData {
-    @DbColum(name = "id",isPrimaryKey = true)
+    @LQField(name = "id",isPrimaryKey = true)
     private int id;
-    @DbColum()
+    @LQField()
     private String num;
-    @DbColum()
-    private String date;
-    @DbColum()
+    @LQField()
+    private Date date;
+    @LQField()
     private String name;
-    @DbColum()
+    @LQField(convertDBType= LQField.ConvertDBType.BoolNumber)
     private boolean isGood;
 
-    @DbColum(name ="test_enum")
+    @LQField(name ="test_enum")
     private TestEnum testEnum;
 
-    @DbColum(name ="test_enum2")
+    @LQField(name ="test_enum2",convertDBType = LQField.ConvertDBType.EnumNumber)
     private TestEnum2 testEnum2;
 
     @DBRelations(relation = DBRelations.Reltaion.OneToMany,
@@ -44,9 +44,9 @@ public class TestData {
             })
     private TestOne testOne;
 
-    @DbColum()
+    @LQField(convertDBType= LQField.ConvertDBType.BoolNumber)
     private Boolean visid;
-    @DbColum()
+    @LQField()
     private Double mydouble;
 
     public int getId() {
@@ -73,8 +73,12 @@ public class TestData {
         this.name = name;
     }
 
-    public String getDate() {
+    public Date getDate() {
         return date;
+    }
+
+    public void setDate(Date date) {
+        this.date = date;
     }
 
     public TestEnum2 getTestEnum2() {
@@ -87,10 +91,6 @@ public class TestData {
 
     public void setTestEnum2(TestEnum2 testEnum2) {
         this.testEnum2 = testEnum2;
-    }
-
-    public void setDate(String date) {
-        this.date = date;
     }
 
     public TestEnum getTestEnum() {
@@ -118,7 +118,7 @@ public class TestData {
     }
 
     public int db_isVisid() {
-        return visid?1:0;
+        return visid != null && visid?1:0;
     }
 
     public List<Test1> getTest1() {

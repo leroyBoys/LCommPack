@@ -1,8 +1,9 @@
 package com.mysql.entity;
 
-import com.dyuproject.protostuff.Schema;
 import com.mysql.compiler.ColumInit;
-import com.mysql.compiler.RelationGetIntace;
+import com.mysql.compiler.FieldGetProxy;
+import com.redis.entity.RedisCache;
+import com.redis.entity.RedisSerializer;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -14,11 +15,11 @@ import java.util.Map;
 public class DBTable {
     private String name;
     private String idColumName;
-    private Schema schema;
+    private RedisSerializer redisSerializer;
     private RedisCache redisCache;
-    private RelationGetIntace redisKeyGetInace;
-    private Map<String,RelationGetIntace> columGetMap = new HashMap<>();
-    private Map<String,String> field_columMap = new HashMap<>(5);
+    private FieldGetProxy.FieldGet redisKeyGetInace;
+
+    private Map<String,FieldGetProxy.FieldGet> columGetMap = new HashMap<>();
     private Map<String,ColumInit> columInitMap = new HashMap<>(5);
     private Map<String,RelationData> columRelationMap = new HashMap<>();
     private Map<String,RelationData> fieldRelationMap = new HashMap<>();
@@ -35,20 +36,12 @@ public class DBTable {
         this.name = name;
     }
 
-    public Schema getSchema() {
-        return schema;
+    public RedisSerializer getRedisSerializer() {
+        return redisSerializer;
     }
 
-    public void setSchema(Schema schema) {
-        this.schema = schema;
-    }
-
-    public void addColum(String columName, String fieldName){
-        field_columMap.put(fieldName,columName);
-    }
-
-    public String getColumName(String fieldName){
-        return field_columMap.get(fieldName);
+    public void setRedisSerializer(RedisSerializer redisSerializer) {
+        this.redisSerializer = redisSerializer;
     }
 
     public RelationData getRelationMap(String columName){
@@ -79,16 +72,16 @@ public class DBTable {
         this.redisCache = redisCache;
     }
 
-    public void addColumInit(String columName, ColumInit columInit, RelationGetIntace relationGetIntace) {
+    public void addColumInit(String columName, ColumInit columInit, FieldGetProxy.FieldGet fieldGetProxy) {
         columInitMap.put(columName,columInit);
-        columGetMap.put(columName,relationGetIntace);
+        columGetMap.put(columName, fieldGetProxy);
     }
 
-    public RelationGetIntace getRedisKeyGetInace() {
+    public FieldGetProxy.FieldGet getRedisKeyGetInace() {
         return redisKeyGetInace;
     }
 
-    public void setRedisKeyGetInace(RelationGetIntace redisKeyGetInace) {
+    public void setRedisKeyGetInace(FieldGetProxy.FieldGet redisKeyGetInace) {
         this.redisKeyGetInace = redisKeyGetInace;
     }
 
@@ -102,7 +95,11 @@ public class DBTable {
         fieldRelationMap.put(relationData.getFieldName(),relationData);
     }
 
-    public Map<String, RelationGetIntace> getColumGetMap() {
+    public Map<String, FieldGetProxy.FieldGet> getColumGetMap() {
         return columGetMap;
+    }
+
+    public String redisKey(Object uniqueid){
+        return getName()+"."+uniqueid;
     }
 }

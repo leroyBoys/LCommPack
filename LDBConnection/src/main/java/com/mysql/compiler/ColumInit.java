@@ -12,20 +12,32 @@ import java.sql.SQLException;
  */
 public class ColumInit{
     private SqlTypeToJava sqlTypeToJava;
-    public void setSqlTypeToJava(SqlTypeToJava sqlTypeToJava) {
+    private String fieldName;
+    public void setSqlTypeToJava(SqlTypeToJava sqlTypeToJava,String fieldName) {
         this.sqlTypeToJava = sqlTypeToJava;
+        this.fieldName = fieldName;
     }
 
-    public void set(Object obj, ResultSet rs, String colum) throws SQLException {
+    public final void set(Object obj, ResultSet rs, String colum) throws SQLException {
+        this.set(obj,sqlTypeToJava.get(rs,colum));
+    }
+
+    public final void set(Object obj, ResultSet rs, int index) throws SQLException {
+        this.set(obj,sqlTypeToJava.get(rs,index));
+
+    }
+
+    public final void setFromRedis(Object obj,Object fieldValue) throws SQLException {
+        this.set(obj,sqlTypeToJava.formtDataFromDb(fieldValue));
+    }
+
+    public final void set(Object obj,Object fieldValue){
         try {
-            this.set(obj,sqlTypeToJava.get(rs,colum));
+            this.doSet(obj,fieldValue);
         }catch (Exception ex){
-            PrintTool.error("class:"+obj.getClass().getSimpleName()+"  colum:"+colum+" not find match sqlTypeToJava",ex);
+            PrintTool.error("class:"+obj.getClass().getSimpleName()+"  fieldName:"+fieldName+"  fieldValue:"+fieldValue,ex);
         }
     }
 
-    public void set(Object obj, ResultSet rs, int index) throws SQLException {
-        this.set(obj,sqlTypeToJava.get(rs,index));
-    }
-    public void set(Object obj,Object v){}
+    protected void doSet(Object obj,Object fieldValue){}
 }

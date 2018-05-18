@@ -67,7 +67,7 @@ public class PrintTool {
 
     public static void error(String info,Exception e){
         e.printStackTrace();
-        //System.out.println(info);
+        System.out.println(info);
     }
 
     public static void error(Class info,Exception e){

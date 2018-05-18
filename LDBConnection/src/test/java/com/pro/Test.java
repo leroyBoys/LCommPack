@@ -1,6 +1,7 @@
 package com.pro;
 
 import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.serializer.SimplePropertyPreFilter;
 import com.dyuproject.protostuff.LinkedBuffer;
 import com.dyuproject.protostuff.ProtostuffIOUtil;
 import com.dyuproject.protostuff.Schema;
@@ -9,26 +10,59 @@ import com.lgame.util.PrintTool;
 import com.lgame.util.json.FastJsonTool;
 import com.lgame.util.json.JsonUtil;
 import com.lgame.util.time.DateTimeTool;
+import com.redis.entity.RedisKey;
+import com.test.TestData;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.io.IOException;
+import java.util.*;
 
 public class Test {
     static int size = 100000;
 
     @org.junit.Test
     public void test() throws Exception {
-        protoBuffStf();
+     //   protoBuffStf_read();
+       /* protoBuffStf();
         protoBuffStf_read();
        // protoBuff();
       //  fastJson();
       //  protoBuffBaidu_read();
-
    //     protoBuff();
         json_read();
-        json();
 
+*/
+   //     json_read();
+        fastJson_read();
     }
+
+    public void protoBuffStr() throws IOException {
+        String str = "sdfsdfsdfs2dfsdfsd";
+        PrintTool.outTime("1","====");
+
+        RedisKey redisKey =  new RedisKey() {
+            @Override
+            public boolean isSynFromDb() {
+                return false;
+            }
+
+            @Override
+            public Object queryFromDb(Object... paramters) {
+                return null;
+            }
+
+            @Override
+            public String getKey(Object... paramters) {
+                return null;
+            }
+        };
+        byte[] bytes;
+     /*   for(int i = 0;i<size;i++){
+           resetExpire("key",redisKey);
+        }*/
+
+        PrintTool.outTime("1","====over");
+    }
+
 /*
 
    public List<Products2.Products22> _deserializeProtoBufDataListToProducts22List(
@@ -96,13 +130,15 @@ public class Test {
     public void protoBuffStf_read() throws Exception {
         Products products = getProDucts();
         Schema<Products> schema = RuntimeSchema.getSchema(Products.class);
+
         byte[]  bytes = ProtostuffIOUtil.toByteArray(products, schema, LinkedBuffer.allocate(LinkedBuffer.DEFAULT_BUFFER_SIZE));
         PrintTool.outTime("1","====");
 
         Products product = null;
         for(int i = 0;i<size;i++){
-            product = new Products();
-            ProtostuffIOUtil.mergeFrom(bytes, product, schema);
+            bytes = ProtostuffIOUtil.toByteArray(products, schema, LinkedBuffer.allocate(LinkedBuffer.DEFAULT_BUFFER_SIZE));
+           /* product = new Products();
+            ProtostuffIOUtil.mergeFrom(bytes, product, schema);*/
         }
         PrintTool.outTime("1","====over");
         System.out.println(product.getL4());
@@ -110,18 +146,18 @@ public class Test {
 
 
     public void protoBuffStf() throws Exception {
-        Products products = getProDucts();
+        TestData products = new TestData();
         byte[] bytes = null;
-        Schema<Products> schema = RuntimeSchema.getSchema(Products.class);
+        Schema<TestData> schema = RuntimeSchema.getSchema(TestData.class);
         PrintTool.outTime("1","====");
 
 
         for(int i = 0;i<size;i++){
-            bytes = ProtostuffIOUtil.toByteArray(products, schema, LinkedBuffer.allocate(4096));
+            bytes = ProtostuffIOUtil.toByteArray(products, schema, LinkedBuffer.allocate(LinkedBuffer.DEFAULT_BUFFER_SIZE));
         }
 
         PrintTool.outTime("1","====over");
-        Products product = new Products();
+        TestData product = new TestData();
         ProtostuffIOUtil.mergeFrom(bytes, product, schema);
         System.out.println(JsonUtil.getJsonFromBean(product));
     }
@@ -197,12 +233,26 @@ public class Test {
         PrintTool.outTime("1","=fastJson===over:"+jsonString);
     }
 
-    private void fastJson_read(){
+    private void fastJson_read() throws Exception {
         Products products = getProDucts();
-        String  jsonString = JSON.toJSONString(products);
+
+     /*   SimplePropertyPreFilter filter = new SimplePropertyPreFilter( products.getClass(),"s2","s1");
+        String  jsonString = JSON.toJSONString(products,filter);*/
+
+      //  RedisConnectionImpl master = new RedisConnectionImpl("redis://0@192.168.11.133:6378/123456");
+
+        SimplePropertyPreFilter filter = new SimplePropertyPreFilter( products.getClass(),"s2","s1");
+      //  SerializeConfig.globalInstance.addFilter(products.getClass(),filter);
+        Map<String,String> alisMap = new HashMap<>();
+       // alisMap.put("l1","bbbbbbbbsds");
+        System.out.println(JSON.toJSONString(products));
         PrintTool.outTime("1","====");
-        for(int i = 0;i<size;i++){
-            products = JSON.parseObject(jsonString,Products.class);
+        for(int i = 0;i<1;i++){
+        //    System.out.println(jsonString);
+       //     JavaBeanSerializer javaBeanSerializer = (JavaBeanSerializer) SerializeConfig.globalInstance.getObjectWriter(products.getClass());
+            products = (Products) JsonUtil.getBeanFromJson(JsonUtil.getJsonFromBean(alisMap),Products.class);
+            //products = (Products) FastJsonTool.getBeanFromJson(FastJsonTool.getJsonFromBean(maps),Products.class);
+            System.out.println(JsonUtil.getJsonFromBean(products));
         }
 
         PrintTool.outTime("1","=fastJson===over:"+products.getS5());
@@ -210,7 +260,7 @@ public class Test {
 
 
 
-    private Products getProDucts(){
+    public static Products getProDucts(){
         Products products = new Products();
         products.setB1(true);
         products.setB2(true);

@@ -1,7 +1,7 @@
 package com.mysql.compiler;
 
-import com.mysql.entity.DBDesc;
-import com.mysql.entity.RedisCache;
+import com.mysql.entity.LQDBTable;
+import com.redis.entity.RedisCache;
 
 import java.io.File;
 import java.io.FileFilter;
@@ -116,7 +116,7 @@ public class ClassScanner {
     }
 
     private static void addClass(Set<Class<?>> classes,Class cls){
-        if(cls == null || (cls.getAnnotation(DBDesc.class) == null && cls.getAnnotation(RedisCache.class) == null) ){
+        if(cls == null || (cls.getAnnotation(LQDBTable.class) == null && cls.getAnnotation(RedisCache.class) == null) ){
             return;
         }
         classes.add(cls);

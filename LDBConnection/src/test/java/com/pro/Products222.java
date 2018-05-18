@@ -1,7 +1,8 @@
 package com.pro;
 
+import com.alibaba.fastjson.annotation.JSONField;
+import com.mysql.entity.LQDBTable;
 import com.mysql.entity.LQField;
-import com.redis.entity.RedisCache;
 
 import java.util.Date;
 import java.util.List;
@@ -9,84 +10,52 @@ import java.util.List;
 /**
  * 商品类
  */
-@RedisCache(keyMethodName = "getS1")
-public class Products {
-    @LQField(name = "names1")
+@LQDBTable
+public class Products222 {
+    @LQField
+    @JSONField(name="name",serialize=false)
     private String s1;
     @LQField
     private String s2;
     @LQField
     private String s3;
-    @LQField
     private String s4;
-    @LQField
     private String s5;
-    @LQField
     private String s6;
-    @LQField
     private String s7;
-    @LQField
     private String s8;
-    @LQField
     private String s9;
-    @LQField(name = "ndate")
     private Date date;
-    private Products products;
+    private Products222 products;
 
-    @LQField
     private int i1;
-    @LQField
     private int i2;
-    @LQField
     private int i3;
-    @LQField
     private int i4;
-    @LQField
     private int i5;
-    @LQField
     private int i6;
-    @LQField
     private int i7;
-    @LQField
     private int i8;
-    @LQField
     private int i9;
 
-    @LQField
     private boolean  b1;
-    @LQField
     private boolean  b2;
-    @LQField
     private boolean  b3;
-    @LQField
     private boolean  b4;
-    @LQField
     private boolean  b5;
-    @LQField
     private boolean  b6;
-    @LQField
     private boolean  b7;
-    @LQField
     private boolean  b8;
-    @LQField
     private boolean  b9;
 
     private List<String> list;
-    @LQField
     private long l1;
-    @LQField
     private long l2;
-    @LQField
     private long l3;
-    @LQField
     private long l4;
-    @LQField
     private long l5;
-    @LQField
     private long l6;
-    @LQField
     private long l7;
-    @LQField
     private long l8;
     private long l9;
     public long getL9() {
@@ -133,11 +102,11 @@ public class Products {
         this.date = date;
     }
 
-    public Products getProducts() {
+    public Products222 getProducts() {
         return products;
     }
 
-    public void setProducts(Products products) {
+    public void setProducts(Products222 products) {
         this.products = products;
     }
 
@@ -401,15 +370,15 @@ public class Products {
         this.list = list;
     }
 
-    public Products(){
+    public Products222(){
 
     }
 
-    public Products(String s1, String s2, String s3, String s4, String s5,
-                    String s6, String s7, String s8, String s9, int i1, int i2, int i3,
-                    int i4, int i5, int i6, int i7, int i8, int i9, boolean b1,
-                    boolean b2, boolean b3, boolean b4, boolean b5, boolean b6,
-                    boolean b7, boolean b8, boolean b9, List<String> list) {
+    public Products222(String s1, String s2, String s3, String s4, String s5,
+                       String s6, String s7, String s8, String s9, int i1, int i2, int i3,
+                       int i4, int i5, int i6, int i7, int i8, int i9, boolean b1,
+                       boolean b2, boolean b3, boolean b4, boolean b5, boolean b6,
+                       boolean b7, boolean b8, boolean b9, List<String> list) {
         super();
         this.s1 = s1;
         this.s2 = s2;

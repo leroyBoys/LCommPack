@@ -58,4 +58,21 @@ public class ReflectionTool {
 
         return null;
     }
+
+    /**
+     * 判断某个类是否是指定接口的实现类
+     * @param cls
+     * @param interFaceClss
+     * @return
+     */
+    public static boolean isInterFace(Class cls,Class interFaceClss){
+        Class[] classes = cls.getInterfaces();
+        for(Class c:classes){
+            if(c == interFaceClss){
+                return true;
+            }
+        }
+
+        return false;
+    }
 }

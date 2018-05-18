@@ -10,6 +10,6 @@ import static java.lang.annotation.ElementType.TYPE;
  */
 @Target(TYPE)
 @Retention(RetentionPolicy.RUNTIME)
-public @interface DBDesc {
+public @interface LQDBTable {
     String name() default "";
 }

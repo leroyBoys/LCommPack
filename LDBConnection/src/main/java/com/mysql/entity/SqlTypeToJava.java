@@ -1,5 +1,6 @@
 package com.mysql.entity;
 
+import com.lgame.util.comm.StringTool;
 import com.mysql.compiler.ScanEntitysTool;
 
 import java.math.BigDecimal;
@@ -38,6 +39,31 @@ public class SqlTypeToJava {
         sqlTypsMap.put(java.net.URL.class,new URLToJava());
     }
 
+
+    public Object get(ResultSet rs,String colum) throws SQLException {
+        return rs.getString(colum);
+    }
+
+    public Object get(ResultSet rs,int index) throws SQLException {
+        return rs.getString(index);
+    }
+
+    public Object formtDataFromDb(Object value) throws SQLException {
+        if(value == null || !(value instanceof String)){
+            return value;
+        }
+        return formtDataTypeFromDb(value.toString());
+    }
+
+    protected Object formtDataTypeFromDb(String value) throws SQLException {
+        return value;
+    }
+
+    public static SqlTypeToJava get(Class<?> type) {
+        return sqlTypsMap.get(type);
+    }
+
+
     public static class EnumIntJava extends SqlTypeToJava{
         protected Class enumClass;
         public EnumIntJava(Class enumClss){
@@ -52,6 +78,7 @@ public class SqlTypeToJava {
         public Object get(ResultSet rs,int index) throws SQLException {
             return  ScanEntitysTool.getEnum(enumClass,rs.getInt(index));
         }
+
     }
 
     public static class EnumStringJava extends SqlTypeToJava{
@@ -92,20 +119,9 @@ public class SqlTypeToJava {
             }
             return Enum.valueOf(enumClass,str);
         }
+
     }
 
-
-    public Object get(ResultSet rs,String colum) throws SQLException {
-        return rs.getString(colum);
-    }
-
-    public Object get(ResultSet rs,int index) throws SQLException {
-        return rs.getString(index);
-    }
-
-    public static SqlTypeToJava get(Class<?> type) {
-        return sqlTypsMap.get(type);
-    }
 
     public static class IntToJava extends SqlTypeToJava{
         @Override
@@ -115,6 +131,10 @@ public class SqlTypeToJava {
 
         public Object get(ResultSet rs,int index) throws SQLException {
             return rs.getInt(index);
+        }
+
+        protected Object formtDataTypeFromDb(String value) throws SQLException {
+            return Integer.valueOf(value);
         }
     }
 
@@ -127,6 +147,9 @@ public class SqlTypeToJava {
         public Object get(ResultSet rs,int index) throws SQLException {
             return rs.getFloat(index);
         }
+        protected Object formtDataTypeFromDb(String value) throws SQLException {
+            return Float.valueOf(value);
+        }
     }
 
     public static class DoubleToJava extends SqlTypeToJava{
@@ -137,6 +160,10 @@ public class SqlTypeToJava {
 
         public Object get(ResultSet rs,int index) throws SQLException {
             return rs.getDouble(index);
+        }
+
+        protected Object formtDataTypeFromDb(String value) throws SQLException {
+            return Double.valueOf(value);
         }
     }
 
@@ -149,6 +176,10 @@ public class SqlTypeToJava {
         public Object get(ResultSet rs,int index) throws SQLException {
             return rs.getBigDecimal(index);
         }
+
+        protected Object formtDataTypeFromDb(String value) throws SQLException {
+            return new BigDecimal(value);
+        }
     }
 
     public static class ByteStreamToJava extends SqlTypeToJava{
@@ -159,6 +190,10 @@ public class SqlTypeToJava {
 
         public Object get(ResultSet rs,int index) throws SQLException {
             return rs.getByte(index);
+        }
+
+        protected Object formtDataTypeFromDb(String value) throws SQLException {
+            return Byte.valueOf(value);
         }
     }
 
@@ -171,6 +206,7 @@ public class SqlTypeToJava {
         public Object get(ResultSet rs,int index) throws SQLException {
             return rs.getBytes(index);
         }
+
     }
 
     public static class UDateToJava extends SqlTypeToJava{
@@ -190,6 +226,7 @@ public class SqlTypeToJava {
             }
             return new java.util.Date(timestamp.getTime());
         }
+
     }
 
     public static class DateToJava extends SqlTypeToJava{
@@ -221,6 +258,10 @@ public class SqlTypeToJava {
 
         public Object get(ResultSet rs,int index) throws SQLException {
             return rs.getLong(index);
+        }
+
+        protected Object formtDataTypeFromDb(String value) throws SQLException {
+            return Long.valueOf(value);
         }
     }
 
@@ -262,6 +303,10 @@ public class SqlTypeToJava {
         }
         public Object get(ResultSet rs,int index) throws SQLException {
             return rs.getBoolean(index);
+        }
+
+        protected Object formtDataTypeFromDb(String value) throws SQLException {
+            return Boolean.valueOf(value);
         }
     }
 

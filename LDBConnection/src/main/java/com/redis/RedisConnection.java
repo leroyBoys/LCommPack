@@ -1,20 +1,9 @@
 package com.redis;
 
-import com.dyuproject.protostuff.LinkedBuffer;
-import com.dyuproject.protostuff.ProtostuffIOUtil;
-import com.lgame.util.PrintTool;
 import com.lgame.util.comm.StringTool;
-import com.lgame.util.comm.TimeCacheManager;
-import com.mysql.compiler.ScanEntitysTool;
-import com.mysql.entity.DBTable;
-import redis.clients.jedis.BinaryClient;
-import redis.clients.jedis.Jedis;
-import redis.clients.jedis.JedisPool;
-import redis.clients.jedis.JedisPoolConfig;
+import redis.clients.jedis.*;
 
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 /**
  * Created by leroy:656515489@qq.com
@@ -63,62 +52,6 @@ public class RedisConnection {
         config.setMaxWaitMillis(-1);
 
         jedisPool = new JedisPool(config, host, port, timeout, password, db);
-    }
-
-    public <T> T ExeuteQuery(Class<T> cls,Object uniqueId){
-        DBTable table = ScanEntitysTool.getDBTable(cls);
-        if(table == null){
-            PrintTool.error(cls.getName()+" not config redis ");
-            return null;
-        }
-
-        String key = key(table,uniqueId);
-        try {
-            byte[] keys = StringTool.hex2byte(key);
-            keys = get(keys);
-            if(keys == null){
-                return null;
-            }
-
-            T t = cls.newInstance();
-            ProtostuffIOUtil.mergeFrom(keys, t, table.getSchema());
-            return t;
-        }catch (Exception e){
-            e.printStackTrace();
-        }
-        return null;
-    }
-
-    private String key(DBTable table,Object uniqueid){
-        return table.getName()+"."+uniqueid;
-    }
-
-    public void Exeute(Object obj){
-        DBTable table = ScanEntitysTool.getDBTable(obj.getClass());
-        if(table == null){
-            PrintTool.error(obj.getClass().getName()+" not config redis ");
-            return;
-        }
-
-        String key = key(table,table.getRedisKeyGetInace().get(obj));
-        try {
-            byte[] keys = StringTool.hex2byte(key);
-            this.set(keys, ProtostuffIOUtil.toByteArray(obj, table.getSchema(), LinkedBuffer.allocate(LinkedBuffer.DEFAULT_BUFFER_SIZE)));
-
-            if(table.getRedisCache().expire() > 0){
-                if(table.getRedisCache().expireAt() > 0){
-                    long endTime = TimeCacheManager.getInstance().getCurTime()+table.getRedisCache().expire()*1000;
-                    endTime = Math.min(endTime,table.getRedisCache().expireAt());
-                    this.expireAt(keys,endTime);
-                    return;
-                }
-                this.expire(keys,table.getRedisCache().expire());
-            }else {
-                this.expireAt(keys,table.getRedisCache().expireAt());
-            }
-        }catch (Exception e){
-            e.printStackTrace();
-        }
     }
 
     /**
@@ -627,6 +560,20 @@ public class RedisConnection {
         return res;
     }
 
+    public String hmset(byte[] key, Map<byte[], byte[]> hash) {
+        Jedis jedis = null;
+        String res = null;
+        try {
+            jedis = jedisPool.getResource();
+            res = jedis.hmset(key, hash);
+        } catch (Exception e) {
+            logException(e);
+        } finally {
+            returnResource(jedisPool, jedis);
+        }
+        return res;
+    }
+
     /**
      * <p>通过key 和 field 获取指定的 value</p>
      *
@@ -747,6 +694,21 @@ public class RedisConnection {
 
     }
 
+    public Long hlen(byte[] key) {
+        Jedis jedis = null;
+        Long res = null;
+        try {
+            jedis = jedisPool.getResource();
+            res = jedis.hlen(key);
+        } catch (Exception e) {
+            logException(e);
+        } finally {
+            returnResource(jedisPool, jedis);
+        }
+        return res;
+
+    }
+
     /**
      * <p>通过key 删除指定的 field </p>
      *
@@ -755,6 +717,20 @@ public class RedisConnection {
      * @return
      */
     public Long hdel(String key, String... fields) {
+        Jedis jedis = null;
+        Long res = null;
+        try {
+            jedis = jedisPool.getResource();
+            res = jedis.hdel(key, fields);
+        } catch (Exception e) {
+            logException(e);
+        } finally {
+            returnResource(jedisPool, jedis);
+        }
+        return res;
+    }
+
+    public Long hdel(byte[] key, byte[]... fields) {
         Jedis jedis = null;
         Long res = null;
         try {
@@ -788,6 +764,20 @@ public class RedisConnection {
         return res;
     }
 
+    public Set<byte[]> hkeys(byte[] key) {
+        Jedis jedis = null;
+        Set<byte[]> res = null;
+        try {
+            jedis = jedisPool.getResource();
+            res = jedis.hkeys(key);
+        } catch (Exception e) {
+            logException(e);
+        } finally {
+            returnResource(jedisPool, jedis);
+        }
+        return res;
+    }
+
     /**
      * <p>通过key返回所有和key有关的value</p>
      *
@@ -808,15 +798,28 @@ public class RedisConnection {
         return res;
     }
 
+    public Map<String, String> hgetAll(String key) {
+        Jedis jedis = null;
+        Map<String, String> res = null;
+        try {
+            jedis = jedisPool.getResource();
+            res = jedis.hgetAll(key);
+        } catch (Exception e) {
+            logException(e);
+        } finally {
+            returnResource(jedisPool, jedis);
+        }
+        return res;
+    }
+
     /**
-     * <p>通过key获取所有的field和value</p>
-     *
+     * 效率很低
      * @param key
      * @return
      */
-    public Map<String, String> hgetall(String key) {
+    public Map<byte[], byte[]> hgetAll(byte[] key) {
         Jedis jedis = null;
-        Map<String, String> res = null;
+        Map<byte[], byte[]> res = null;
         try {
             jedis = jedisPool.getResource();
             res = jedis.hgetAll(key);

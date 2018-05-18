@@ -1,7 +1,7 @@
 package com.mysql.entity;
 
 import com.mysql.compiler.ColumInit;
-import com.mysql.compiler.RelationGetIntace;
+import com.mysql.compiler.FieldGetProxy;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.ParameterizedType;
@@ -15,18 +15,18 @@ import java.util.*;
 public class RelationData {
     private String fieldName;
     private Class fieldClass;
-    private RelationGetIntace relationGetIntace;
+    private FieldGetProxy fieldGetProxy;
     private ColumInit columInit;
     private NewInstance newInstance;
     private DBRelations reltaion;
     private int count;
     private Map<String,ColumInit> colums_target_map;
 
-    public RelationData(String fieldName, DBRelations dbRelations, int count,Field field,RelationGetIntace relationGetIntace,ColumInit columInit) {
+    public RelationData(String fieldName, DBRelations dbRelations, int count, Field field, FieldGetProxy fieldGetProxy, ColumInit columInit) {
         this.fieldName = fieldName;
         this.count = count;
         this.columInit = columInit;
-        this.relationGetIntace = relationGetIntace;
+        this.fieldGetProxy = fieldGetProxy;
         colums_target_map = new HashMap<>(count);
         reltaion = dbRelations;
         if(dbRelations.relation()== DBRelations.Reltaion.OneToMany){
@@ -77,8 +77,8 @@ public class RelationData {
         return colums_target_map;
     }
 
-    public RelationGetIntace getRelationGetIntace() {
-        return relationGetIntace;
+    public FieldGetProxy getFieldGetProxy() {
+        return fieldGetProxy;
     }
 
     public NewInstance getNewInstance() {

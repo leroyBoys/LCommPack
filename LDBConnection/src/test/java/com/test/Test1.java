@@ -1,18 +1,18 @@
 package com.test;
 
-import com.mysql.entity.DBDesc;
-import com.mysql.entity.DbColum;
+import com.mysql.entity.LQDBTable;
+import com.mysql.entity.LQField;
 
 /**
  * Created by leroy:656515489@qq.com
  * 2018/5/4.
  */
-@DBDesc(name = "test1")
+@LQDBTable(name = "test1")
 public class Test1 {
-    @DbColum
+    @LQField
     private int id;
     private int TestData;
-    @DbColum
+    @LQField
     private String name;
 
     public int getId() {

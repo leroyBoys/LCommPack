@@ -4,7 +4,7 @@ import com.lgame.util.PrintTool;
 import com.mysql.DbCallBack;
 import com.mysql.SqlDataSource;
 import com.mysql.compiler.ColumInit;
-import com.mysql.compiler.RelationGetIntace;
+import com.mysql.compiler.FieldGetProxy;
 import com.mysql.compiler.ScanEntitysTool;
 import com.mysql.entity.*;
 
@@ -212,7 +212,7 @@ public class JdbcTemplate implements SqlDataSource {
                 return false;
             }
 
-            Object id = table.getColumGetMap().get(table.getIdColumName()).get(instance);
+            Object id = table.getColumGetMap().get(table.getIdColumName()).formatToDbData(instance);
             if(id != null && Long.valueOf(id.toString())>0){
 
                 sql = updateSql(instance,table);
@@ -249,7 +249,7 @@ public class JdbcTemplate implements SqlDataSource {
         values.append("  ( ");
         int i = 0;
         Object object;
-        for(Map.Entry<String,RelationGetIntace> entry:table.getColumGetMap().entrySet()){
+        for(Map.Entry<String,FieldGetProxy.FieldGet> entry:table.getColumGetMap().entrySet()){
             if(entry.getKey() == table.getIdColumName()){
                 continue;
             }
@@ -259,7 +259,7 @@ public class JdbcTemplate implements SqlDataSource {
                 values.append(" , ");
             }
             names.append("`").append(entry.getKey()).append("`");
-            object =  entry.getValue().get(instance);
+            object =  entry.getValue().formatToDbData(instance);
             if(object == null){
                 values.append("null");
             }else{
@@ -279,14 +279,14 @@ public class JdbcTemplate implements SqlDataSource {
         sql.append("  set ");
         int i = 0;
         Object object;
-        for(Map.Entry<String,RelationGetIntace> entry:table.getColumGetMap().entrySet()){
+        for(Map.Entry<String,FieldGetProxy.FieldGet> entry:table.getColumGetMap().entrySet()){
             if(entry.getKey() == table.getIdColumName()){
                 continue;
             }
             if(i > 0){
                 sql.append(" , ");
             }
-            object =  entry.getValue().get(instance);
+            object =  entry.getValue().formatToDbData(instance);
             sql.append(entry.getKey()).append("=");
             if(object == null){
                 sql.append("null");
@@ -295,7 +295,7 @@ public class JdbcTemplate implements SqlDataSource {
             }
             i++;
         }
-        sql.append("  where id = ").append(table.getColumGetMap().get(table.getIdColumName()).get(instance));
+        sql.append("  where id = ").append(table.getColumGetMap().get(table.getIdColumName()).formatToDbData(instance));
         return sql.toString();
     }
 
@@ -425,8 +425,8 @@ public class JdbcTemplate implements SqlDataSource {
             cn = getConnection();
 
             ps = cn.prepareStatement(cmd);
-            SetParameter(ps, p);
 
+            SetParameter(ps, p);
             rs =  ps.executeQuery();
             JdbcColumsArray jdbcColumsArray = getJdbcColumsArray(rs,cls,cmd,dbTable);
 

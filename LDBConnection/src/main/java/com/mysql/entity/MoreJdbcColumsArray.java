@@ -2,11 +2,8 @@ package com.mysql.entity;
 
 import com.lgame.util.PrintTool;
 import com.mysql.compiler.ColumInit;
-import com.mysql.compiler.ScanEntitysTool;
 
 import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
@@ -83,7 +80,7 @@ public class MoreJdbcColumsArray extends JdbcColumsArray{
             }
 
             if(relationData.isOneToMany()){
-                obj = relationData.getRelationGetIntace().get(t);
+                obj = relationData.getFieldGetProxy().get(t);
                 if(obj == null){
                     obj = relationData.getNewInstance().create();
                     relationData.getColumInit().set(t,obj);

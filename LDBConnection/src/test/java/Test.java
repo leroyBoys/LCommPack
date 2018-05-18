@@ -1,19 +1,32 @@
+import com.dyuproject.protostuff.LinkedBuffer;
+import com.dyuproject.protostuff.ProtostuffIOUtil;
+import com.dyuproject.protostuff.Schema;
+import com.dyuproject.protostuff.runtime.RuntimeSchema;
 import com.lgame.util.PrintTool;
 import com.lgame.util.comm.StringTool;
 import com.lgame.util.file.PropertiesTool;
+import com.lgame.util.json.FastJsonTool;
 import com.lgame.util.json.JsonUtil;
 import com.lgame.util.thread.TaskIndieThread;
 import com.lgame.util.thread.TaskPools;
 import com.module.GameServer;
 import com.mysql.compiler.ScanEntitysTool;
+import com.mysql.entity.DBTable;
+import com.mysql.entity.LQDBEnum;
 import com.mysql.impl.JdbcTemplate;
+import com.pro.Products;
+import com.redis.entity.MapRedisSerializer;
+import com.redis.entity.RedisKey;
+import com.redis.impl.RedisConnectionImpl;
 import com.test.TestData;
+import com.test.TestEnum;
+import com.test.TestEnum2;
 
 import java.lang.reflect.Method;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
+
+import static com.pro.Test.getProDucts;
 
 /**
  * Created by Administrator on 2017/4/2.
@@ -43,8 +56,19 @@ public class Test {
     }
     @org.junit.Test
     public void thres() throws Exception {
+    //    dbTest();
+     //   redisTest();
         testJdkReflect();
-     //   go();
+        //RedisConnectionImpl redisConnectionManager = new RedisConnectionImpl("redis://0@192.168.11.128:3307");
+       /* RedisConnectionImpl redisConnectionManager = new RedisConnectionImpl("redis://0@192.168.11.133:6378/123456");
+        PrintTool.outTime("1","=PrintTool==>");
+
+        redisConnectionManager.set("abc","sss");
+        System.out.println(redisConnectionManager.get("abc"));
+        PrintTool.outTime("1","=PrintTool==>");*/
+
+     //   redisConnectionManager.test();
+        //   go();
       //  testReflectAsm();
      //   tttDB22();
 
@@ -59,16 +83,115 @@ public class Test {
         System.out.println( res.getDeepSize() );*/
     }
 
+    private void redisTest() throws Exception {
+     //   RedisConnectionImpl master = new RedisConnectionImpl("redis://0@192.168.11.133:6378/123456");
+        RedisConnectionImpl master = new RedisConnectionImpl("redis://0@192.168.11.128:3307");
+        Map<String,String> map = new HashMap<>();
+        for(int i =0;i<100;i++){
+            map.put("str"+i,"str"+i);
+        }
+
+        String key = "test-ls";
+        master.hmset(key,map);
 
 
-    public static void testJdkReflect() throws Exception {
+
+        ScanEntitysTool.scan("com.pro");
+        Products products = getProDucts();
+
+        DBTable dbTable = ScanEntitysTool.getDBTable(products.getClass());
+        MapRedisSerializer mapRedisSerializer = (MapRedisSerializer) dbTable.getRedisSerializer();
+       // map = mapRedisSerializer.serializer_single(products);
+        System.out.println(JsonUtil.getJsonFromBean(map));
+
+        String[] arr = new String[map.size()];
+        map.keySet().toArray(arr);
+        int  size = 1000000;
+        String json = FastJsonTool.getJsonFromBean(products);
+        PrintTool.outTime("1","=PrintTool==>");
+
+        for(int i =0;i<size;i++){
+         //   products = (Products) mapRedisSerializer.mergeFrom_single(arr,map,dbTable,products.getClass());
+//            master.hgetAll(key);
+           // mapRedisSerializer.serializer_single(products);
+           // FastJsonTool.getBeanFromJson(json,Products.class);
+            //master.hgetAll2(key,map);
+          //  master.get("abd");
+        }
+
+        PrintTool.outTime("1","=PrintTool==>");
+
+
+
+
+    }
+
+    private void dbTest() throws Exception {
         ScanEntitysTool.scan("com.test");
         String sql = "SELECT * FROM `test_data`";
         JdbcTemplate db = new JdbcTemplate(JdbcTemplate.DataSourceType.Hikari,PropertiesTool.loadProperty("hikari_db.properties"));
+        List<TestData> datas = db.ExecuteQuery(TestData.class,sql);
+        TestData data = datas.get(1);
+        data.setName("逗你玩");
+        data.setTestEnum(TestEnum.Name);
+        data.setTestEnum2(TestEnum2.More);
+        db.ExecuteEntity(data);
+    }
 
 
+    public static void testJdkReflect() throws Exception {
+
+        ScanEntitysTool.scan("com.test");
+        String sql = "SELECT * FROM `test_data`";
+        JdbcTemplate db = new JdbcTemplate(JdbcTemplate.DataSourceType.Hikari,PropertiesTool.loadProperty("hikari_db.properties"));
+   //     RedisConnectionImpl redisConnectionManager = new RedisConnectionImpl("redis://0@127.0.0.1:6379");
+      // RedisConnectionImpl redisConnectionManager = new RedisConnectionImpl("redis://0@192.168.11.128:3307");
+        RedisConnectionImpl redisConnectionManager = new RedisConnectionImpl("redis://0@192.168.11.133:63781/123456");
+        RedisConnectionImpl sleav1 = new RedisConnectionImpl("redis://0@192.168.11.133:63782/123456");
+
+        RedisConnectionImpl master = new RedisConnectionImpl("redis://0@192.168.11.133:6378/123456");
+
+        String key ="abd";
+        master.set(key,"哈哈哈");
+        System.out.println("master:"+master.get(key));
+        Thread.sleep(100);
+        System.out.println("sleav1:"+redisConnectionManager.get(key));
+        Thread.sleep(100);
+        System.out.println("sleav1:"+sleav1.get(key));
+
+
+
+        RedisKey redisKey = new RedisKey() {
+            @Override
+            public boolean isSynFromDb() {
+                return false;
+            }
+
+            @Override
+            public Object queryFromDb(Object... paramters) {
+                return null;
+            }
+
+            @Override
+            public String getKey(Object... paramters) {
+                return paramters[0]+""+paramters[1];
+            }
+        };
 
         PrintTool.outTime("1","===>");
+        int size = 1;
+      /*  for(int i = 0;i<size;i++){
+            redisConnectionManager.hgetAll(redisKey.getKey("a",1));
+       //     redisConnectionManager.hget("fiel哈哈d2"+i,redisKey,"a",1);
+         //   redisConnectionManager.hset("fiel哈哈d2"+i, "va张三李四luess", redisKey,"a",1);
+        //    redisConnectionManager.hset("a"+1,"fiel哈哈d2"+i, "va张三李四luess");
+        }*/
+     /*   System.out.println(redisConnectionManager.hget("field", redisKey,"a",1));
+
+        String str = redisConnectionManager.hget(redisKey.getKey("a",1),"field");
+
+        System.out.println(JsonUtil.getJsonFromBean(redisConnectionManager.hgetAll(redisKey.getKey("a",1))));*/
+        PrintTool.outTime("1","=PrintTool==>");
 
  /*       for(int i = 0;i<5000;i++){
             List<TestData> testDatas =  db.ExecuteQuery(TestData.class,sql);
@@ -78,19 +201,32 @@ public class Test {
         }
 */
         List<TestData> testDatas =  db.ExecuteQuery(TestData.class,sql);
+
+        System.out.println(FastJsonTool.getJsonFromBean(testDatas));
         //     System.out.println(JsonUtil.getJsonFromBean(testDatas));
-        TestData data = testDatas.get(1);
-        data.setName("张龙赵虎");
+     /*   TestData data = testDatas.get(1);
+        data.setName("张2");*/
         PrintTool.outTime("1","==22=>");
 
+
         AtomicInteger integer = new AtomicInteger();
-        int size = 1000;
         for(int i = 0;i<size;i++){
             TaskPools.addTask(new TaskIndieThread() {
                 @Override
                 public void doExcute(Object... objects) {
-                    db.ExecuteEntity(data);
+                /*    redisConnectionManager.hset("fiel哈哈d2"+objects[0], "va张三李四luess", redisKey,"a",1);
+                    redisConnectionManager.hget("fiel哈哈d2"+objects[0],redisKey,"a",1);*/
+                   // redisConnectionManager.hgetAll(redisKey.getKey("a",1));
+                    //redisConnectionManager.hgetAll(redisKey.getKey("a",1));
+               //     db.Execute("update test_data  set num='99'   where id = "+((int)objects[0]+1453));
+                 /*   TestData data = new TestData();
+                    data.setName("张sdfsdfsdf1 ");
+                    data.setId(1453);
+                    data = redisConnectionManager.ExeuteQuery(TestData.class,1453);
                     //db.Execute("update test_data  set num='99'   where id = 22");
+                    if(10 == (int)objects[0]){
+                        System.out.println(FastJsonTool.getJsonFromBean(data));
+                    }*/
                     integer.getAndAdd(1);
                 }
             },i);
