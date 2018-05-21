@@ -1,4 +1,7 @@
 package com.lgame.util.compiler;
+
+import javax.tools.*;
+import javax.tools.JavaCompiler.CompilationTask;
 import java.io.ByteArrayOutputStream;
 import java.io.FilterOutputStream;
 import java.io.IOException;
@@ -7,12 +10,8 @@ import java.net.URI;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.nio.CharBuffer;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
-import javax.tools.*;
-import javax.tools.JavaCompiler.CompilationTask;
 /**
  *
  * In-memory compile Java source code as String.
@@ -23,63 +22,63 @@ public class JavaStringCompiler {
 
     JavaCompiler compiler;
     StandardJavaFileManager stdManager;
-
+    final Map<String, byte[]> classBytes = new HashMap<String, byte[]>();
     public JavaStringCompiler() {
         this.compiler = ToolProvider.getSystemJavaCompiler();
         this.stdManager = compiler.getStandardFileManager(null, null, null);
     }
 
+    public void close(){
+        classBytes.clear();
+    }
+
     /**
-     * Compile a Java source file in memory.
      *
-     * @param fileName
-     *            Java file name, e.g. "Test.java"
-     * @param source
-     *            The source code as String.
-     * @return The compiled results as Map that contains class name as key,
-     *         class binary as value.
+     * @param javaFiles
      * @throws IOException
-     *             If compile error.
      */
-    public Map<String, byte[]> compile(String fileName, String source) throws IOException {
+    public void compile(List<JavaFile> javaFiles) throws IOException {
         try (MemoryJavaFileManager manager = new MemoryJavaFileManager(stdManager)) {
-            JavaFileObject javaFileObject = manager.makeStringSource(fileName, source);
-            CompilationTask task = compiler.getTask(null, manager, null, null, null, Arrays.asList(javaFileObject));
+            List<JavaFileObject> jfiles = new ArrayList<>();
+            for(JavaFile javaFile:javaFiles){
+                jfiles.add(manager.makeStringSource(javaFile.getName(), javaFile.getCode()));
+            }
+            CompilationTask task = compiler.getTask(null, manager, null, null, null, jfiles);
             Boolean result = task.call();
             if (result == null || !result.booleanValue()) {
                 throw new RuntimeException("Compilation failed.");
             }
-            return manager.getClassBytes();
+
         }
     }
 
     /**
      * Load class from compiled classes.
-     *
-     * @param name
-     *            Full class name.
-     * @param classBytes
-     *            Compiled results as a Map.
-     * @return The Class instance.
+     * @param classFullname
+     * @return
      * @throws ClassNotFoundException
-     *             If class not found.
      * @throws IOException
-     *             If load error.
      */
-    public Class<?> loadClass(String name, Map<String, byte[]> classBytes) throws ClassNotFoundException, IOException {
-        try (MemoryClassLoader classLoader = new MemoryClassLoader(classBytes)) {
-            return classLoader.loadClass(name);
+    public Class<?> loadClass(String classFullname) throws ClassNotFoundException, IOException {
+        try (MemoryClassLoader classLoader = new MemoryClassLoader()) {
+            return classLoader.loadClass(classFullname);
         }
     }
 
-    static class MemoryClassLoader extends URLClassLoader {
+    public <T> T instanceClass(String classFullname) throws Exception {
+        try (MemoryClassLoader classLoader = new MemoryClassLoader()) {
+            return (T) classLoader.loadClass(classFullname).newInstance();
+        }
+    }
+
+    class MemoryClassLoader extends URLClassLoader {
 
         // class name to class bytes:
-        Map<String, byte[]> classBytes = new HashMap<String, byte[]>();
+       // Map<String, byte[]> classBytes = new HashMap<String, byte[]>();
 
-        public MemoryClassLoader(Map<String, byte[]> classBytes) {
+        public MemoryClassLoader() {
             super(new URL[0], MemoryClassLoader.class.getClassLoader());
-            this.classBytes.putAll(classBytes);
+          //  this.classBytes.putAll(classBytes);
         }
 
         @Override
@@ -93,17 +92,11 @@ public class JavaStringCompiler {
         }
     }
 
-    static class MemoryJavaFileManager extends ForwardingJavaFileManager<JavaFileManager> {
+    class MemoryJavaFileManager extends ForwardingJavaFileManager<JavaFileManager> {
 
         // compiled classes in bytes:
-        final Map<String, byte[]> classBytes = new HashMap<String, byte[]>();
-
         MemoryJavaFileManager(JavaFileManager fileManager) {
             super(fileManager);
-        }
-
-        public Map<String, byte[]> getClassBytes() {
-            return new HashMap<String, byte[]>(this.classBytes);
         }
 
         @Override
@@ -112,11 +105,11 @@ public class JavaStringCompiler {
 
         @Override
         public void close() throws IOException {
-            classBytes.clear();
+            //classBytes.clear();
         }
 
         @Override
-        public JavaFileObject getJavaFileForOutput(JavaFileManager.Location location, String className, JavaFileObject.Kind kind,
+        public JavaFileObject getJavaFileForOutput(Location location, String className, JavaFileObject.Kind kind,
                                                    FileObject sibling) throws IOException {
             if (kind == JavaFileObject.Kind.CLASS) {
                 return new MemoryOutputJavaFileObject(className);
@@ -126,10 +119,10 @@ public class JavaStringCompiler {
         }
 
         JavaFileObject makeStringSource(String name, String code) {
-            return new MemoryInputJavaFileObject(name, code);
+            return new MemoryInputJavaFileObject(name+".java", code);
         }
 
-        static class MemoryInputJavaFileObject extends SimpleJavaFileObject {
+        class MemoryInputJavaFileObject extends SimpleJavaFileObject {
 
             final String code;
 
