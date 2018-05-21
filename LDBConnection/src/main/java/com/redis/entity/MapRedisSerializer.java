@@ -16,12 +16,10 @@ import java.util.Map;
  */
 public class MapRedisSerializer extends RedisSerializer{
     /**  colum--getMethod */
-    private Map<String,FieldGetProxy.FieldGet> alias;
-    private String[] aliasArray;
+    private Map.Entry<String,FieldGetProxy.FieldGet>[] aliasArray;
     public MapRedisSerializer(Map<String,FieldGetProxy.FieldGet> alias){
-        this.alias = alias;
-        aliasArray = new String[alias.size()];
-        alias.keySet().toArray(aliasArray);
+        aliasArray = new Map.Entry[alias.size()];
+        alias.entrySet().toArray(aliasArray);
     }
 
     @Override
@@ -31,12 +29,12 @@ public class MapRedisSerializer extends RedisSerializer{
         try {
             Map<String, String> map = new HashMap<>(aliasArray.length);
             Object object;
-            for(String columName:aliasArray){
-                object = alias.get(columName).formatToDbData(entity);
+            for(Map.Entry<String,FieldGetProxy.FieldGet> entry:aliasArray){
+                object = entry.getValue().formatToDbData(entity);
                 if(object == null){
                     continue;
                 }
-                map.put(columName,object.toString());
+                map.put(entry.getKey(),object.toString());
             }
             redisConnection.hmset(keys,map);
 
@@ -66,13 +64,11 @@ public class MapRedisSerializer extends RedisSerializer{
             }
 
             Object entity = instance.newInstance();
-            FieldGetProxy.FieldGet fieldGet;
-            for(String columName:aliasArray){
-                fieldGet = alias.get(columName);
-                if(fieldGet == null){
+            for(Map.Entry<String,FieldGetProxy.FieldGet> entry:aliasArray){
+                if(entry.getValue() == null){
                     continue;
                 }
-                table.getColumInit(columName).setFromRedis(entity, fieldGet.formatFromDb(map.get(columName)));
+                table.getColumInit(entry.getKey()).setFromRedis(entity, entry.getValue().formatFromDb(map.get(entry.getKey())));
             }
 
             return entity;

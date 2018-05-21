@@ -1,6 +1,5 @@
 package com.mysql.entity;
 
-import com.lgame.util.comm.StringTool;
 import com.mysql.compiler.ScanEntitysTool;
 
 import java.math.BigDecimal;
@@ -119,8 +118,10 @@ public class SqlTypeToJava {
             }
             return Enum.valueOf(enumClass,str);
         }
-        public Object formtDataFromDb(Object value) throws SQLException {
-            return Enum.valueOf(enumClass,String.valueOf(value));
+
+        @Override
+        protected Object formtDataTypeFromDb(String value) throws SQLException {
+            return Enum.valueOf(enumClass,value);
         }
     }
 
