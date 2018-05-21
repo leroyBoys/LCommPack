@@ -34,7 +34,7 @@ public interface ConvertDefaultDBType<FROM> {
 
         @Override
         public Object formatFromDb(Class cls,String value) {
-            return value==null?null: ScanEntitysTool.getEnum(cls,value);
+            return value==null?null: ScanEntitysTool.getEnum(cls,Integer.valueOf(value));
         }
     }
 

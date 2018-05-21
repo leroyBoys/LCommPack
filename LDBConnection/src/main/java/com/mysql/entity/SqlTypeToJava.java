@@ -119,7 +119,9 @@ public class SqlTypeToJava {
             }
             return Enum.valueOf(enumClass,str);
         }
-
+        public Object formtDataFromDb(Object value) throws SQLException {
+            return Enum.valueOf(enumClass,String.valueOf(value));
+        }
     }
 
 

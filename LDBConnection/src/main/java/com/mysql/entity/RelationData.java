@@ -22,8 +22,8 @@ public class RelationData {
     private int count;
     private Map<String,ColumInit> colums_target_map;
 
-    public RelationData(String fieldName, DBRelations dbRelations, int count, Field field, FieldGetProxy fieldGetProxy, ColumInit columInit) {
-        this.fieldName = fieldName;
+    public RelationData(DBRelations dbRelations, int count, Field field, FieldGetProxy fieldGetProxy, ColumInit columInit) {
+        this.fieldName = field.getName();
         this.count = count;
         this.columInit = columInit;
         this.fieldGetProxy = fieldGetProxy;

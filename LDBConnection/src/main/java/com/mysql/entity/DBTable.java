@@ -5,6 +5,7 @@ import com.mysql.compiler.FieldGetProxy;
 import com.redis.entity.RedisCache;
 import com.redis.entity.RedisSerializer;
 
+import java.lang.reflect.Field;
 import java.util.HashMap;
 import java.util.Map;
 

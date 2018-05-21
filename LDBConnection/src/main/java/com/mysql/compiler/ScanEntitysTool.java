@@ -2,12 +2,13 @@ package com.mysql.compiler;
 
 import com.lgame.util.PrintTool;
 import com.lgame.util.comm.ReflectionTool;
+import com.lgame.util.compiler.JavaFile;
 import com.lgame.util.compiler.JavaStringCompiler;
 import com.mysql.entity.*;
-import com.redis.entity.ByteRedisSerializer;
 import com.redis.entity.MapRedisSerializer;
 import com.redis.entity.RedisCache;
 
+import java.io.IOException;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.lang.reflect.ParameterizedType;
@@ -79,17 +80,6 @@ public class ScanEntitysTool {
         }
 
         return fieldName.replaceFirst(String.valueOf(fistChar),prex+toUpperCase);
-      /*  String methodName = fieldName.replaceFirst(String.valueOf(fistChar),prex+toUpperCase);
-        if(methodsSet != null && !methodsSet.contains(methodName)){
-            throw new TransformationException("method :"+methodName+" not exit!");
-        }
-        return methodName;*/
-      /*  StringBuilder sb = new StringBuilder("return ((");
-        sb.append(method_obj.getName()).append(")obj).");
-        sb.append(methodName);
-        sb.append("();");*/
-        //return sb.toString();
-      //  return getMethodContentForGet(method_obj,methodName);
     }
 
     public static String getMethodContentForGet(Class method_obj,String methodName){
@@ -116,112 +106,214 @@ public class ScanEntitysTool {
                     sqlTypeToJava = new SqlTypeToJava.EnumDefaultJava(field.getType());
                 }
             }else {
-                PrintTool.info("warn:"+field.getType().getName()+" not find match sqlTypeToJava default SqlTypeToJava");
+                PrintTool.info("warn:"+field.getType().getName()+" not find match sqlTypeToJava default SqlTypeToJava default set SqlTypeToJava");
                 sqlTypeToJava = new SqlTypeToJava();
             }
         }
         return sqlTypeToJava;
     }
 
-    public static void scanClass(Set<Class<?>> classs){
-        PrintTool.outTime("ScanEntitysTool","begin scan dbEntity");
-        JavaStringCompiler javaStringCompiler = new JavaStringCompiler();
-
-        Map<Class,Map<String,LQField>> classSetMap = new HashMap<>(classs.size());
-        Map<Class,Map<String,FieldGetProxy.FieldGet>> fieldNameColumMap = new HashMap<>(classs.size());
-        Map<DBTable,Set<RelationData>> relations = new HashMap<>(classs.size());
-        Set<RelationData> tmpSet;
-        Field[] fields;
-        String newClassName;
-        Map<String, byte[]> tmpcompilers;
-        ColumInit columInit;
-        FieldGetProxy fieldGetProxy;
-        LQField lqField;
-        LQDBTable lqdbTable;
-        DBRelations dbRelations;
-        RelationData relationData;
-        SqlTypeToJava sqlTypeToJava;
-
-        Map<String,FieldGetProxy.FieldGet> methdNameMap ;
-        FieldGetProxy.FieldGet fieldGet;
-        String columName;
-        String methodName;
-       // Set<String> methodsSet;
+    private static void checkMyDbConfig(Map<Class,ClassCache> classSetMap,Set<Class<?>> classs,List<JavaFile> javaFiles){
         for(Class cls:classs){
-            DBTable dbTable = columInitMap.get(cls);
-            if(dbTable != null){
+            if(columInitMap.containsKey(cls)){
                 continue;
             }
-            lqdbTable = (LQDBTable) cls.getAnnotation(LQDBTable.class);
+
+            LQDBTable lqdbTable = (LQDBTable) cls.getAnnotation(LQDBTable.class);
             if(lqdbTable == null){
                 continue;
             }
 
-       //     methodsSet = initGetMethods(cls.getMethods()) ;
-            fields = cls.getDeclaredFields();
+            Field[] fields = cls.getDeclaredFields();
+            ClassCache classCache = new ClassCache(fields.length);
+            classCache.setLqdbTable(lqdbTable);
+            classSetMap.put(cls,classCache);
 
-            dbTable = new DBTable(lqdbTable.name());
+            for(Field field:fields){
+                LQField lqField = field.getAnnotation(LQField.class);
+                DBRelations dbRelations = field.getAnnotation(DBRelations.class);
+                if(lqField == null && dbRelations == null){
+                    continue;
+                }
+
+                String setClassName = getKey("Set",cls,field.getName());//classFinal+""+field.getName();
+                javaFiles.add(new JavaFile(setClassName,getSetClass(getMethodContentForSet(cls,field.getType(),field.getName()),setClassName)));
+
+                String getClassName = getKey("Get",cls,field.getName());//classFinal+""+field.getName();
+                String methodName = getMethodNameForGet(field.getType(),field.getName());
+                javaFiles.add(new JavaFile(getClassName,getGetClass(getMethodContentForGet(cls,methodName),getClassName)));
+
+                if(dbRelations == null){
+                    String columName = lqField.name().isEmpty()?field.getName():lqField.name();
+                    classCache.addFieldCache(field.getName(),new ClassCache.FieldCache(lqField,columName,getClassName,setClassName,field));
+                }else {
+                    classCache.addFieldCache(field.getName(),new ClassCache.FieldCache(dbRelations,getClassName,setClassName,field));
+                }
+            }
+        }
+    }
+
+    private static void checkRedisConfig(Map<Class,ClassCache> classSetMap,Set<Class<?>> classs,List<JavaFile> javaFiles){
+        for(Class cls:classs){
+            RedisCache redisCache = (RedisCache) cls.getAnnotation(RedisCache.class);
+            if(redisCache == null){
+                continue;
+            }
+
+            ClassCache classCache = classSetMap.get(cls);
+            final boolean isNewInit = classCache == null;
+            boolean isContainRedisKeyMethod = false;
+            Field[] fields = null;
+            if(classCache == null){
+                fields = cls.getDeclaredFields();
+                classCache = new ClassCache(fields.length);
+                classCache.setRedisCache(redisCache);
+                classSetMap.put(cls,classCache);
+            }else {
+                classCache.setRedisCache(redisCache);
+                isContainRedisKeyMethod = classCache.isContainMethodClass(redisCache.keyMethodName());
+            }
+
+            if(!isContainRedisKeyMethod){
+                String getClassName = getKey("metho",cls,redisCache.keyMethodName());//classFinal+""+field.getName();
+
+                classCache.setRedisKeyClassName(getClassName);
+                javaFiles.add(new JavaFile(getClassName,getGetClass(getMethodContentForGet(cls,redisCache.keyMethodName()),getClassName)));
+            }
+
+            if(!isNewInit){
+                continue;
+            }
+
+            for(Field field:fields){
+                LQField lqField = field.getAnnotation(LQField.class);
+                if(lqField == null || !lqField.redisSave()){
+                    continue;
+                }
+                String setClassName = getKey("Set",cls,field.getName());//classFinal+""+field.getName();
+                javaFiles.add(new JavaFile(setClassName,getSetClass(getMethodContentForSet(cls,field.getType(),field.getName()),setClassName)));
+
+                String getClassName = getKey("Get",cls,field.getName());//classFinal+""+field.getName();
+                String methodName = getMethodNameForGet(field.getType(),field.getName());
+                javaFiles.add(new JavaFile(getClassName,getGetClass(getMethodContentForGet(cls,methodName),getClassName)));
+
+                String columName = lqField.name().isEmpty()?field.getName():lqField.name();
+                classCache.addFieldCache(field.getName(),new ClassCache.FieldCache(lqField,columName,getClassName,setClassName,field));
+            }
+        }
+    }
+
+    public static void scanClass(Set<Class<?>> classs) throws Exception {
+        PrintTool.outTime("ScanEntitysTool","begin scan dbEntity");
+
+        Map<Class,ClassCache> classSetMap = new HashMap<>(classs.size());
+        List<JavaFile> javaFiles = new LinkedList<>();
+
+        checkMyDbConfig(classSetMap,classs,javaFiles);
+        checkRedisConfig(classSetMap,classs,javaFiles);
+
+        ////init prox class
+        JavaStringCompiler compiler = new JavaStringCompiler();
+        try {
+            compiler.compile(javaFiles);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        ///load class
+        String packName = "com.mysql.compiler.";
+        Class cls;
+        ClassCache classCache;
+        ColumInit init;
+        FieldGetProxy fieldGetProxy;
+        FieldGetProxy.FieldGet fieldGet;
+        Map<DBTable,Set<RelationData>> relations = new HashMap<>(classs.size());
+
+        for(Map.Entry<Class,ClassCache> entry:classSetMap.entrySet()){
+            cls = entry.getKey();
+            classCache = entry.getValue();
+            if(columInitMap.containsKey(cls)){
+                continue;
+            }
+
+            String name = cls.getSimpleName();
+            if(classCache.getLqdbTable() != null && !classCache.getLqdbTable().name().isEmpty()){
+                name = classCache.getLqdbTable().name();
+            }
+            DBTable dbTable = new DBTable(name);
             columInitMap.put(cls,dbTable);
 
-            Map<String,LQField> fieldsSet = new HashMap<>(fields.length);
-            classSetMap.put(cls,fieldsSet);
-
-            methdNameMap = new HashMap<>(fields.length);
-            fieldNameColumMap.put(cls,methdNameMap);
-
-            tmpSet = new HashSet<>(fields.length);
+            dbTable.setRedisCache(classCache.getRedisCache());
+            Set<RelationData> tmpSet = new HashSet<>();
             relations.put(dbTable,tmpSet);
-            for(Field field:fields){
-                try {
-                    lqField = field.getAnnotation(LQField.class);
-                    dbRelations = field.getAnnotation(DBRelations.class);
-                    if(lqField == null && dbRelations == null){
-                        continue;
-                    }
 
-                    newClassName = getKey("Set",cls,field.getName());//classFinal+""+field.getName();
-                    tmpcompilers = javaStringCompiler.compile(newClassName+".java",
-                            getSetClass(getMethodContentForSet(cls,field.getType(),field.getName()),newClassName));
-                    columInit = (ColumInit) javaStringCompiler.loadClass("com.mysql.compiler."+newClassName,tmpcompilers).newInstance();
+            Map<String,FieldGetProxy.FieldGet> getMethodClssSet = new HashMap<>();
+            if(classCache.getLqdbTable() != null){
+                for(Map.Entry<String,ClassCache.FieldCache> classEntry:classCache.getFieldCacheMap().entrySet()){
+                    ClassCache.FieldCache fieldCache = classEntry.getValue();
+                    LQField lqField = fieldCache.getLqField();
 
+                    init = compiler.instanceClass(packName+fieldCache.getMethodSetFileName());
+                    init.setSqlTypeToJava(getSqlTypeToJava(fieldCache.getField()),fieldCache.getField().getName());
 
-                    newClassName = getKey("Get",cls,field.getName());//classFinal+""+field.getName();
-                    if(lqField != null){
-                        methodName = getMethodNameForGet(field.getType(),field.getName());
-                        tmpcompilers = javaStringCompiler.compile(newClassName+".java",
-                                getGetClass(getMethodContentForGet(cls,methodName),newClassName));
-                        fieldGetProxy = (FieldGetProxy)javaStringCompiler.loadClass("com.mysql.compiler."+newClassName,tmpcompilers).newInstance();
+                    fieldGetProxy = compiler.instanceClass(packName+fieldCache.getMethodGetFileName());
+                    if(lqField != null){//colum
+                        ConvertDefaultDBType defaultDBType = getConvertDefaultDBType(fieldCache.getField(),lqField);
+                        fieldGet = new FieldGetProxy.FieldGet(fieldGetProxy,defaultDBType,fieldCache.getField().getType());
+                        dbTable.addColumInit(fieldCache.getColumName(),init,fieldGet);
 
-                        columName = lqField.name().isEmpty()?field.getName(): lqField.name();
                         if(lqField.isPrimaryKey()){
-                            dbTable.setIdColumName(columName);
+                            dbTable.setIdColumName(fieldCache.getColumName());
                         }
 
-                        ConvertDefaultDBType defaultDBType = getConvertDefaultDBType(field,lqField);
-                        fieldGet = new FieldGetProxy.FieldGet(fieldGetProxy,defaultDBType,field.getType());
-                        methdNameMap.put(methodName,fieldGet);
-                        dbTable.addColumInit(columName,columInit,fieldGet);
-                        columInit.setSqlTypeToJava(getSqlTypeToJava(field),field.getName());
-                        fieldsSet.put(columName,lqField);
-                        continue;
-                    }
-
-                    if(dbRelations != null){
-                        methodName = getMethodNameForGet(field.getType(),field.getName());
-                        tmpcompilers = javaStringCompiler.compile(newClassName+".java",
-                                getGetClass(getMethodContentForGet(cls,methodName),newClassName));
-
-                        fieldGetProxy = (FieldGetProxy)javaStringCompiler.loadClass("com.mysql.compiler."+newClassName,tmpcompilers).newInstance();
-                        relationData = new RelationData(field.getName(),dbRelations,dbRelations.map().length,field, fieldGetProxy,columInit);
+                        getMethodClssSet.put(fieldCache.getMethodGetFileName(),fieldGet);
+                    }else {
+                        RelationData relationData = new RelationData(fieldCache.getDbRelations(),fieldCache.getDbRelations().map().length,fieldCache.getField(), fieldGetProxy,init);
                         dbTable.addRelationData(relationData);
                         tmpSet.add(relationData);
                     }
 
-                } catch (Exception e) {
-                    e.printStackTrace();
                 }
             }
+
+            if(classCache.getRedisCache() != null){
+                fieldGet = getMethodClssSet.get(classCache.getRedisCache().keyMethodName());
+                if(fieldGet == null){
+                    fieldGetProxy = compiler.instanceClass(packName+classCache.getRedisKeyClassName());
+                    fieldGet = new FieldGetProxy.FieldGet(fieldGetProxy,LQField.ConvertDBType.Default.getConvertDBTypeInter(),null);
+                }
+
+                dbTable.setRedisKeyGetInace(fieldGet);
+                if(classCache.getRedisCache().type() == RedisCache.Type.Serialize){
+                    continue;
+                }
+
+                Map<String,FieldGetProxy.FieldGet> alias = new HashMap<>();
+                for(Map.Entry<String,ClassCache.FieldCache> classEntry:classCache.getFieldCacheMap().entrySet()){
+                    ClassCache.FieldCache fieldCache = classEntry.getValue();
+                    LQField lqField = fieldCache.getLqField();
+                    if(lqField == null || !lqField.redisSave()){
+                        continue;
+                    }
+
+                    fieldGet = dbTable.getColumGetMap().get(fieldCache.getColumName());
+                    if(fieldGet == null){
+                        init = compiler.instanceClass(packName+fieldCache.getMethodSetFileName());
+                        init.setSqlTypeToJava(getSqlTypeToJava(fieldCache.getField()),fieldCache.getField().getName());
+
+                        fieldGetProxy = compiler.instanceClass(packName+fieldCache.getMethodGetFileName());
+                        ConvertDefaultDBType defaultDBType = getConvertDefaultDBType(fieldCache.getField(),lqField);
+                        fieldGet = new FieldGetProxy.FieldGet(fieldGetProxy,defaultDBType,fieldCache.getField().getType());
+                        dbTable.addColumInit(fieldCache.getColumName(),init,fieldGet);
+                    }
+                    alias.put(fieldCache.getColumName(),fieldGet);
+                }
+
+                alias = alias.size() == dbTable.getColumGetMap().size()?dbTable.getColumGetMap():alias;
+                dbTable.setRedisSerializer(new MapRedisSerializer(alias));
+            }
         }
+
 
         DBTable dbTable = null;
         DBRelation[] dbRelationArray;
@@ -236,99 +328,7 @@ public class ScanEntitysTool {
                 }
             }
         }
-        ///////////redis
-
-        for(Class cls:classs){
-            RedisCache redisCache = (RedisCache) cls.getAnnotation(RedisCache.class);
-            if(redisCache == null){
-                continue;
-            }
-
-            try {
-                dbTable = columInitMap.get(cls);
-                methdNameMap =  fieldNameColumMap.get(cls);
-                fieldGet = null;
-                final boolean isNewInit = dbTable == null;
-                if(isNewInit){
-                    dbTable = new DBTable(cls.getSimpleName());
-                    columInitMap.put(cls,dbTable);
-                }else {
-                    fieldGet = methdNameMap.get(redisCache.keyMethodName());
-                }
-
-                if(fieldGet == null){
-                    methodName = redisCache.keyMethodName();
-                    newClassName = getKey("metho",cls,methodName);//classFinal+""+field.getName();
-                    tmpcompilers = javaStringCompiler.compile(newClassName+".java",
-                            getGetClass(getMethodContentForGet(cls,methodName),newClassName));
-                    fieldGetProxy = (FieldGetProxy)javaStringCompiler.loadClass("com.mysql.compiler."+newClassName,tmpcompilers).newInstance();
-                    fieldGet = new FieldGetProxy.FieldGet(fieldGetProxy,LQField.ConvertDBType.Default.getConvertDBTypeInter(),null);
-                }
-
-                dbTable.setRedisKeyGetInace(fieldGet);
-                dbTable.setRedisCache(redisCache);
-
-                if(redisCache.type() == RedisCache.Type.Serialize){
-                    dbTable.setRedisSerializer(new ByteRedisSerializer(cls));
-                    continue;
-                }
-
-                Map<String,LQField> sets = classSetMap.get(cls);
-                Map<String,FieldGetProxy.FieldGet> alias;
-                if(!isNewInit){
-                    alias = new HashMap<>(sets.size());
-                    for(Map.Entry<String,LQField> entry:sets.entrySet()){
-                        if(!entry.getValue().redisSave()){
-                            continue;
-                        }
-                        alias.put(entry.getKey(),dbTable.getColumGetMap().get(entry.getKey()));
-                    }
-
-                    alias = alias.size() == dbTable.getColumGetMap().size()?dbTable.getColumGetMap():alias;
-                    dbTable.setRedisSerializer(new MapRedisSerializer(alias));
-                    continue;
-                }
-
-                fields = cls.getDeclaredFields();
-                alias = new HashMap<>(fields.length);
-                for(Field field:fields){
-                    lqField = field.getAnnotation(LQField.class);
-                    if(lqField == null || !lqField.redisSave()){
-                        continue;
-                    }
-                    newClassName = getKey("Set",cls,field.getName());//classFinal+""+field.getName();
-                    tmpcompilers = javaStringCompiler.compile(newClassName+".java",
-                            getSetClass(getMethodContentForSet(cls,field.getType(),field.getName()),newClassName));
-                    columInit = (ColumInit) javaStringCompiler.loadClass("com.mysql.compiler."+newClassName,tmpcompilers).newInstance();
-
-
-                    columName = lqField.name().isEmpty()?field.getName(): lqField.name();
-                    methodName = getMethodNameForGet(field.getType(),field.getName());
-
-                    newClassName = getKey("Get",cls,field.getName());//classFinal+""+field.getName();
-                    tmpcompilers = javaStringCompiler.compile(newClassName+".java",
-                            getGetClass(getMethodContentForGet(cls,methodName),newClassName));
-                    fieldGetProxy = (FieldGetProxy)javaStringCompiler.loadClass("com.mysql.compiler."+newClassName,tmpcompilers).newInstance();
-
-                    ConvertDefaultDBType defaultDBType = getConvertDefaultDBType(field,lqField);
-                    fieldGet = new FieldGetProxy.FieldGet(fieldGetProxy,defaultDBType,field.getType());
-
-                    alias.put(columName,fieldGet);
-                    columInit.setSqlTypeToJava(getSqlTypeToJava(field),field.getName());
-                    dbTable.addColumInit(columName,columInit, fieldGet);
-
-                    if(redisCache.keyMethodName().equals(methodName)){
-                        dbTable.setRedisKeyGetInace(fieldGet);
-                    }
-                }
-
-                alias = alias.size() == dbTable.getColumGetMap().size()?dbTable.getColumGetMap():alias;
-                dbTable.setRedisSerializer(new MapRedisSerializer(alias));
-            }catch (Exception ex){
-                ex.printStackTrace();
-            }
-
-        }
+        compiler.close();
         PrintTool.outTime("ScanEntitysTool","over scan dbEntity");
     }
 
@@ -433,6 +433,7 @@ public class ScanEntitysTool {
         if(dbKey == null){
             return null;
         }
-        return dbEnumMap.get(tClass).get(dbKey);
+        Object o = dbEnumMap.get(tClass).get(dbKey);
+        return o;
     }
 }

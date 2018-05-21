@@ -1,5 +1,7 @@
 package com.module;
 
+import com.mysql.entity.LQDBTable;
+import com.mysql.entity.LQField;
 import com.mysql.impl.DbFactory;
 
 import java.sql.ResultSet;
@@ -7,9 +9,11 @@ import java.sql.ResultSet;
 /**
  * Created by Administrator on 2017/4/26.
  */
+@LQDBTable
 public class GameServer extends DbFactory {
     public final static GameServer instance = new GameServer();
 
+    @LQField(isPrimaryKey = true)
     private int id;
     private int g_v_id;
     private String zoneName;
