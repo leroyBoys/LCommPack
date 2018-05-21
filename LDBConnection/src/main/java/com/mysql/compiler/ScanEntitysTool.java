@@ -22,7 +22,8 @@ public class ScanEntitysTool {
     private final static Map<Class,Map<Object,LQDBEnum>> dbEnumMap = new HashMap<>();
 
     private static String getSetClass(String methodContent,String className){
-        StringBuilder sb = new StringBuilder("package com.mysql.compiler;\n @SuppressWarnings(\"unchecked\") \n public class  ");
+        StringBuilder sb = new StringBuilder(330);
+        sb.append("package com.mysql.compiler;\n @SuppressWarnings(\"unchecked\") \n public class  ");
         sb.append(className).append(" extends ColumInit {\n");
         sb.append("@Override\n public void  doSet(Object obj, Object v) {\n");
         sb.append(methodContent).append("}\n}\n");
@@ -31,11 +32,11 @@ public class ScanEntitysTool {
     }
 
     private static String getGetClass(String methodContent,String className){
-        StringBuilder sb = new StringBuilder("package com.mysql.compiler;\n  @SuppressWarnings(\"unchecked\") \n public class  ");
+        StringBuilder sb = new StringBuilder(330);
+        sb.append("package com.mysql.compiler;\n  @SuppressWarnings(\"unchecked\") \n public class  ");
         sb.append(className).append(" extends FieldGetProxy {\n");
         sb.append("@Override\n public Object  get(Object obj) {\n");
         sb.append(methodContent).append("}\n}\n");
-
         return sb.toString();
     }
 
