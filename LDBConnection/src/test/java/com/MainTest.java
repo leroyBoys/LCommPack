@@ -116,7 +116,7 @@ public class MainTest {
         ScanEntitysTool.instance("com.test");
         String sql = "SELECT * FROM `test_data`";
         LqJdbcPool db = new LqJdbcPool(LqJdbcPool.DataSourceType.Hikari,LqUtil.loadProperty("hikari_db.properties"));
-        List<TestData> datas = db.ExecuteQuery(TestData.class,sql);
+        List<TestData> datas = db.ExecuteQueryList(TestData.class,sql);
         TestData data = datas.get(1);
         data.setName("逗你玩");
         data.setTestEnum(TestEnum.Name);
@@ -169,7 +169,7 @@ public class MainTest {
             data.setName("张龙赵虎");
         }
 */
-        List<TestData> testDatas =  db.ExecuteQuery(TestData.class,sql);
+        List<TestData> testDatas =  db.ExecuteQueryList(TestData.class,sql);
 
         //     System.out.println(JsonUtil.getJsonFromBean(testDatas));
      /*   TestData data = testDatas.get(1);
@@ -345,7 +345,7 @@ public class MainTest {
 
         long now = System.currentTimeMillis();
         for(int i = 0; i<5000; ++i){
-            Object obj = db.ExecuteQueryOnlyValue("select id from test1");
+            Object obj = db.ExecuteQueryOnlyOneValue("select id from test1");
             if(i < 2){
                 System.out.println(obj);
             }
