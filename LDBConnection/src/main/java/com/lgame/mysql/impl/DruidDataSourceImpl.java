@@ -2,7 +2,7 @@ package com.lgame.mysql.impl;
 
 import com.alibaba.druid.pool.DruidDataSource;
 import com.alibaba.druid.pool.DruidDataSourceFactory;
-import com.lgame.util.file.PropertiesTool;
+import com.lgame.util.LqUtil;
 import com.lgame.mysql.SqlDataSource;
 
 import java.sql.Connection;
@@ -20,7 +20,7 @@ public class DruidDataSourceImpl implements SqlDataSource{
      * 默认配置文件名字：druid_db.properties
      */
     protected DruidDataSourceImpl(){
-        init(PropertiesTool.loadProperty("druid_db.properties"));
+        init(LqUtil.loadProperty("druid_db.properties"));
     }
 
     protected DruidDataSourceImpl(Properties properties){

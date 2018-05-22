@@ -1,8 +1,7 @@
 package com.lgame.mysql.entity;
 
 import com.lgame.mysql.compiler.ScanEntitysTool;
-import com.lgame.util.comm.StringTool;
-import com.lgame.util.time.DateTimeTool;
+import com.lgame.util.LqUtil;
 
 import java.util.Date;
 
@@ -66,24 +65,24 @@ public interface ConvertDefaultDBType<FROM> {
     public static class DateDefaultConvertDBType extends ConvertDefault<Date> {
         @Override
         public Object formatToDbData(Date o) {
-            return o==null?0: DateTimeTool.getDateTime(o);
+            return o==null?0: LqUtil.getDateTime(o);
         }
 
         @Override
         public Object formatFromDb(Class cls,String value) {
-            return value==null?null:DateTimeTool.getDateTime(value,DateTimeTool.C_TIME_PATTON_DEFAULT);
+            return value==null?null:LqUtil.getDateTime(value, LqUtil.C_TIME_PATTON_DEFAULT);
         }
     }
 
     public static class BytesConvertDBType extends ConvertDefault<byte[]> {
         @Override
         public Object formatToDbData(byte[] o) {
-            return o==null?null: StringTool.byte2hex(o);
+            return o==null?null: LqUtil.byte2hex(o);
         }
 
         @Override
         public Object formatFromDb(Class cls,String value) {
-            return StringTool.hex2byte(value);
+            return LqUtil.hex2byte(value);
         }
     }
 }

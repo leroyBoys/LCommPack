@@ -4,10 +4,10 @@ import com.dyuproject.protostuff.LinkedBuffer;
 import com.dyuproject.protostuff.ProtostuffIOUtil;
 import com.dyuproject.protostuff.Schema;
 import com.dyuproject.protostuff.runtime.RuntimeSchema;
-import com.lgame.util.comm.StringTool;
-import com.lgame.util.comm.TimeCacheManager;
+import com.lgame.core.LqTimeCacheManager;
 import com.lgame.mysql.entity.DBTable;
 import com.lgame.redis.impl.RedisConnectionImpl;
+import com.lgame.util.LqUtil;
 
 /**
  * Created by leroy:656515489@qq.com
@@ -25,12 +25,12 @@ public class ByteRedisSerializer extends RedisSerializer {
 
         String key = table.redisKey(table.getRedisKeyGetInace().formatToDbData(entity));
         try {
-            byte[] keys = StringTool.hex2byte(key);
+            byte[] keys = LqUtil.hex2byte(key);
             redisConnection.set(keys,bytes);
 
             if(table.getRedisCache().expire() > 0){
                 if(table.getRedisCache().expireAt() > 0){
-                    long endTime = TimeCacheManager.getInstance().getCurTime()+table.getRedisCache().expire()*1000;
+                    long endTime = LqTimeCacheManager.getInstance().getCurTime()+table.getRedisCache().expire()*1000;
                     endTime = Math.min(endTime,table.getRedisCache().expireAt());
                     redisConnection.expireAt(keys,endTime);
                     return;
@@ -48,7 +48,7 @@ public class ByteRedisSerializer extends RedisSerializer {
     public Object mergeFrom(RedisConnectionImpl redisConnection,DBTable table,Class instance,Object uniqueId) {
         String key = table.redisKey(uniqueId);
         try {
-            byte[] keys = StringTool.hex2byte(key);
+            byte[] keys = LqUtil.hex2byte(key);
             byte[] bytes = redisConnection.get(keys);
             if(bytes == null){
                 return null;

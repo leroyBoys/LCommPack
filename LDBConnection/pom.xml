@@ -46,27 +46,17 @@
         <!-- druid 线程池 over-->
 
         <!-- hikariCP（利用threadlocal和case减少锁的竞争，目前效率最高，特别注意内存使用销毁） 线程池 begin-->
-
-        <!-- https://mvnrepository.com/artifact/com.zaxxer/HikariCP -->
         <dependency>
             <groupId>com.zaxxer</groupId>
             <artifactId>HikariCP</artifactId>
             <version>3.1.0</version>
         </dependency>
-        <dependency>
-            <groupId>LCommPack</groupId>
-            <artifactId>LBaseTool</artifactId>
-            <version>1.0</version>
-        </dependency>
-
         <!-- hikariCP 线程池 over-->
-        <!-- https://mvnrepository.com/artifact/c3p0/c3p0 -->
         <dependency>
             <groupId>c3p0</groupId>
             <artifactId>c3p0</artifactId>
             <version>0.9.1.2</version>
         </dependency>
-
         <!-- https://mvnrepository.com/artifact/com.dyuproject.protostuff/protostuff-core -->
         <dependency>
             <groupId>com.dyuproject.protostuff</groupId>

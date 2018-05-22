@@ -1,6 +1,6 @@
 package com.lgame.mysql.impl;
 
-import com.lgame.util.file.PropertiesTool;
+import com.lgame.util.LqUtil;
 import com.mchange.v2.c3p0.DataSources;
 import com.lgame.mysql.SqlDataSource;
 
@@ -20,7 +20,7 @@ public class C3P0DataSourceImpl implements SqlDataSource{
      * 默认配置文件名字：hikari_db.properties
      */
     protected C3P0DataSourceImpl(){
-        init(PropertiesTool.loadProperty("c3p0.properties"));
+        init(LqUtil.loadProperty("c3p0.properties"));
     }
 
     protected C3P0DataSourceImpl(Properties properties){

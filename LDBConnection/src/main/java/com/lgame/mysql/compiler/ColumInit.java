@@ -1,6 +1,6 @@
 package com.lgame.mysql.compiler;
 
-import com.lgame.util.PrintTool;
+import com.lgame.util.LqLogUtil;
 import com.lgame.mysql.entity.SqlTypeToJava;
 
 import java.sql.ResultSet;
@@ -35,7 +35,7 @@ public class ColumInit{
         try {
             this.doSet(obj,fieldValue);
         }catch (Exception ex){
-            PrintTool.error("class:"+obj.getClass().getSimpleName()+"  fieldName:"+fieldName+"  fieldValue:"+fieldValue,ex);
+            LqLogUtil.error("class:"+obj.getClass().getSimpleName()+"  fieldName:"+fieldName+"  fieldValue:"+fieldValue,ex);
         }
     }
 

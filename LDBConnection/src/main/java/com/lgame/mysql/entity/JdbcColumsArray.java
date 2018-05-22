@@ -1,7 +1,7 @@
 package com.lgame.mysql.entity;
 
 import com.lgame.mysql.compiler.ColumInit;
-import com.lgame.util.PrintTool;
+import com.lgame.util.LqLogUtil;
 
 import java.sql.ResultSet;
 import java.util.Map;
@@ -42,7 +42,7 @@ public class JdbcColumsArray {
             try {
                 dbTable.getColumInit(columsArray[i]).set(t,rs,i + 1);
             }catch (Exception ex){
-                PrintTool.error(dbTable.getName()+"  doExuteOnlyOne:columName:"+columsArray[i]+" not find from config",ex);
+                LqLogUtil.error(dbTable.getName()+"  doExuteOnlyOne:columName:"+columsArray[i]+" not find from config",ex);
             }
         }
         return t;

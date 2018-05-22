@@ -1,7 +1,8 @@
 package com.lgame.mysql.impl;
 
-import com.lgame.util.file.PropertiesTool;
 import com.lgame.mysql.SqlDataSource;
+import com.lgame.util.LqLogUtil;
+import com.lgame.util.LqUtil;
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
 
@@ -20,7 +21,7 @@ public class HikariDataSourceImpl implements SqlDataSource{
      * 默认配置文件名字：hikari_db.properties
      */
     protected HikariDataSourceImpl(){
-        init(PropertiesTool.loadProperty("hikari_db.properties"));
+        init(LqUtil.loadProperty("hikari_db.properties"));
     }
 
     protected HikariDataSourceImpl(Properties properties){

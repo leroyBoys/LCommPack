@@ -1,10 +1,7 @@
 package com.lgame.mysql.impl;
 
-import com.lgame.mysql.compiler.ColumInit;
-import com.lgame.mysql.compiler.FieldGetProxy;
-import com.lgame.mysql.compiler.ScanEntitysTool;
-import com.lgame.mysql.entity.*;
-import com.lgame.util.PrintTool;
+import com.lgame.mysql.DbFactoryCache;
+import com.lgame.util.LqLogUtil;
 import com.lgame.mysql.DbCallBack;
 import com.lgame.mysql.SqlDataSource;
 
@@ -15,8 +12,8 @@ import java.util.*;
  * Created by leroy:656515489@qq.com
  * 2017/4/13.
  */
+@Deprecated
 public class JdbcTemplate implements SqlDataSource {
-    private final static Map<String,JdbcColumsArray> cmd_jdbcColumsArrayCache = new HashMap<>();
     private SqlDataSource pool;
     private DataSourceType sourceType = DataSourceType.Druid;
 
@@ -27,16 +24,13 @@ public class JdbcTemplate implements SqlDataSource {
     private void initPool(Properties properties){
         switch (sourceType){
             case Druid:
-                pool = properties==null? new DruidDataSourceImpl():new DruidDataSourceImpl(properties);
+                pool = new DruidDataSourceImpl(properties);
                 break;
             case Hikari:
-                pool = properties==null?new HikariDataSourceImpl():new HikariDataSourceImpl(properties);
-                break;
-            case C3P0:
-                pool = properties==null?new C3P0DataSourceImpl():new C3P0DataSourceImpl(properties);
+                pool = new HikariDataSourceImpl(properties);
                 break;
             default:
-                pool = properties==null? new DruidDataSourceImpl():new DruidDataSourceImpl(properties);
+                pool = new DruidDataSourceImpl(properties);
                 break;
         }
     }
@@ -57,7 +51,7 @@ public class JdbcTemplate implements SqlDataSource {
     }
 
     public void Execute(String cmd, Object... p) {
-      //  PrintTool.log("cmd:" + cmd);
+        System.out.println("cmd:" + cmd);
         Connection cn = null;
         PreparedStatement ps = null;
         try {
@@ -66,7 +60,7 @@ public class JdbcTemplate implements SqlDataSource {
             SetParameter(ps, p);
             ps.execute();
         } catch (Exception e) {
-            PrintTool.error(this.getClass(),e);
+            LqLogUtil.error(this.getClass(),e);
         } finally {
             this.close(ps, cn);
         }
@@ -81,81 +75,11 @@ public class JdbcTemplate implements SqlDataSource {
             SetParameter(ps, p);
             return ps.executeUpdate() > 0;
         } catch (Exception e) {
-            PrintTool.error(cmd+(p==null?"":Arrays.toString(p)),e);
+            LqLogUtil.error(this.getClass(),e);
         } finally {
             this.close(ps, cn);
         }
         return false;
-    }
-
-    /**
-     *
-     * @param tableName
-     * @param datas
-     * @param columNames 要插入数据的列名集合(与columValues 顺序对应)
-     * @param columValues 要插入数据的列名对应值（或者函数或者固定值）集合(与columValues 顺序对应)
-     * @param commitLimitCount 最大提交数量（根据mysql.cnf中 max_allowed_packet调整）如果小于等于0则为默认5000
-     * @param
-     * @return
-     */
-    public  boolean InsertBatch(String tableName,List<Map<String,String>> datas,String[] columNames,String[] columValues,int commitLimitCount) {
-        if(commitLimitCount <= 0){
-            commitLimitCount = this.getDefaultLimitCount();
-        }
-
-        StringBuilder sb = new StringBuilder("INSERT INTO  ");
-        sb.append(tableName).append(" (");
-        for(int i = 0;i<columNames.length;i++){
-            if(i != 0){
-                sb.append(",");
-            }
-            sb.append("`").append(columNames[i]).append("`");
-        }
-        sb.append(") values ");
-        String sql = sb.toString();
-
-        String str;
-        List<String> sqls = new LinkedList<>();
-        int i = 0;
-        for(Map<String,String> map:datas){
-            if(i++ != 0){
-                sb.append(",");
-            }
-
-            sb.append("(");
-            for(int j = 0;j<columNames.length;j++){
-                if(j != 0){
-                    sb.append(",");
-                }
-
-                str = columValues[j];
-                if(str.endsWith("()")){
-                    sb.append(str);
-                    continue;
-                }
-
-                sb.append("'");
-                str = map.get(str);
-                if(str == null){
-                    str = columValues[j];
-                }
-                sb.append(str);
-                sb.append("'");
-            }
-            sb.append(")");
-
-            if(i > commitLimitCount){
-                sqls.add(sb.toString());
-                sb=new StringBuilder(sql);
-                i=0;
-            }
-        }
-
-        if(i > 0){
-            sqls.add(sb.toString());
-        }
-
-        return ExecuteUpdates(sqls);
     }
 
     public boolean ExecuteUpdates(List<String> cmds) {
@@ -164,15 +88,15 @@ public class JdbcTemplate implements SqlDataSource {
         try {
             cn = getConnection();
             cn.setAutoCommit(false);
-            ps = cn.createStatement();
+            ps = cn.createStatement(ResultSet.TYPE_SCROLL_SENSITIVE,
+                    ResultSet.CONCUR_READ_ONLY);
             for (String cmd : cmds) {
-                ps.addBatch(cmd);
+                ps.executeUpdate(cmd);
             }
-            ps.executeBatch();
             cn.commit();
             return true;
         } catch (Exception e) {
-            PrintTool.error(JdbcTemplate.class,e);
+            LqLogUtil.error(this.getClass(),e);
         } finally {
             this.close(ps, cn);
         }
@@ -193,110 +117,56 @@ public class JdbcTemplate implements SqlDataSource {
                 return (Long) rs.getObject(1);
             }
         } catch (Exception e) {
-            PrintTool.error(this.getClass(),e);
+            LqLogUtil.error(this.getClass(),e);
         } finally {
             close(ps, cn, rs);
         }
         return -1;
     }
 
-    public boolean ExecuteEntity(Object instance) {
+    public LinkedList<Map<String, Object>> ExecuteQuery(String cmd, Object... p) {
         Connection cn = null;
         PreparedStatement ps = null;
         ResultSet rs = null;
         try {
-            String sql;
-            DBTable table = ScanEntitysTool.instance.getDBTable(instance.getClass());
-            if(table == null){
-                PrintTool.error(" class:"+instance.getClass().getName()+" not config db");
-                return false;
-            }
-
-            Object id = table.getColumGetMap().get(table.getIdColumName()).formatToDbData(instance);
-            if(id != null && Long.valueOf(id.toString())>0){
-
-                sql = updateSql(instance,table);
-                cn = getConnection();
-                ps = cn.prepareStatement(sql);
-                return ps.executeUpdate()>0;
-            }else {
-                sql = insertSql(instance,table);
-            }
             cn = getConnection();
-            ps = cn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
-            ps.executeUpdate();
-            rs = ps.getGeneratedKeys();
-            if (rs.next()) {
-                table.getColumInit(table.getIdColumName()).set(instance,rs,1);
-                return true;
-            }else {
-                return false;
+
+            ps = cn.prepareStatement(cmd);
+            SetParameter(ps, p);
+
+            rs =  ps.executeQuery();
+            ResultSetMetaData rsMeta = rs.getMetaData();
+
+            String[] columsArray = null;
+            LinkedList<Map<String, Object>> rows = new LinkedList<Map<String, Object>>();
+            while (rs.next()){
+
+                if(columsArray == null){
+                    columsArray  = initColumsArray(rsMeta);
+                }
+                HashMap<String, Object> row = new HashMap<>(columsArray.length);
+                for (int i = 0, size = columsArray.length; i < size; ++i) {
+                    Object value = rs.getObject(i + 1);
+                    row.put(columsArray[i], value);
+                }
+
+                rows.add(row);
             }
+            return rows;
         } catch (Exception e) {
-            PrintTool.error(this.getClass(),e);
+            LqLogUtil.error(this.getClass(),e);
         } finally {
-            close(ps, cn, rs);
+            this.close(ps, cn, rs);
         }
-        return false;
+        return null;
     }
 
-    private String insertSql(Object instance,DBTable table) {
-        StringBuilder sql = new StringBuilder();
-        StringBuilder names = new StringBuilder();
-        StringBuilder values = new StringBuilder();
-        sql.append("insert into ").append(table.getName());
-        names.append("  ( ");
-        values.append("  ( ");
-        int i = 0;
-        Object object;
-        for(Map.Entry<String,FieldGetProxy.FieldGet> entry:table.getColumGetMap().entrySet()){
-            if(entry.getKey() == table.getIdColumName()){
-                continue;
-            }
-
-            if(i > 0){
-                names.append(" , ");
-                values.append(" , ");
-            }
-            names.append("`").append(entry.getKey()).append("`");
-            object =  entry.getValue().formatToDbData(instance);
-            if(object == null){
-                values.append("null");
-            }else{
-                values.append("'").append(object).append("'");
-            }
-            i++;
+    private String[] initColumsArray(ResultSetMetaData rsMeta) throws SQLException {
+        String[] array = new String[rsMeta.getColumnCount()];
+        for (int i = 0, size = array.length; i < size; ++i) {
+            array[i] = rsMeta.getColumnLabel(i + 1);
         }
-        names.append("  ) ");
-        values.append("  ) ");
-        sql.append(names).append("  values ").append(values);
-        return sql.toString();
-    }
-
-    private String updateSql(Object instance,DBTable table) {
-        StringBuilder sql = new StringBuilder();
-        sql.append("update ").append(table.getName());
-        sql.append("  set ");
-        int i = 0;
-        Object object;
-        for(Map.Entry<String,FieldGetProxy.FieldGet> entry:table.getColumGetMap().entrySet()){
-            if(entry.getKey() == table.getIdColumName()){
-                continue;
-            }
-            if(i > 0){
-                sql.append(" , ");
-            }
-            object =  entry.getValue().formatToDbData(instance);
-            sql.append(entry.getKey()).append("=");
-            if(object == null){
-                sql.append("null");
-            }else{
-                sql.append("'").append(object).append("'");
-            }
-            i++;
-        }
-        sql.append("  where id = ").append(table.getColumGetMap().get(table.getIdColumName()).formatToDbData(instance));
-        return sql.toString();
+        return array;
     }
 
     /**
@@ -306,7 +176,7 @@ public class JdbcTemplate implements SqlDataSource {
      * @return
      */
     public Object ExecuteQueryOnlyValue(String cmd, Object... p) {
- //       PrintTool.log("cmd:" + cmd);
+        System.out.println("cmd:" + cmd);
         Connection cn = null;
         PreparedStatement ps = null;
         ResultSet rs = null;
@@ -322,7 +192,7 @@ public class JdbcTemplate implements SqlDataSource {
             }
             return null;
         } catch (Exception e) {
-            PrintTool.error(this.getClass(),e);
+            LqLogUtil.error(this.getClass(),e);
         } finally {
             this.close(ps, cn, rs);
         }
@@ -330,7 +200,7 @@ public class JdbcTemplate implements SqlDataSource {
     }
 
     public <T> T ExecuteQuery(String sql, DbCallBack<T> callBack) {
-        //PrintTool.log("cmd:" + sql);
+        System.out.println("cmd:" + sql);
         Connection cn = null;
         PreparedStatement ps = null;
         ResultSet rs = null;
@@ -342,81 +212,15 @@ public class JdbcTemplate implements SqlDataSource {
             rs =  ps.executeQuery();
            return callBack.doInPreparedStatement(rs);
         } catch (Exception e) {
-            PrintTool.error(this.getClass(),e);
+            LqLogUtil.error(this.getClass(),e);
         } finally {
             this.close(ps, cn, rs);
         }
         return null;
     }
 
-    private <T> JdbcColumsArray initColumsArray(ResultSetMetaData rsMeta, DBTable dbTable) throws SQLException {
-        String[] array = new String[rsMeta.getColumnCount()];
-
-        final Map<String,Map<String,ColumInit>> relationFieldNames = new HashMap<>(2);
-        String str;
-        RelationData relationData;
-        for (int i = 0, size = array.length; i < size; ++i) {
-            str = rsMeta.getColumnLabel(i + 1);
-            array[i] = str;
-            if(dbTable.getColumInit(str) != null){
-                continue;
-            }
-            relationData = dbTable.getRelationMap(str);
-            if(relationData == null){
-                array[i] = null;
-                continue;
-            }
-
-            if(!relationFieldNames.containsKey(relationData.getFieldName())){
-                relationFieldNames.put(relationData.getFieldName(),new HashMap<String,ColumInit>());
-            }
-        }
-
-        if(relationFieldNames.isEmpty()){
-           return new JdbcColumsArray(array);
-        }
-
-        Set<String> cols = new HashSet<>(array.length);
-        for(int i = 0;i<array.length;i++){
-            cols.add(array[i]);
-        }
-
-        for(Map.Entry<String,Map<String,ColumInit>> entry:relationFieldNames.entrySet()){
-            relationData = dbTable.getRelationByFieldName(entry.getKey());
-            for(Map.Entry<String,ColumInit> entry1:relationData.getColums_target_map().entrySet()){
-                if(cols.contains(entry1.getKey())){
-                    entry.getValue().put(entry1.getKey(),entry1.getValue());
-                }
-            }
-        }
-
-        return new MoreJdbcColumsArray(array,relationFieldNames);
-    }
-
-    private <T> JdbcColumsArray getJdbcColumsArray(ResultSet rs,Class<T> cls,String cmd,DBTable dbTable) throws SQLException {
-        JdbcColumsArray jdbcColumsArray = cmd_jdbcColumsArrayCache.get(cmd);
-        if(jdbcColumsArray != null){
-            return jdbcColumsArray;
-        }
-
-        synchronized (cls) {
-            jdbcColumsArray = cmd_jdbcColumsArrayCache.get(cmd);
-            if (jdbcColumsArray != null) {
-                return jdbcColumsArray;
-            }
-
-            jdbcColumsArray = initColumsArray(rs.getMetaData(),dbTable);
-            cmd_jdbcColumsArrayCache.put(cmd, jdbcColumsArray);
-            return jdbcColumsArray;
-        }
-    }
-
-    public <T> List<T> ExecuteQuery(Class<T> cls,String cmd, Object... p) {
-        //PrintTool.log("cm2d:" + cmd);
-        DBTable dbTable = ScanEntitysTool.instance.getDBTable(cls);
-        if(dbTable == null){
-            throw new RuntimeException(cls.getSimpleName()+" not config dbentity");
-        }
+    public <T extends DbFactory> List<T> ExecuteQuery(T dbFactory,String cmd, Object... p) {
+        System.out.println("cm2d:" + cmd);
 
         Connection cn = null;
         PreparedStatement ps = null;
@@ -425,40 +229,37 @@ public class JdbcTemplate implements SqlDataSource {
             cn = getConnection();
 
             ps = cn.prepareStatement(cmd);
-
             SetParameter(ps, p);
-            rs =  ps.executeQuery();
-            JdbcColumsArray jdbcColumsArray = getJdbcColumsArray(rs,cls,cmd,dbTable);
 
-            QueryResultData<T> resultData = new QueryResultData<>();
+            rs =  ps.executeQuery();
+            List<T> rows = new ArrayList<>();
             while (rs.next()){
-                jdbcColumsArray.doExute(dbTable,rs,cls,resultData);
+                T t = dbFactory.create(rs);
+                rows.add(t);
             }
-            return resultData.getResult();
+            return rows;
         } catch (Exception e) {
-            PrintTool.error(this.getClass(),e);
+            LqLogUtil.error(this.getClass(),e);
         } finally {
             this.close(ps, cn, rs);
         }
         return null;
     }
 
+    public <T extends DbFactory> List<T> ExecuteQuery(Class<T> dbClass,String cmd, Object... p) {
+        return ExecuteQuery(DbFactoryCache.getInstance().getDbFactory(dbClass),cmd,p);
+    }
+
     /**
      * 只返回一个对象
-     * @param cls
+     * @param dbFactory
      * @param cmd
      * @param p
      * @param <T>
      * @return
      */
-    public <T> T ExecuteQueryOne(Class<T> cls,String cmd, Object... p) {
-        PrintTool.log("ExecuteQueryOne cmd:" + cmd);
-
-        DBTable dbTable = ScanEntitysTool.instance.getDBTable(cls);
-        if(dbTable == null){
-            throw new RuntimeException(cls.getSimpleName()+" not config dbentity");
-        }
-
+    public <T extends DbFactory> T ExecuteQueryOne(T dbFactory,String cmd, Object... p) {
+        System.out.println("cm2d:" + cmd);
         Connection cn = null;
         PreparedStatement ps = null;
         ResultSet rs = null;
@@ -472,9 +273,9 @@ public class JdbcTemplate implements SqlDataSource {
             if (!rs.next()){
                 return null;
             }
-            return getJdbcColumsArray(rs,cls,cmd,dbTable).doExuteOnlyOne(dbTable,rs,cls);
+            return dbFactory.create(rs);
         } catch (Exception e) {
-            PrintTool.error(this.getClass(),e);
+            LqLogUtil.error(this.getClass(),e);
         } finally {
             this.close(ps, cn, rs);
         }
@@ -499,14 +300,14 @@ public class JdbcTemplate implements SqlDataSource {
             }
 
         } catch (Exception e) {
-            PrintTool.error(this.getClass(),e);
+            LqLogUtil.error(this.getClass(),e);
         }
         try {
             if (cn != null) {
                 cn.close();
             }
         } catch (Exception e) {
-            PrintTool.error(this.getClass(),e);
+            LqLogUtil.error(this.getClass(),e);
         }
         ps = null;
         cn = null;
@@ -518,14 +319,14 @@ public class JdbcTemplate implements SqlDataSource {
                 ps.close();
             }
         } catch (Exception e) {
-            PrintTool.error(this.getClass(),e);
+            LqLogUtil.error(this.getClass(),e);
         }
         try {
             if (cn != null) {
                 cn.close();
             }
         } catch (Exception e) {
-            PrintTool.error(this.getClass(),e);
+            LqLogUtil.error(this.getClass(),e);
         }
 
         try {
@@ -539,11 +340,7 @@ public class JdbcTemplate implements SqlDataSource {
         rs = null;
     }
 
-    public int getDefaultLimitCount() {
-        return 5000;
-    }
-
     public enum DataSourceType{
-        Druid,Hikari,C3P0
+        Druid,Hikari
     }
 }

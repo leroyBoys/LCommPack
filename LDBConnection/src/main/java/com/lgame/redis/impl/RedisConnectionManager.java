@@ -1,13 +1,13 @@
 package com.lgame.redis.impl;
 
-import com.lgame.util.comm.RandomTool;
-
 import java.util.Properties;
+import java.util.Random;
 
 /**
  * Created by Administrator on 2017/4/15.
  */
 public class RedisConnectionManager {
+    private final Random random = new Random();
     private RedisConnectionImpl master;
     private RedisConnectionImpl[] slaves;
 
@@ -55,7 +55,7 @@ public class RedisConnectionManager {
             return slaves[0];
         }
 
-        return slaves[RandomTool.Next(slaves.length)];
+        return slaves[random.nextInt(slaves.length)];
     }
 
     public RedisConnectionImpl[] getSlaves() {

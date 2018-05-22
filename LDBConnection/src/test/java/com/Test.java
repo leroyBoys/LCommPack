@@ -1,6 +1,6 @@
 package com;
 
-import com.lgame.util.PrintTool;
+import com.lgame.util.LqLogUtil;
 import com.lgame.module.GameServer;
 
 import java.util.HashMap;
@@ -45,14 +45,14 @@ public class Test{
         map.put(cls,stringStringMap);
 
         int sum = 0;
-        PrintTool.outTime("1","===>");
+        LqLogUtil.outTime("1","===>");
         for(int i=0;i<size;i++){
             stringStringMap = map.get(cls);
             if(stringStringMap != null){
                 sum+=stringStringMap.get("abc");
             }
         }
-        PrintTool.outTime("1",sum+"  ===>over:");
+        LqLogUtil.outTime("1",sum+"  ===>over:");
     }
 
 
@@ -62,12 +62,12 @@ public class Test{
         stringStringMap.put(cls.getSimpleName()+"abc",1);
         String str;
         int sum = 0;
-        PrintTool.outTime("11","===>");
+        LqLogUtil.outTime("11","===>");
         for(int i=0;i<size;i++){
             str = cls.getSimpleName()+"abc";
             sum+=stringStringMap.get(str);
         }
-        PrintTool.outTime("11",sum+"   ===>over:");
+        LqLogUtil.outTime("11",sum+"   ===>over:");
     }
 
 
@@ -79,11 +79,11 @@ public class Test{
 
         String str;
         int sum = 0;
-        PrintTool.outTime("121","===>");
+        LqLogUtil.outTime("121","===>");
         for(int i=0;i<size;i++){
             str = clasName+"abc";
             sum += stringStringMap.get(str);
         }
-        PrintTool.outTime("121",sum+"  ===>over:");
+        LqLogUtil.outTime("121",sum+"  ===>over:");
     }
 }

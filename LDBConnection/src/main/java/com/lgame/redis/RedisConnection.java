@@ -1,6 +1,6 @@
 package com.lgame.redis;
 
-import com.lgame.util.comm.StringTool;
+import com.lgame.util.LqUtil;
 import redis.clients.jedis.*;
 
 import java.util.*;
@@ -43,7 +43,7 @@ public class RedisConnection {
 
         String password = null;
         if (threeArray[1].split("/").length > 1) {
-            password = StringTool.trimToNull(threeArray[1].split("/")[1]);
+            password = LqUtil.trimToNull(threeArray[1].split("/")[1]);
         }
 
         JedisPoolConfig config = new JedisPoolConfig();

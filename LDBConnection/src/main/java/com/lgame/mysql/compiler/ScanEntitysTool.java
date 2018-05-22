@@ -1,10 +1,10 @@
 package com.lgame.mysql.compiler;
 
+import com.lgame.mysql.compiler.util.JavaFile;
+import com.lgame.mysql.compiler.util.JavaStringCompiler;
 import com.lgame.mysql.entity.*;
-import com.lgame.util.PrintTool;
-import com.lgame.util.comm.ReflectionTool;
-import com.lgame.util.compiler.JavaFile;
-import com.lgame.util.compiler.JavaStringCompiler;
+import com.lgame.util.LqLogUtil;
+import com.lgame.util.LqUtil;
 import com.lgame.redis.entity.MapRedisSerializer;
 import com.lgame.redis.entity.RedisCache;
 
@@ -109,7 +109,7 @@ public class ScanEntitysTool {
         SqlTypeToJava sqlTypeToJava = SqlTypeToJava.get(field.getType());
         if(sqlTypeToJava == null){
             if(field.getType().isEnum()){
-                if(ReflectionTool.isInterFace(field.getType(),LQDBEnum.class)){
+                if(LqUtil.isInterFace(field.getType(),LQDBEnum.class)){
                     Class cc = (Class) (((ParameterizedType) field.getType().getGenericInterfaces()[0]).getActualTypeArguments())[0];
                     if(cc == String.class){
                         sqlTypeToJava = new SqlTypeToJava.EnumStringJava(field.getType());
@@ -121,7 +121,7 @@ public class ScanEntitysTool {
                     sqlTypeToJava = new SqlTypeToJava.EnumDefaultJava(field.getType());
                 }
             }else {
-                PrintTool.info("warn:"+curClass.getName()+"  field:"+field.getName()+"("+field.getType().getName()+") not find match sqlTypeToJava default SqlTypeToJava default set SqlTypeToJava");
+                LqLogUtil.info("warn:"+curClass.getName()+"  field:"+field.getName()+"("+field.getType().getName()+") not find match sqlTypeToJava default SqlTypeToJava default set SqlTypeToJava");
                 sqlTypeToJava = new SqlTypeToJava();
             }
         }
@@ -219,7 +219,7 @@ public class ScanEntitysTool {
     }
 
     public void scanClass(Set<Class<?>> classs) throws Exception {
-        PrintTool.outTime("ScanEntitysTool","begin scan dbEntity");
+        LqLogUtil.outTime("ScanEntitysTool","begin scan dbEntity");
 
         Map<Class,ClassCache> classSetMap = new HashMap<>(classs.size());
         List<JavaFile> javaFiles = new LinkedList<>();
@@ -345,7 +345,7 @@ public class ScanEntitysTool {
             }
         }
         compiler.close();
-        PrintTool.outTime("ScanEntitysTool","over scan dbEntity");
+        LqLogUtil.outTime("ScanEntitysTool","over scan dbEntity");
     }
 
     private ConvertDefaultDBType getConvertDefaultDBType(Field field, LQField lqField) {
@@ -414,7 +414,7 @@ public class ScanEntitysTool {
         }
 
         if(classs == null){
-            PrintTool.info(Arrays.toString(packs)+" not find db class");
+            LqLogUtil.info(Arrays.toString(packs)+" not find db class");
             return;
         }
         scanClass(classs);

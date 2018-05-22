@@ -1,7 +1,7 @@
 package com.lgame.redis.entity;
 
+import com.lgame.core.LqTimeCacheManager;
 import com.lgame.mysql.compiler.FieldGetProxy;
-import com.lgame.util.comm.TimeCacheManager;
 import com.lgame.mysql.entity.DBTable;
 import com.lgame.redis.impl.RedisConnectionImpl;
 
@@ -38,7 +38,7 @@ public class MapRedisSerializer extends RedisSerializer{
 
             if(table.getRedisCache().expire() > 0){
                 if(table.getRedisCache().expireAt() > 0){
-                    long endTime = TimeCacheManager.getInstance().getCurTime()+table.getRedisCache().expire()*1000;
+                    long endTime =  LqTimeCacheManager.getInstance().getCurTime()+table.getRedisCache().expire()*1000;
                     endTime = Math.min(endTime,table.getRedisCache().expireAt());
                     redisConnection.expireAt(keys,endTime);
                     return;

@@ -1,7 +1,7 @@
 package com.lgame.mysql.entity;
 
 import com.lgame.mysql.compiler.ColumInit;
-import com.lgame.util.PrintTool;
+import com.lgame.util.LqLogUtil;
 
 import java.sql.ResultSet;
 import java.util.HashSet;
@@ -22,7 +22,7 @@ public class MoreJdbcColumsArray extends JdbcColumsArray{
     public <T> T doExute(DBTable dbTable, ResultSet rs,Class<T> tClass,QueryResultData<T> resultData) throws Exception {
         int id = rs.getInt(dbTable.getIdColumName());
         if(id == 0){
-            PrintTool.error(dbTable.getName()+":idKey is 0 maybe is error!!!please not use idKey = 0");
+            LqLogUtil.error(dbTable.getName()+":idKey is 0 maybe is error!!!please not use idKey = 0");
         }
 
         T t = resultData.getReultById(id);
@@ -51,7 +51,7 @@ public class MoreJdbcColumsArray extends JdbcColumsArray{
                 try {
                     columInit.set(t,rs,i+1);
                 }catch (Exception ex){
-                    PrintTool.error(dbTable.getName()+" columName:"+columsArray[i]+" "+ex.getMessage(),ex);
+                    LqLogUtil.error(dbTable.getName()+" columName:"+columsArray[i]+" "+ex.getMessage(),ex);
                 }
                 continue;
             }
@@ -59,7 +59,7 @@ public class MoreJdbcColumsArray extends JdbcColumsArray{
             relationData = dbTable.getRelationMap(columName);
             if(relationData == null){
                 if(isNew){
-                    PrintTool.error(dbTable.getName()+":columName:"+columName+" not find from config relationData");
+                    LqLogUtil.error(dbTable.getName()+":columName:"+columName+" not find from config relationData");
                 }
                 continue;
             }else if(objMap.contains(relationData.getFieldName())){

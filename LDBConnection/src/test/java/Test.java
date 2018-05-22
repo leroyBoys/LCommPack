@@ -1,29 +1,20 @@
-import com.lgame.util.PrintTool;
-import com.lgame.util.comm.StringTool;
-import com.lgame.util.file.PropertiesTool;
-import com.lgame.util.json.FastJsonTool;
-import com.lgame.util.json.JsonUtil;
-import com.lgame.util.thread.TaskIndieThread;
-import com.lgame.util.thread.TaskPools;
 import com.lgame.module.GameServer;
 import com.lgame.mysql.compiler.ColumInit;
 import com.lgame.mysql.compiler.FieldGetProxy;
 import com.lgame.mysql.compiler.ScanEntitysTool;
-import com.lgame.mysql.entity.DBTable;
-import com.lgame.mysql.impl.JdbcTemplate;
-import com.pro.Products;
-import com.lgame.redis.entity.MapRedisSerializer;
-import com.lgame.redis.entity.RedisKey;
+import com.lgame.mysql.impl.LqJdbcPool;
 import com.lgame.redis.impl.RedisConnectionImpl;
+import com.lgame.util.LqLogUtil;
+import com.lgame.util.LqUtil;
 import com.test.TestData;
 import com.test.TestEnum;
 import com.test.TestEnum2;
 
 import java.lang.reflect.Method;
-import java.util.*;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
-
-import static com.pro.Test.getProDucts;
 
 /**
  * Created by Administrator on 2017/4/2.
@@ -46,7 +37,7 @@ public class Test {
 
         String password = null;
         if(threeArray[1].split("/").length>1){
-            password = StringTool.trimToNull(threeArray[1].split("/")[1]);
+            password = LqUtil.trimToNull(threeArray[1].split("/")[1]);
         }
 
         System.out.println("db:"+db+"  ip:"+host+"  port:"+port+"  pwd:"+password);
@@ -96,18 +87,12 @@ public class Test {
 
 
         ScanEntitysTool.instance("com.pro");
-        Products products = getProDucts();
 
-        DBTable dbTable = ScanEntitysTool.instance().getDBTable(products.getClass());
-        MapRedisSerializer mapRedisSerializer = (MapRedisSerializer) dbTable.getRedisSerializer();
        // map = mapRedisSerializer.serializer_single(products);
-        System.out.println(JsonUtil.getJsonFromBean(map));
 
         String[] arr = new String[map.size()];
         map.keySet().toArray(arr);
         int  size = 1000000;
-        String json = FastJsonTool.getJsonFromBean(products);
-        PrintTool.outTime("1","=PrintTool==>");
 
         for(int i =0;i<size;i++){
          //   products = (Products) mapRedisSerializer.mergeFrom_single(arr,map,dbTable,products.getClass());
@@ -118,7 +103,7 @@ public class Test {
           //  master.get("abd");
         }
 
-        PrintTool.outTime("1","=PrintTool==>");
+        LqLogUtil.outTime("1","=PrintTool==>");
 
 
 
@@ -128,7 +113,7 @@ public class Test {
     private void dbTest() throws Exception {
         ScanEntitysTool.instance("com.test");
         String sql = "SELECT * FROM `test_data`";
-        JdbcTemplate db = new JdbcTemplate(JdbcTemplate.DataSourceType.Hikari,PropertiesTool.loadProperty("hikari_db.properties"));
+        LqJdbcPool db = new LqJdbcPool(LqJdbcPool.DataSourceType.Hikari,LqUtil.loadProperty("hikari_db.properties"));
         List<TestData> datas = db.ExecuteQuery(TestData.class,sql);
         TestData data = datas.get(1);
         data.setName("逗你玩");
@@ -142,7 +127,7 @@ public class Test {
 
         ScanEntitysTool.instance("com");
         String sql = "SELECT test_data.* ,test1.`id` AS tid,test1.`name` AS tname FROM `test_data` RIGHT JOIN test1 ON test_data.`id` = test1.`id`\n";
-        JdbcTemplate db = new JdbcTemplate(JdbcTemplate.DataSourceType.Hikari,PropertiesTool.loadProperty("hikari_db.properties"));
+        LqJdbcPool db = new LqJdbcPool(LqJdbcPool.DataSourceType.Hikari,LqUtil.loadProperty("hikari_db.properties"));
    //     RedisConnectionImpl redisConnectionManager = new RedisConnectionImpl("redis://0@127.0.0.1:6379");
        RedisConnectionImpl redisConnectionManager = new RedisConnectionImpl("redis://0@192.168.11.128:3307/123456");
   //      RedisConnectionImpl redisConnectionManager = new RedisConnectionImpl("redis://0@192.168.11.133:63781/123456");
@@ -160,24 +145,7 @@ public class Test {
 
 
 
-        RedisKey redisKey = new RedisKey() {
-            @Override
-            public boolean isSynFromDb() {
-                return false;
-            }
-
-            @Override
-            public Object queryFromDb(Object... paramters) {
-                return null;
-            }
-
-            @Override
-            public String getKey(Object... paramters) {
-                return paramters[0]+""+paramters[1];
-            }
-        };
-
-        PrintTool.outTime("1","===>");
+        LqLogUtil.outTime("1","===>");
         int size = 1;
       /*  for(int i = 0;i<size;i++){
             redisConnectionManager.hgetAll(redisKey.getKey("a",1));
@@ -190,7 +158,7 @@ public class Test {
         String str = redisConnectionManager.hget(redisKey.getKey("a",1),"field");
 
         System.out.println(JsonUtil.getJsonFromBean(redisConnectionManager.hgetAll(redisKey.getKey("a",1))));*/
-        PrintTool.outTime("1","=PrintTool==>");
+        LqLogUtil.outTime("1","=PrintTool==>");
 
  /*       for(int i = 0;i<5000;i++){
             List<TestData> testDatas =  db.ExecuteQuery(TestData.class,sql);
@@ -201,43 +169,16 @@ public class Test {
 */
         List<TestData> testDatas =  db.ExecuteQuery(TestData.class,sql);
 
-        System.out.println(FastJsonTool.getJsonFromBean(testDatas));
         //     System.out.println(JsonUtil.getJsonFromBean(testDatas));
      /*   TestData data = testDatas.get(1);
         data.setName("张2");*/
-        PrintTool.outTime("1","==22=>");
+        LqLogUtil.outTime("1","==22=>");
       //  redisConnectionManager.Exeute(testDatas.get(0));
         redisConnectionManager.save(testDatas.get(0));
-        System.out.println(JsonUtil.getJsonFromBean(redisConnectionManager.query(TestData.class,"1")));
         AtomicInteger integer = new AtomicInteger();
-        for(int i = 0;i<size;i++){
-            TaskPools.addTask(new TaskIndieThread() {
-                @Override
-                public void doExcute(Object... objects) {
-                /*    redisConnectionManager.hset("fiel哈哈d2"+objects[0], "va张三李四luess", redisKey,"a",1);
-                    redisConnectionManager.hget("fiel哈哈d2"+objects[0],redisKey,"a",1);*/
-                   // redisConnectionManager.hgetAll(redisKey.getKey("a",1));
-                    //redisConnectionManager.hgetAll(redisKey.getKey("a",1));
-               //     db.Execute("update test_data  set num='99'   where id = "+((int)objects[0]+1453));
-                 /*   TestData data = new TestData();
-                    data.setName("张sdfsdfsdf1 ");
-                    data.setId(1453);
-                    data = redisConnectionManager.ExeuteQuery(TestData.class,1453);
-                    //db.Execute("update test_data  set num='99'   where id = 22");
-                    if(10 == (int)objects[0]){
-                        System.out.println(FastJsonTool.getJsonFromBean(data));
-                    }*/
-                    integer.getAndAdd(1);
-                }
-            },i);
 
-        }
 
-        while (integer.get() !=size ){
-            Thread.sleep(10);
-        }
-
-        PrintTool.outTime("1","===>");
+        LqLogUtil.outTime("1","===>");
 
     }
 
@@ -396,7 +337,7 @@ public class Test {
     }
 
     private void tttDB() throws Exception {
-        JdbcTemplate db = new JdbcTemplate(PropertiesTool.loadProperty("druid_db.properties"));
+        LqJdbcPool db = new LqJdbcPool(LqUtil.loadProperty("druid_db.properties"));
 
         long sum = 0;
 

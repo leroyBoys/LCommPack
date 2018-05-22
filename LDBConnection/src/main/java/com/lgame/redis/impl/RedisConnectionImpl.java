@@ -1,10 +1,10 @@
 package com.lgame.redis.impl;
 
+import com.lgame.core.LqTimeCacheManager;
 import com.lgame.mysql.compiler.ScanEntitysTool;
 import com.lgame.redis.entity.RedisKey;
-import com.lgame.util.PrintTool;
-import com.lgame.util.comm.StringTool;
-import com.lgame.util.comm.TimeCacheManager;
+import com.lgame.util.LqLogUtil;
+import com.lgame.util.LqUtil;
 import com.lgame.mysql.entity.DBTable;
 import com.lgame.redis.RedisConnection;
 
@@ -37,7 +37,7 @@ public class RedisConnectionImpl extends RedisConnection {
     public <T> T query(Class<T> cls,Object uniqueId){
         DBTable table = ScanEntitysTool.instance.getDBTable(cls);
         if(table == null){
-            PrintTool.error(cls.getName()+" not config redis ");
+            LqLogUtil.error(cls.getName()+" not config redis ");
             return null;
         }
 
@@ -47,7 +47,7 @@ public class RedisConnectionImpl extends RedisConnection {
     public void save(Object obj){
         DBTable table = ScanEntitysTool.instance.getDBTable(obj.getClass());
         if(table == null){
-            PrintTool.error(obj.getClass().getName()+" not config redis ");
+            LqLogUtil.error(obj.getClass().getName()+" not config redis ");
             return;
         }
 
@@ -70,7 +70,7 @@ public class RedisConnectionImpl extends RedisConnection {
             RedisKey.RedisExpiresKey redisExpiresKey = (RedisKey.RedisExpiresKey) redisKey;
             if(redisExpiresKey.getExpire() > 0){
                 if(redisExpiresKey.getExpireAt() > 0){
-                    long endTime = TimeCacheManager.getInstance().getCurTime()+redisExpiresKey.getExpire()*1000;
+                    long endTime = LqTimeCacheManager.getInstance().getCurTime()+redisExpiresKey.getExpire()*1000;
                     endTime = Math.min(endTime,redisExpiresKey.getExpireAt());
                     this.expireAt(key,endTime);
                 }else {
@@ -107,7 +107,7 @@ public class RedisConnectionImpl extends RedisConnection {
     }
 
     public Map<String, String> hgetAll2(RedisKey key,Object... keyParamters) {
-        byte[] redisKey = StringTool.hex2byte(key.getKey(keyParamters));
+        byte[] redisKey = LqUtil.hex2byte(key.getKey(keyParamters));
 
         Map<byte[], byte[]> map = super.hgetAll(redisKey);
         Map<String, String> retMap;
@@ -119,7 +119,7 @@ public class RedisConnectionImpl extends RedisConnection {
                 }
                 map = new HashMap<>(retMap.size());
                 for(Map.Entry<String,String> entry:retMap.entrySet()){
-                    map.put(StringTool.hex2byte(entry.getKey()),StringTool.hex2byte(entry.getValue()));
+                    map.put(LqUtil.hex2byte(entry.getKey()),LqUtil.hex2byte(entry.getValue()));
                 }
                 super.hmset(redisKey,map);
                 return retMap;
@@ -128,7 +128,7 @@ public class RedisConnectionImpl extends RedisConnection {
             retMap = new HashMap<>(map.size());
 
             for(Map.Entry<byte[],byte[]> entry:map.entrySet()){
-                retMap.put(StringTool.byte2hex(entry.getKey()),StringTool.byte2hex(entry.getValue()));
+                retMap.put(LqUtil.byte2hex(entry.getKey()),LqUtil.byte2hex(entry.getValue()));
             }
             return retMap;
         }
@@ -136,8 +136,8 @@ public class RedisConnectionImpl extends RedisConnection {
     }
 
     public String hget(String field,RedisKey key,Object... keyParamters) {
-        byte[] redisKey = StringTool.hex2byte(key.getKey(keyParamters));
-        byte[] fieldByte = StringTool.hex2byte(field);
+        byte[] redisKey = LqUtil.hex2byte(key.getKey(keyParamters));
+        byte[] fieldByte = LqUtil.hex2byte(field);
         byte[] bytes = super.hget(redisKey,fieldByte );
         if(bytes == null){
             if(key.isSynFromDb()){
@@ -145,11 +145,11 @@ public class RedisConnectionImpl extends RedisConnection {
                 if(value == null){
                     return null;
                 }
-                hset(redisKey,fieldByte,StringTool.hex2byte(value));
+                hset(redisKey,fieldByte,LqUtil.hex2byte(value));
                 return value;
             }
         }else {
-            return StringTool.byte2hex(bytes);
+            return LqUtil.byte2hex(bytes);
         }
         return null;
     }
@@ -163,8 +163,8 @@ public class RedisConnectionImpl extends RedisConnection {
      * @return 状态码 1成功，0失败，fieid已存在将更新，也返回0
      */
     public Long hset(String field, String value,RedisKey key,Object... keyParamters) {
-        byte[] redisKey = StringTool.hex2byte(key.getKey(keyParamters));
-        Long flag = super.hset(redisKey, StringTool.hex2byte(field), StringTool.hex2byte(value));
+        byte[] redisKey = LqUtil.hex2byte(key.getKey(keyParamters));
+        Long flag = super.hset(redisKey, LqUtil.hex2byte(field), LqUtil.hex2byte(value));
         resetExpire(redisKey,key);
         return flag;
     }
@@ -176,11 +176,11 @@ public class RedisConnectionImpl extends RedisConnection {
      * @return
      */
     public String hmset(Map<String, String> hash,RedisKey key,Object... keyParamters) {
-        byte[] redisKey = StringTool.hex2byte(key.getKey(keyParamters));
+        byte[] redisKey = LqUtil.hex2byte(key.getKey(keyParamters));
 
         Map<byte[], byte[]> hashByts = new HashMap<>(hash.size());
         for(Map.Entry<String,String> entry:hash.entrySet()){
-            hashByts.put(StringTool.hex2byte(entry.getKey()),StringTool.hex2byte(entry.getValue()));
+            hashByts.put(LqUtil.hex2byte(entry.getKey()),LqUtil.hex2byte(entry.getValue()));
         }
         String ret = super.hmset(redisKey, hashByts);
         resetExpire(redisKey,key);
@@ -192,11 +192,11 @@ public class RedisConnectionImpl extends RedisConnection {
     }
 
     public long hdel(String field,RedisKey key,Object... keyParamters) {
-        return super.hdel(StringTool.hex2byte(key.getKey(keyParamters)), StringTool.hex2byte(field));
+        return super.hdel(LqUtil.hex2byte(key.getKey(keyParamters)), LqUtil.hex2byte(field));
     }
 
     public long hlen(RedisKey key,Object... keyParamters) {
-        return super.hlen(StringTool.hex2byte(key.getKey(keyParamters)));
+        return super.hlen(LqUtil.hex2byte(key.getKey(keyParamters)));
     }
 
     public Long zadd(double score, String member,RedisKey key,Object... keyParamters) {
