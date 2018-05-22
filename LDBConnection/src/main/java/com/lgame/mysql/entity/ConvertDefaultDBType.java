@@ -65,7 +65,7 @@ public interface ConvertDefaultDBType<FROM> {
     public static class DateDefaultConvertDBType extends ConvertDefault<Date> {
         @Override
         public Object formatToDbData(Date o) {
-            return o==null?0: LqUtil.getDateTime(o);
+            return o==null?null: LqUtil.getDateTime(o);
         }
 
         @Override

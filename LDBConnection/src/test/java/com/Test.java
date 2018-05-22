@@ -1,89 +1,41 @@
 package com;
 
-import com.lgame.util.LqLogUtil;
-import com.lgame.module.GameServer;
 
-import java.util.HashMap;
-import java.util.Map;
+import com.lgame.mysql.compiler.ScanEntitysTool;
+import com.lgame.mysql.impl.LqJdbcPool;
+import com.lgame.util.LqUtil;
+import com.test.TestData;
+
+import java.util.List;
 
 /**
  * Created by leroy:656515489@qq.com
- * 2018/4/28.
+ * 2018/5/16.
  */
-public class Test{
-   static final int size = 9999999;
-    /**
-     * @param args
-     */
-    @SuppressWarnings("static-access")
-    public static void main(String[] args) throws Exception {
-        /*test1();
-        test2();
-        test22();*/
+public class Test {
+    @org.junit.Test
+    public void test() throws Exception {
+        ScanEntitysTool.instance("com");
 
-       /* Type[] types = c.getGenericInterfaces();
+        LqJdbcPool jdbcPool = new LqJdbcPool(LqJdbcPool.DataSourceType.Hikari, LqUtil.loadProperty("hikari_db.properties"));
+        String sql = "SELECT test_data.* ,test1.`id` AS tid,test1.`name` AS tname FROM `test_data` RIGHT JOIN test1 ON test_data.`id` = test1.`id`";
 
 
-        Type t = types[0];
-        Type[] st = ((ParameterizedType) t).getActualTypeArguments();
-        Class c22 = (Class) st[0];
-        System.out.println(c22.getName());
-        Class strCl = String.class;
-        System.out.println((c22 == strCl));
+        List<TestData> testDataList = jdbcPool.ExecuteQueryList(TestData.class,sql);
 
-        String gs = "hell2";
-        DemoEnum demoEnum = Enum.valueOf(DemoEnum.class,gs);
-        System.out.println(demoEnum.getI());*/
+        System.out.println(testDataList.size());
 
-    }
+        TestData testData = testDataList.get(1);
+        testData.setName("tomess");
+        jdbcPool.ExecuteEntity(testData);
 
-    public static void test1(){
-        Class cls = GameServer.class;
-        Map<Class,Map<String,Integer>> map = new HashMap<>();
-        Map<String,Integer> stringStringMap = new HashMap<>();
-        stringStringMap.put("abc",1);
-        map.put(cls,stringStringMap);
-
-        int sum = 0;
-        LqLogUtil.outTime("1","===>");
-        for(int i=0;i<size;i++){
-            stringStringMap = map.get(cls);
-            if(stringStringMap != null){
-                sum+=stringStringMap.get("abc");
-            }
-        }
-        LqLogUtil.outTime("1",sum+"  ===>over:");
-    }
+        System.out.println(testData.getName());
 
 
-    public static void test2(){
-        Class cls = GameServer.class;
-        Map<String,Integer> stringStringMap = new HashMap<>();
-        stringStringMap.put(cls.getSimpleName()+"abc",1);
-        String str;
-        int sum = 0;
-        LqLogUtil.outTime("11","===>");
-        for(int i=0;i<size;i++){
-            str = cls.getSimpleName()+"abc";
-            sum+=stringStringMap.get(str);
-        }
-        LqLogUtil.outTime("11",sum+"   ===>over:");
-    }
+        testData.setId(0);
+        testData.setName("新增");
+        jdbcPool.ExecuteEntity(testData);
 
-
-    public static void test22(){
-        Class cls = GameServer.class;
-        Map<String,Integer> stringStringMap = new HashMap<>();
-        stringStringMap.put(cls.getSimpleName()+"abc",1);
-        String clasName = cls.getSimpleName();
-
-        String str;
-        int sum = 0;
-        LqLogUtil.outTime("121","===>");
-        for(int i=0;i<size;i++){
-            str = clasName+"abc";
-            sum += stringStringMap.get(str);
-        }
-        LqLogUtil.outTime("121",sum+"  ===>over:");
+        System.out.println(testData.getName()+"   "+testData.getId());
     }
 }
