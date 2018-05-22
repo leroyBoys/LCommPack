@@ -6,9 +6,9 @@ import com.lgame.util.poi.ExcelHelper;
 import com.lgame.util.poi.interfac.DbService;
 import com.lgame.util.poi.module.DefaultDbEntity;
 import com.lgame.util.poi.module.ExcelConfig;
-import com.mysql.DbCallBack;
-import com.mysql.compiler.ScanEntitysTool;
-import com.mysql.impl.JdbcTemplate;
+import com.lgame.mysql.DbCallBack;
+import com.lgame.mysql.compiler.ScanEntitysTool;
+import com.lgame.mysql.impl.JdbcTemplate;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -25,7 +25,7 @@ import java.util.Map;
 public class Test {
     public static  void main(String[] args) throws Exception {
         //扫描包，可以多个包
-        ScanEntitysTool.scan("com.test");
+        ScanEntitysTool.instance("com.test");
         JdbcTemplate db = new JdbcTemplate(JdbcTemplate.DataSourceType.Hikari, PropertiesTool.loadProperty("hikari_db.properties"));
         /*JdbcTemplate db = new JdbcTemplate(JdbcTemplate.DataSourceType.Druid, PropertiesTool.loadProperty("druid_db.properties"));*/
         PrintTool.outTime("1","===>");///开始计时

@@ -1,8 +1,8 @@
 package com.pro;
 
 import com.alibaba.fastjson.annotation.JSONField;
-import com.mysql.entity.LQDBTable;
-import com.mysql.entity.LQField;
+import com.lgame.mysql.entity.LQDBTable;
+import com.lgame.mysql.entity.LQField;
 
 import java.util.Date;
 import java.util.List;
@@ -28,7 +28,9 @@ public class Products222 {
     private Date date;
     private Products222 products;
 
+    @LQField
     private int i1;
+    @LQField
     private int i2;
     private int i3;
     private int i4;
@@ -37,7 +39,7 @@ public class Products222 {
     private int i7;
     private int i8;
     private int i9;
-
+    @LQField
     private boolean  b1;
     private boolean  b2;
     private boolean  b3;
@@ -50,6 +52,7 @@ public class Products222 {
 
     private List<String> list;
     private long l1;
+    @LQField
     private long l2;
     private long l3;
     private long l4;

@@ -1,7 +1,10 @@
 package com.test;
 
-import com.mysql.entity.*;
-import com.redis.entity.RedisCache;
+import com.lgame.mysql.entity.DBRelation;
+import com.lgame.mysql.entity.DBRelations;
+import com.lgame.mysql.entity.LQDBTable;
+import com.lgame.mysql.entity.LQField;
+import com.lgame.redis.entity.RedisCache;
 
 import java.util.Date;
 import java.util.List;
@@ -27,7 +30,7 @@ public class TestData {
     @LQField(name ="test_enum")
     private TestEnum testEnum;
 
-    @LQField(name ="test_enum2",convertDBType = LQField.ConvertDBType.EnumNumber)
+    @LQField(name ="test_enum2",convertDBTypeClass = "com.test.MyConvertDefaultDBType")
     private TestEnum2 testEnum2;
 
     @DBRelations(relation = DBRelations.Reltaion.OneToMany,

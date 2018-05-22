@@ -1,7 +1,7 @@
 package com.pro;
 
-import com.mysql.entity.LQField;
-import com.redis.entity.RedisCache;
+import com.lgame.mysql.entity.LQField;
+import com.lgame.redis.entity.RedisCache;
 
 import java.util.Date;
 import java.util.List;

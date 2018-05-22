@@ -1,7 +1,7 @@
 package com.test;
 
-import com.mysql.entity.LQDBTable;
-import com.mysql.entity.LQField;
+import com.lgame.mysql.entity.LQDBTable;
+import com.lgame.mysql.entity.LQField;
 
 /**
  * Created by leroy:656515489@qq.com

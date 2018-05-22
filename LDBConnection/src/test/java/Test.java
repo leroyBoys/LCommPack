@@ -1,7 +1,3 @@
-import com.dyuproject.protostuff.LinkedBuffer;
-import com.dyuproject.protostuff.ProtostuffIOUtil;
-import com.dyuproject.protostuff.Schema;
-import com.dyuproject.protostuff.runtime.RuntimeSchema;
 import com.lgame.util.PrintTool;
 import com.lgame.util.comm.StringTool;
 import com.lgame.util.file.PropertiesTool;
@@ -9,15 +5,16 @@ import com.lgame.util.json.FastJsonTool;
 import com.lgame.util.json.JsonUtil;
 import com.lgame.util.thread.TaskIndieThread;
 import com.lgame.util.thread.TaskPools;
-import com.module.GameServer;
-import com.mysql.compiler.ScanEntitysTool;
-import com.mysql.entity.DBTable;
-import com.mysql.entity.LQDBEnum;
-import com.mysql.impl.JdbcTemplate;
+import com.lgame.module.GameServer;
+import com.lgame.mysql.compiler.ColumInit;
+import com.lgame.mysql.compiler.FieldGetProxy;
+import com.lgame.mysql.compiler.ScanEntitysTool;
+import com.lgame.mysql.entity.DBTable;
+import com.lgame.mysql.impl.JdbcTemplate;
 import com.pro.Products;
-import com.redis.entity.MapRedisSerializer;
-import com.redis.entity.RedisKey;
-import com.redis.impl.RedisConnectionImpl;
+import com.lgame.redis.entity.MapRedisSerializer;
+import com.lgame.redis.entity.RedisKey;
+import com.lgame.redis.impl.RedisConnectionImpl;
 import com.test.TestData;
 import com.test.TestEnum;
 import com.test.TestEnum2;
@@ -59,6 +56,8 @@ public class Test {
     //    dbTest();
      //   redisTest();
         testJdkReflect();
+//        testReflectAsm();
+    //    testJdkReflect();
         //RedisConnectionImpl redisConnectionManager = new RedisConnectionImpl("redis://0@192.168.11.128:3307");
        /* RedisConnectionImpl redisConnectionManager = new RedisConnectionImpl("redis://0@192.168.11.133:6378/123456");
         PrintTool.outTime("1","=PrintTool==>");
@@ -96,10 +95,10 @@ public class Test {
 
 
 
-        ScanEntitysTool.scan("com.pro");
+        ScanEntitysTool.instance("com.pro");
         Products products = getProDucts();
 
-        DBTable dbTable = ScanEntitysTool.getDBTable(products.getClass());
+        DBTable dbTable = ScanEntitysTool.instance().getDBTable(products.getClass());
         MapRedisSerializer mapRedisSerializer = (MapRedisSerializer) dbTable.getRedisSerializer();
        // map = mapRedisSerializer.serializer_single(products);
         System.out.println(JsonUtil.getJsonFromBean(map));
@@ -127,7 +126,7 @@ public class Test {
     }
 
     private void dbTest() throws Exception {
-        ScanEntitysTool.scan("com.test");
+        ScanEntitysTool.instance("com.test");
         String sql = "SELECT * FROM `test_data`";
         JdbcTemplate db = new JdbcTemplate(JdbcTemplate.DataSourceType.Hikari,PropertiesTool.loadProperty("hikari_db.properties"));
         List<TestData> datas = db.ExecuteQuery(TestData.class,sql);
@@ -141,23 +140,23 @@ public class Test {
 
     public static void testJdkReflect() throws Exception {
 
-        ScanEntitysTool.scan("com.test");
-        String sql = "SELECT * FROM `test_data`";
+        ScanEntitysTool.instance("com");
+        String sql = "SELECT test_data.* ,test1.`id` AS tid,test1.`name` AS tname FROM `test_data` RIGHT JOIN test1 ON test_data.`id` = test1.`id`\n";
         JdbcTemplate db = new JdbcTemplate(JdbcTemplate.DataSourceType.Hikari,PropertiesTool.loadProperty("hikari_db.properties"));
    //     RedisConnectionImpl redisConnectionManager = new RedisConnectionImpl("redis://0@127.0.0.1:6379");
-      // RedisConnectionImpl redisConnectionManager = new RedisConnectionImpl("redis://0@192.168.11.128:3307");
-        RedisConnectionImpl redisConnectionManager = new RedisConnectionImpl("redis://0@192.168.11.133:63781/123456");
-        RedisConnectionImpl sleav1 = new RedisConnectionImpl("redis://0@192.168.11.133:63782/123456");
+       RedisConnectionImpl redisConnectionManager = new RedisConnectionImpl("redis://0@192.168.11.128:3307/123456");
+  //      RedisConnectionImpl redisConnectionManager = new RedisConnectionImpl("redis://0@192.168.11.133:63781/123456");
+    //    RedisConnectionImpl sleav1 = new RedisConnectionImpl("redis://0@192.168.11.133:63782/123456");
 
-        RedisConnectionImpl master = new RedisConnectionImpl("redis://0@192.168.11.133:6378/123456");
+        //RedisConnectionImpl master = new RedisConnectionImpl("redis://0@192.168.11.133:6378/123456");
 
         String key ="abd";
-        master.set(key,"哈哈哈");
-        System.out.println("master:"+master.get(key));
+        redisConnectionManager.set(key,"哈哈哈");
+        System.out.println("master:"+redisConnectionManager.get(key));
         Thread.sleep(100);
         System.out.println("sleav1:"+redisConnectionManager.get(key));
         Thread.sleep(100);
-        System.out.println("sleav1:"+sleav1.get(key));
+        System.out.println("sleav1:"+redisConnectionManager.get(key));
 
 
 
@@ -207,8 +206,9 @@ public class Test {
      /*   TestData data = testDatas.get(1);
         data.setName("张2");*/
         PrintTool.outTime("1","==22=>");
-
-
+      //  redisConnectionManager.Exeute(testDatas.get(0));
+        redisConnectionManager.save(testDatas.get(0));
+        System.out.println(JsonUtil.getJsonFromBean(redisConnectionManager.query(TestData.class,"1")));
         AtomicInteger integer = new AtomicInteger();
         for(int i = 0;i<size;i++){
             TaskPools.addTask(new TaskIndieThread() {
@@ -241,6 +241,7 @@ public class Test {
 
     }
 
+    int size = 500000000;
     public void testReflectAsm() throws Exception  {
         long now;
         long sum = 0;
@@ -248,50 +249,77 @@ public class Test {
 
         now = System.currentTimeMillis();
 
-        for(int i = 0; i<500000000; ++i){
+        for(int i = 0; i<size; ++i){
             GameServer t = new GameServer();
             t.setId(i);
             sum += t.getId();
         }
         System.out.println("get-set耗时"+(System.currentTimeMillis() - now) + "ms秒，和是" +sum);
         ttt();
-        sum = 0;
-        now = System.currentTimeMillis();
-
-        for(int i = 0; i<5000000; ++i){
-            Class<?> c = GameServer.class;
-            GameServer o = (GameServer) c.newInstance();
-            Class<?>[] argsType = new Class[1];
-            argsType[0] = int.class;
-
-            Method m = c.getMethod("setId",argsType);
-            m.invoke(o, i);
-            sum += o.getId();
-        }
-        System.out.println("标准反射耗时"+(System.currentTimeMillis() - now) + "ms，和是" +sum);
         ttt2();
+        tttProx();
+        tttProxTest();
+        /*
         sum = 0;
 
         Map<String,Object> maps = new HashMap<>();
         maps.put("id",1);
         now = System.currentTimeMillis();
 
-        for(int i = 0; i<500000000; ++i){
+        for(int i = 0; i<size; ++i){
+            maps.put("id",i);
             sum +=  (int)maps.get("id");
         }
         System.out.println("map耗时"+(System.currentTimeMillis() - now) + "ms，和是" +sum);
         sum = 0;
 
         now = System.currentTimeMillis();
-
-        for(int i = 0; i<500000000; ++i){
-            Map<String,Object> map = new HashMap<>(1);
+        Map<String,Object> map222 = new HashMap<>(2);
+        for(int i = 0; i<size; ++i){
+            Map<String,Object> map = new HashMap<>();
             map.put("id",i);
             sum +=  (int)map.get("id");
         }
         System.out.println("map222耗时"+(System.currentTimeMillis() - now) + "ms，和是" +sum);
-        sum = 0;
+        sum = 0;*/
     }
+
+    private void tttProxTest() throws Exception {
+        System.out.println("===================");
+      //  ScanEntitysTool.scan("com.pro");
+
+        long sum = 0;
+      /*  Class<?> c = GameServer.class;
+        FieldGetProxy.FieldGet fieldGet = com.outofmemory.ScanEntitysTool.getDBTable(c).getColumGetMap().get("id");
+        ColumInit columInit = com.outofmemory.ScanEntitysTool.getDBTable(c).getColumInit("id");
+
+        long now = System.currentTimeMillis();
+        for(int i = 0; i<size; ++i){
+            GameServer o = new GameServer();
+            columInit.set(o,i);
+            sum += o.getId();
+        }*/
+      //  System.out.println("缓存反射耗时tttProxTest======:::"+(System.currentTimeMillis() - now) + "ms，和是" +sum);
+    }
+
+
+    private void tttProx() throws Exception {
+        ScanEntitysTool.instance("com.module");
+
+        long sum = 0;
+        Class<?> c = GameServer.class;
+        FieldGetProxy.FieldGet fieldGet = ScanEntitysTool.instance.getDBTable(c).getColumGetMap().get("id");
+        ColumInit columInit = ScanEntitysTool.instance.getDBTable(c).getColumInit("id");
+
+        long now = System.currentTimeMillis();
+        for(int i = 0; i<size; ++i){
+            GameServer o = new GameServer();
+            columInit.set(o,i);
+            sum += o.getId();
+        }
+        System.out.println("缓存反射耗时tttProx:::"+(System.currentTimeMillis() - now) + "ms，和是" +sum);
+    }
+
 
     private void ttt2() throws Exception {
         long sum = 0;
@@ -301,7 +329,7 @@ public class Test {
         Map<String,Method> methodMap = new HashMap<>();
         methodMap.put("setId",c.getMethod("setId",argsType));
         long now = System.currentTimeMillis();
-        for(int i = 0; i<500000000; ++i){
+        for(int i = 0; i<size; ++i){
             GameServer o = new GameServer();
 
             methodMap.get("setId").invoke(o, i);

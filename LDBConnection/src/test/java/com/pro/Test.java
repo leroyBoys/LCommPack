@@ -1,6 +1,7 @@
 package com.pro;
 
 import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.serializer.JavaBeanSerializer;
 import com.alibaba.fastjson.serializer.SimplePropertyPreFilter;
 import com.dyuproject.protostuff.LinkedBuffer;
 import com.dyuproject.protostuff.ProtostuffIOUtil;
@@ -10,14 +11,15 @@ import com.lgame.util.PrintTool;
 import com.lgame.util.json.FastJsonTool;
 import com.lgame.util.json.JsonUtil;
 import com.lgame.util.time.DateTimeTool;
-import com.redis.entity.RedisKey;
+import com.lgame.mysql.compiler.ScanEntitysTool;
+import com.lgame.redis.entity.RedisKey;
 import com.test.TestData;
 
 import java.io.IOException;
 import java.util.*;
 
 public class Test {
-    static int size = 100000;
+    static int size = 1000000;
 
     @org.junit.Test
     public void test() throws Exception {
@@ -32,7 +34,8 @@ public class Test {
 
 */
    //     json_read();
-        fastJson_read();
+    //    fastJson_read();
+       fastJson_read2233();
     }
 
     public void protoBuffStr() throws IOException {
@@ -233,7 +236,26 @@ public class Test {
         PrintTool.outTime("1","=fastJson===over:"+jsonString);
     }
 
+
+    private void fastJson_read2233()throws Exception{
+        Products products = getProDucts();
+
+        JavaBeanSerializer javaBeanSerializer = new JavaBeanSerializer(Products.class);
+        String str = FastJsonTool.getJsonFromBean(products);
+        Map map = (Map) FastJsonTool.getBeanFromJson(str,Map.class);
+        ScanEntitysTool.instance("com.pro");
+
+        PrintTool.outTime("11111","=======FastJsonTool=====");
+        for(int i = 0;i<size;i++){
+            FastJsonTool.getJsonFromBean(map);
+
+        }
+
+        PrintTool.outTime("11111","=======FastJsonTool=Over====");
+    }
+
     private void fastJson_read() throws Exception {
+
         Products products = getProDucts();
 
      /*   SimplePropertyPreFilter filter = new SimplePropertyPreFilter( products.getClass(),"s2","s1");

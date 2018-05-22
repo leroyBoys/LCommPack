@@ -1,6 +1,6 @@
 package com.test;
 
-import com.mysql.entity.LQDBEnum;
+import com.lgame.mysql.entity.LQDBEnum;
 
 /**
  * Created by leroy:656515489@qq.com
