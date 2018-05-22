@@ -56,7 +56,7 @@ public class LqJdbcPool implements SqlDataSource {
         return pool.getConnection();
     }
 
-    public void Execute(String cmd, Object... p) {
+    /*public void Execute(String cmd, Object... p) {
       //  LqLogUtil.log("cmd:" + cmd);
         Connection cn = null;
         PreparedStatement ps = null;
@@ -71,7 +71,7 @@ public class LqJdbcPool implements SqlDataSource {
             this.close(ps, cn);
         }
     }
-
+*/
     public boolean ExecuteUpdate(String cmd, Object[] p) {
         Connection cn = null;
         PreparedStatement ps = null;
@@ -179,7 +179,7 @@ public class LqJdbcPool implements SqlDataSource {
         return false;
     }
 
-    public long Insert(String sql, Object... p) {
+    public long ExecuteInsert(String sql, Object... p) {
         Connection cn = null;
         PreparedStatement ps = null;
         ResultSet rs = null;
@@ -305,7 +305,7 @@ public class LqJdbcPool implements SqlDataSource {
      * @param p
      * @return
      */
-    public Object ExecuteQueryOnlyValue(String cmd, Object... p) {
+    public Object ExecuteQueryOnlyOneValue(String cmd, Object... p) {
  //       LqLogUtil.log("cmd:" + cmd);
         Connection cn = null;
         PreparedStatement ps = null;
@@ -321,26 +321,6 @@ public class LqJdbcPool implements SqlDataSource {
                 return rs.getObject(1);
             }
             return null;
-        } catch (Exception e) {
-            LqLogUtil.error(this.getClass(),e);
-        } finally {
-            this.close(ps, cn, rs);
-        }
-        return null;
-    }
-
-    public <T> T ExecuteQuery(String sql, DbCallBack<T> callBack) {
-        //LqLogUtil.log("cmd:" + sql);
-        Connection cn = null;
-        PreparedStatement ps = null;
-        ResultSet rs = null;
-        try {
-            cn = getConnection();
-
-            ps = cn.prepareStatement(sql);
-
-            rs =  ps.executeQuery();
-           return callBack.doInPreparedStatement(rs);
         } catch (Exception e) {
             LqLogUtil.error(this.getClass(),e);
         } finally {
@@ -411,7 +391,7 @@ public class LqJdbcPool implements SqlDataSource {
         }
     }
 
-    public <T> List<T> ExecuteQuery(Class<T> cls,String cmd, Object... p) {
+    public <T> List<T> ExecuteQueryList(Class<T> cls,String cmd, Object... p) {
         //LqLogUtil.log("cm2d:" + cmd);
         DBTable dbTable = ScanEntitysTool.instance.getDBTable(cls);
         if(dbTable == null){
