@@ -1,5 +1,6 @@
 package com.lgame.mysql.compiler;
 
+import com.lgame.mysql.compiler.util.ClassScanner;
 import com.lgame.mysql.compiler.util.JavaFile;
 import com.lgame.mysql.compiler.util.JavaStringCompiler;
 import com.lgame.mysql.entity.*;

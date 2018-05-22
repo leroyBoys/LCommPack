@@ -1,4 +1,4 @@
-package com.lgame.mysql.compiler;
+package com.lgame.mysql.compiler.util;
 
 import com.lgame.mysql.entity.LQDBTable;
 import com.lgame.redis.entity.RedisCache;

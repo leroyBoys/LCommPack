@@ -1,3 +1,5 @@
+package com;
+
 import com.lgame.module.GameServer;
 import com.lgame.mysql.compiler.ColumInit;
 import com.lgame.mysql.compiler.FieldGetProxy;
@@ -19,7 +21,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 /**
  * Created by Administrator on 2017/4/2.
  */
-public class Test {
+public class MainTest {
 
 
     public void go() {
