@@ -1,12 +1,11 @@
 package com.gate.manager;
 
 import com.gate.action.dao.mysql.ServerService;
+import com.lgame.module.*;
+import com.lgame.mysql.impl.JdbcTemplate;
 import com.lgame.util.comm.StringTool;
 import com.lgame.util.file.PropertiesTool;
 import com.lsocket.core.ICommon;
-import com.module.GameServer;
-import com.module.ServerGroup;
-import com.mysql.impl.JdbcTemplate;
 
 import java.util.List;
 import java.util.Properties;

@@ -2,9 +2,9 @@ package com.gate.action.dao.mysql;
 
 import com.gate.action.dao.mysql.template.ServerTemplate;
 import com.gate.manager.ServerConnection;
-import com.module.GameServer;
-import com.module.ServerGroup;
-import com.mysql.impl.JdbcTemplate;
+import com.lgame.module.GameServer;
+import com.lgame.module.ServerGroup;
+import com.lgame.mysql.impl.JdbcTemplate;
 
 import java.util.List;
 
