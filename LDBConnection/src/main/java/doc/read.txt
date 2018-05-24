@@ -30,21 +30,23 @@ redis
      LQField：设置字段（默认与fieldName一致）
               redisSave:存入redis时候是否存入（只对Type=map类型有效）
 
-
+配置表
+    支持一主多备
+        私有参数>公共参数
+    均以datasource.dbtype开头，注dbtype目前支持db,redis
+    master配置:datasource.db.master.name=tome datasource.db.master.01.name=tome 等格式
+    slave配置:datasource.db.slave.name=tome   datasource.db.slave.01.name=tome  等格式
+    datasource.db.type=引用数据源类完全限定名如：com.alibaba.druid.pool.DruidDataSource
 
 第三方jar包
 jedis.2.9.0
 mysql-connector-java
-
-线程池
-druid，HikariCP，c3p0三选一
-
+数据库连接池由type决定（参考配置信息说明）
 如果需要序列化二进制
 protostuff-core（1.1.3）
 protostuff-runtime（1.1.3）
 
 使用方式：
-第一步扫描：ScanEntitysTool.instance("com.test");
-第二步初始化db：LqJdbcPool l = new LqJdbcPool(DataSourceType sourceType, Properties properties);
-                (DataSourceType:Druid,Hikari,C3P0)
-第三部使用 l.Excute(...);
+第一步扫描：LQSpringScan.san("com","org");
+第二步初始化db： LQSpringScan.initConnectionManager(Properties properties);
+第三部使用 LQSpringScan.getJdbcManager().getMaster/slave().Exceute()
