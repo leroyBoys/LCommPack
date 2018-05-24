@@ -2,17 +2,12 @@ package com.lgame.module;
 
 import com.lgame.mysql.entity.LQDBTable;
 import com.lgame.mysql.entity.LQField;
-import com.lgame.mysql.impl.DbFactory;
-
-import java.sql.ResultSet;
 
 /**
  * Created by Administrator on 2017/4/26.
  */
 @LQDBTable
-public class GameServer extends DbFactory {
-    public final static GameServer instance = new GameServer();
-
+public class GameServer {
     @LQField(isPrimaryKey = true)
     private int id;
     private int g_v_id;
@@ -125,37 +120,12 @@ public class GameServer extends DbFactory {
         this.severStatus = severStatus;
     }
 
-    @Override
-    public GameServer create(ResultSet rs) throws Exception {
-        GameServer gameServer = createNew();
-        gameServer.setId(rs.getInt("id"));
-        gameServer.setG_v_id(rs.getInt("g_v_id"));
-        gameServer.setGroupNum(rs.getInt("zone_num"));
-        gameServer.setIp(rs.getString("ip"));
-        gameServer.setMaxCount(rs.getInt("max_count"));
-        gameServer.setPort(rs.getInt("port"));
-        gameServer.setServerType(ServerType.valueOf(rs.getString("server_type")));
-        gameServer.setSeverStatus(rs.getInt("server_status"));
-        gameServer.setUdpPort(rs.getInt("udp_port"));
-        gameServer.setZoneDes(rs.getString("zone_desc"));
-        gameServer.setZoneName(rs.getString("zone_name"));
-        gameServer.setZoneIcon(rs.getString("zone_icon"));
-        gameServer.setKey(rs.getString("key"));
-        return gameServer;
-    }
-
     public String getKey() {
         return key;
     }
 
     public void setKey(String key) {
         this.key = key;
-    }
-
-    @Override
-
-    protected GameServer createNew() {
-        return new GameServer();
     }
 
     public enum ServerType{

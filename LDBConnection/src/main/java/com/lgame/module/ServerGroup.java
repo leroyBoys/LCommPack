@@ -1,13 +1,9 @@
 package com.lgame.module;
 
-import com.lgame.mysql.impl.DbFactory;
-
-import java.sql.ResultSet;
-
 /**
  * Created by Administrator on 2017/4/26.
  */
-public class ServerGroup extends DbFactory {
+public class ServerGroup {
     public final static ServerGroup instance = new ServerGroup();
     private int group;
     private String sqlUrl;
@@ -73,21 +69,4 @@ public class ServerGroup extends DbFactory {
         this.redisPwd = redisPwd;
     }
 
-    @Override
-    public ServerGroup create(ResultSet rs) throws Exception {
-        ServerGroup serverGroup = createNew();
-        serverGroup.setGroup(rs.getInt("group"));
-        serverGroup.setSqlUrl(rs.getString("sqlurl"));
-        serverGroup.setSqlPwd(rs.getString("sql_pwd"));
-        serverGroup.setSqlUserName(rs.getString("sql_user_name"));
-        serverGroup.setRedisUrl(rs.getString("redisurl"));
-        serverGroup.setRedisUserName(rs.getString("redis_user_name"));
-        serverGroup.setRedisPwd(rs.getString("redis_pwd"));
-        return serverGroup;
-    }
-
-    @Override
-    protected ServerGroup createNew() {
-        return new ServerGroup();
-    }
 }

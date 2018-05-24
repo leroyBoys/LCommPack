@@ -6,12 +6,8 @@ import com.lgame.mysql.compiler.ColumInit;
 import com.lgame.mysql.compiler.FieldGetProxy;
 import com.lgame.mysql.entity.*;
 import com.lgame.util.LqLogUtil;
-import com.lgame.util.LqUtil;
-import com.zaxxer.hikari.HikariConfig;
-import com.zaxxer.hikari.HikariDataSource;
 
 import javax.sql.DataSource;
-import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.sql.*;
 import java.util.*;
@@ -173,7 +169,7 @@ public class DataSourceImpl implements SqlDataSource{
             cn.commit();
             return true;
         } catch (Exception e) {
-            LqLogUtil.error(LqJdbcPool.class,e);
+            LqLogUtil.error(DataSourceImpl.class,e);
         } finally {
             this.close(ps, cn);
         }

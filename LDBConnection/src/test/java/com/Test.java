@@ -3,7 +3,6 @@ package com;
 
 import com.lgame.core.LQSpringScan;
 import com.lgame.mysql.impl.DataSourceImpl;
-import com.lgame.mysql.impl.LqJdbcPool;
 import com.lgame.util.LqUtil;
 import com.test.TestData;
 
