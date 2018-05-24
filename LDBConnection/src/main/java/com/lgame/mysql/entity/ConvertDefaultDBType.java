@@ -1,6 +1,6 @@
 package com.lgame.mysql.entity;
 
-import com.lgame.core.LQSpringScan;
+import com.lgame.core.LQStart;
 import com.lgame.util.LqUtil;
 
 import java.util.Date;
@@ -33,7 +33,7 @@ public interface ConvertDefaultDBType<FROM> {
 
         @Override
         public Object formatFromDb(Class cls,String value) {
-            return value==null?null: LQSpringScan.instance.getEnum(cls,Integer.valueOf(value));
+            return value==null?null: LQStart.instance.getEnum(cls,Integer.valueOf(value));
         }
     }
 

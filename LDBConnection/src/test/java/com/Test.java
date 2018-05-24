@@ -1,7 +1,7 @@
 package com;
 
 
-import com.lgame.core.LQSpringScan;
+import com.lgame.core.LQStart;
 import com.lgame.mysql.impl.DataSourceImpl;
 import com.lgame.util.LqUtil;
 import com.test.TestData;
@@ -27,12 +27,12 @@ public class Test {
     }
     @org.junit.Test
     public void test() throws Exception {
-        LQSpringScan.instance("com");
+        LQStart.scan("com");
 
-        LQSpringScan.initConnectionManager(LqUtil.loadProperty("db.properties"));
+        LQStart.initConnectionManager(LqUtil.loadProperty("db.properties"));
 
     //    LqJdbcPool jdbcPool = new LqJdbcPool(LqJdbcPool.DataSourceType.Hikari, LqUtil.loadProperty("hikari_db.properties"));
-        DataSourceImpl jdbcPool = LQSpringScan.getJdbcManager().getMaster();
+        DataSourceImpl jdbcPool = LQStart.getJdbcManager().getMaster();
         String sql = "SELECT test_data.* ,test1.`id` AS tid,test1.`name` AS tname FROM `test_data` RIGHT JOIN test1 ON test_data.`id` = test1.`id`";
 
 

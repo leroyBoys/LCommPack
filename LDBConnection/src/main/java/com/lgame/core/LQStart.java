@@ -10,7 +10,7 @@ import java.util.*;
  * Created by leroy:656515489@qq.com
  * 2018/5/2.
  */
-public class LQSpringScan {
+public class LQStart {
     private final static String[] dbTypeArray = new String[]{"redis","db"};
     public static ScanEntitysTool instance;
     private static RedisConnectionManager redisConnectionManager;
@@ -197,9 +197,5 @@ public class LQSpringScan {
 
     public static JDBCManager getJdbcManager() {
         return jdbcManager;
-    }
-
-    public static void instance(String com) throws Exception {
-        scan(com);
     }
 }

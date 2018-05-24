@@ -1,7 +1,7 @@
 package com.lgame.redis.impl;
 
 import com.lgame.core.LqTimeCacheManager;
-import com.lgame.core.LQSpringScan;
+import com.lgame.core.LQStart;
 import com.lgame.redis.entity.RedisKey;
 import com.lgame.util.LqLogUtil;
 import com.lgame.util.LqUtil;
@@ -35,7 +35,7 @@ public class RedisConnectionImpl extends RedisConnection {
     }
 
     public <T> T query(Class<T> cls,Object uniqueId){
-        DBTable table = LQSpringScan.instance.getDBTable(cls);
+        DBTable table = LQStart.instance.getDBTable(cls);
         if(table == null){
             LqLogUtil.error(cls.getName()+" not config redis ");
             return null;
@@ -45,7 +45,7 @@ public class RedisConnectionImpl extends RedisConnection {
     }
 
     public void save(Object obj){
-        DBTable table = LQSpringScan.instance.getDBTable(obj.getClass());
+        DBTable table = LQStart.instance.getDBTable(obj.getClass());
         if(table == null){
             LqLogUtil.error(obj.getClass().getName()+" not config redis ");
             return;

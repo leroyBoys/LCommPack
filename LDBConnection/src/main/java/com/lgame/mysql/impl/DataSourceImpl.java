@@ -1,6 +1,6 @@
 package com.lgame.mysql.impl;
 
-import com.lgame.core.LQSpringScan;
+import com.lgame.core.LQStart;
 import com.lgame.mysql.SqlDataSource;
 import com.lgame.mysql.compiler.ColumInit;
 import com.lgame.mysql.compiler.FieldGetProxy;
@@ -203,7 +203,7 @@ public class DataSourceImpl implements SqlDataSource{
         ResultSet rs = null;
         try {
             String sql;
-            DBTable table = LQSpringScan.instance.getDBTable(instance.getClass());
+            DBTable table = LQStart.instance.getDBTable(instance.getClass());
             if(table == null){
                 LqLogUtil.error(" class:"+instance.getClass().getName()+" not config db");
                 return false;
@@ -390,7 +390,7 @@ public class DataSourceImpl implements SqlDataSource{
 
     public <T> List<T> ExecuteQueryList(Class<T> cls,String cmd, Object... p) {
         //LqLogUtil.log("cm2d:" + cmd);
-        DBTable dbTable = LQSpringScan.instance.getDBTable(cls);
+        DBTable dbTable = LQStart.instance.getDBTable(cls);
         if(dbTable == null){
             throw new RuntimeException(cls.getSimpleName()+" not config dbentity");
         }
@@ -431,7 +431,7 @@ public class DataSourceImpl implements SqlDataSource{
     public <T> T ExecuteQueryOne(Class<T> cls,String cmd, Object... p) {
         LqLogUtil.log("ExecuteQueryOne cmd:" + cmd);
 
-        DBTable dbTable = LQSpringScan.instance.getDBTable(cls);
+        DBTable dbTable = LQStart.instance.getDBTable(cls);
         if(dbTable == null){
             throw new RuntimeException(cls.getSimpleName()+" not config dbentity");
         }
