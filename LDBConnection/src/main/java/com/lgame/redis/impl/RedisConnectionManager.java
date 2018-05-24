@@ -12,22 +12,24 @@ public class RedisConnectionManager {
     private RedisConnectionImpl[] slaves;
 
     public RedisConnectionManager(Properties masterConfig, Properties... slavesConfig){
-        master = getRedisConnection(masterConfig);
+        master = initRedisConnection(masterConfig);
         if(slavesConfig==null || slavesConfig.length == 0){
+            slaves = new RedisConnectionImpl[1];
+            slaves[0] = master;
             return;
         }
 
         slaves = new RedisConnectionImpl[slavesConfig.length];
         for(int i=0;i<slavesConfig.length;i++){
-            slaves[i] = getRedisConnection(slavesConfig[i]);
+            slaves[i] = initRedisConnection(slavesConfig[i]);
         }
     }
 
-    private RedisConnectionImpl getRedisConnection(Properties config){
+    private RedisConnectionImpl initRedisConnection(Properties config){
         int timeOut = 5000;
         int maxTotal = 3000;
         int maxIdel = 1500;
-
+        long maxWaitMillis = -1l;
         if(config.getProperty("timeOut") != null){
             timeOut = Integer.valueOf(config.getProperty("timeOut"));
         }
@@ -39,7 +41,12 @@ public class RedisConnectionManager {
         if(config.getProperty("maxIdel") != null){
             maxIdel = Integer.valueOf(config.getProperty("maxIdel"));
         }
-        return new RedisConnectionImpl(config.getProperty("url"),timeOut,maxTotal,maxIdel);
+
+        if(config.getProperty("maxWaitMillis") != null){
+            maxWaitMillis = Long.valueOf(config.getProperty("maxWaitMillis"));
+        }
+
+        return new RedisConnectionImpl(config.getProperty("url"),timeOut,maxTotal,maxIdel,maxWaitMillis);
     }
 
     public RedisConnectionImpl getMaster() {
@@ -47,10 +54,6 @@ public class RedisConnectionManager {
     }
 
     public RedisConnectionImpl getRandomSlave() {
-        if(slaves == null){
-            return master;
-        }
-
         if(slaves.length == 1){
             return slaves[0];
         }

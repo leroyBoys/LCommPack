@@ -1,6 +1,6 @@
 package com.lgame.mysql.entity;
 
-import com.lgame.mysql.compiler.ScanEntitysTool;
+import com.lgame.core.LQSpringScan;
 
 import java.math.BigDecimal;
 import java.sql.*;
@@ -71,11 +71,11 @@ public class SqlTypeToJava {
 
         @Override
         public Object get(ResultSet rs, String colum) throws SQLException {
-            return  ScanEntitysTool.instance.getEnum(enumClass,rs.getInt(colum));
+            return  LQSpringScan.instance.getEnum(enumClass,rs.getInt(colum));
         }
 
         public Object get(ResultSet rs,int index) throws SQLException {
-            return  ScanEntitysTool.instance.getEnum(enumClass,rs.getInt(index));
+            return  LQSpringScan.instance.getEnum(enumClass,rs.getInt(index));
         }
 
     }
@@ -88,11 +88,11 @@ public class SqlTypeToJava {
 
         @Override
         public Object get(ResultSet rs, String colum) throws SQLException {
-            return  ScanEntitysTool.instance.getEnum(enumClass,rs.getString(colum));
+            return  LQSpringScan.instance.getEnum(enumClass,rs.getString(colum));
         }
 
         public Object get(ResultSet rs,int index) throws SQLException {
-            return  ScanEntitysTool.instance.getEnum(enumClass,rs.getString(index));
+            return  LQSpringScan.instance.getEnum(enumClass,rs.getString(index));
         }
     }
 

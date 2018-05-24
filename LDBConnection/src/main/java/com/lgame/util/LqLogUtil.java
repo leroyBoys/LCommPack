@@ -50,6 +50,10 @@ public class LqLogUtil {
         }
     }
 
+    public static void warn(String info){
+        System.out.println(info);
+    }
+
     public static void error(String info){
         System.err.println(info);
     }

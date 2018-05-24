@@ -4,10 +4,10 @@ import com.lgame.mysql.compiler.util.ClassScanner;
 import com.lgame.mysql.compiler.util.JavaFile;
 import com.lgame.mysql.compiler.util.JavaStringCompiler;
 import com.lgame.mysql.entity.*;
-import com.lgame.util.LqLogUtil;
-import com.lgame.util.LqUtil;
 import com.lgame.redis.entity.MapRedisSerializer;
 import com.lgame.redis.entity.RedisCache;
+import com.lgame.util.LqLogUtil;
+import com.lgame.util.LqUtil;
 
 import java.io.IOException;
 import java.lang.reflect.Field;
@@ -17,25 +17,18 @@ import java.util.*;
 
 /**
  * Created by leroy:656515489@qq.com
- * 2018/5/2.
+ * 2018/5/23.
  */
 public class ScanEntitysTool {
-    public static ScanEntitysTool instance;
-    private final  Map<Class,DBTable> columInitMap = new HashMap<>();
+    private final Map<Class,DBTable> columInitMap = new HashMap<>();
     private final Map<Class,Map<Object,LQDBEnum>> dbEnumMap = new HashMap<>();
-    private ScanEntitysTool(){}
-    public static ScanEntitysTool instance(String... packs) throws Exception {
-        if(instance != null){
-            return instance;
+
+    public ScanEntitysTool(String... pack) throws Exception {
+        if(pack.length == 1){
+            this.scan(pack[0].split(","));
+            return;
         }
-        synchronized (ScanEntitysTool.class){
-            if(instance != null){
-                return instance;
-            }
-            instance = new ScanEntitysTool();
-            instance.scan(packs);
-        }
-        return instance;
+        this.scan(pack);
     }
 
     private String getSetClass(String methodContent,String className){
@@ -98,7 +91,7 @@ public class ScanEntitysTool {
         return fieldName.replaceFirst(String.valueOf(fistChar),prex+toUpperCase);
     }
 
-    public String getMethodContentForGet(Class method_obj,String methodName){
+    private String getMethodContentForGet(Class method_obj,String methodName){
         StringBuilder sb = new StringBuilder("return ((");
         sb.append(method_obj.getName()).append(")obj).");
         sb.append(methodName);
@@ -106,7 +99,7 @@ public class ScanEntitysTool {
         return sb.toString();
     }
 
-    private SqlTypeToJava getSqlTypeToJava(Field field,Class curClass){
+    private SqlTypeToJava getSqlTypeToJava(Field field, Class curClass){
         SqlTypeToJava sqlTypeToJava = SqlTypeToJava.get(field.getType());
         if(sqlTypeToJava == null){
             if(field.getType().isEnum()){
@@ -129,7 +122,7 @@ public class ScanEntitysTool {
         return sqlTypeToJava;
     }
 
-    private void checkMyDbConfig(Map<Class,ClassCache> classSetMap,Set<Class<?>> classs,List<JavaFile> javaFiles){
+    private void checkMyDbConfig(Map<Class,ClassCache> classSetMap, Set<Class<?>> classs, List<JavaFile> javaFiles){
         for(Class cls:classs){
             if(columInitMap.containsKey(cls)){
                 continue;
@@ -219,7 +212,7 @@ public class ScanEntitysTool {
         }
     }
 
-    public void scanClass(Set<Class<?>> classs) throws Exception {
+    private void scanClass(Set<Class<?>> classs) throws Exception {
         LqLogUtil.outTime("ScanEntitysTool","begin scan dbEntity");
 
         Map<Class,ClassCache> classSetMap = new HashMap<>(classs.size());
@@ -353,8 +346,8 @@ public class ScanEntitysTool {
         ConvertDefaultDBType convertDefaultDBType = null;
         if(!lqField.convertDBTypeClass().isEmpty()){
             try {
-               Class cls = Class.forName(lqField.convertDBTypeClass());
-               convertDefaultDBType = (ConvertDefaultDBType) cls.newInstance();
+                Class cls = Class.forName(lqField.convertDBTypeClass());
+                convertDefaultDBType = (ConvertDefaultDBType) cls.newInstance();
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -398,13 +391,17 @@ public class ScanEntitysTool {
         }
     }
 
-    public void scan(String... packs) throws Exception {
+    private void scan(String... packs) throws Exception {
         Set<Class<?>> classs = null;
 
         for(String pack:packs){
+            if(pack.trim().isEmpty()){
+                continue;
+            }
+
             Set<Class<?>> cls = ClassScanner.getClasses(pack,false);
             if(cls.isEmpty()){
-               continue;
+                continue;
             }
 
             if(classs == null){

@@ -13,7 +13,7 @@ import java.util.Map;
  * Created by leroy:656515489@qq.com
  * 2018/5/21.
  */
-class ClassCache {
+public class ClassCache {
     private LQDBTable lqdbTable;
     private RedisCache redisCache;
     private String redisKeyClassName;
@@ -67,7 +67,7 @@ class ClassCache {
         this.redisCache = redisCache;
     }
 
-    static class FieldCache{
+    public   static class FieldCache{
         private Field field;
         private LQField lqField;
         private DBRelations dbRelations;

@@ -1,6 +1,8 @@
 package com.lgame.redis;
 
+import com.lgame.util.LqLogUtil;
 import com.lgame.util.LqUtil;
+import com.mchange.v2.log.LogUtils;
 import redis.clients.jedis.*;
 
 import java.util.*;
@@ -18,20 +20,21 @@ public class RedisConnection {
      * @param maxTotal
      * @param maxIdel
      */
-    public RedisConnection(String url, int timeout, int maxTotal, int maxIdel) {
-        init(url, timeout, maxTotal, maxIdel);
+    public RedisConnection(String url, int timeout, int maxTotal, int maxIdel,long maxWaitMillis) {
+        init(url, timeout, maxTotal, maxIdel,maxWaitMillis);
     }
 
     /**
      * @param url:redis://db@119.254.166.136:6379/pwd
      */
     public RedisConnection(String url) {
-        init(url, 5000, 3000, 1500);
+        init(url, 5000, 3000, 1500,-1l);
     }
 
-    private void init(String url, int timeout, int maxTotal, int maxIdel) {
+    private void init(String url, int timeout, int maxTotal, int maxIdel,long maxWaitMillis) {
         String[] firstArray = url.split("//");
-        String[] secondArray = firstArray[1].split("@");
+        String str = firstArray.length == 1?firstArray[0]:firstArray[1];
+        String[] secondArray = str.split("@");
         int db = 0;
         if (!secondArray[0].trim().isEmpty()) {
             db = Integer.valueOf(secondArray[0]);
@@ -43,7 +46,7 @@ public class RedisConnection {
 
         String password = null;
         if (threeArray[1].split("/").length > 1) {
-            password = LqUtil.trimToNull(threeArray[1].split("/")[1]);
+            password = LqUtil.trimToNull(url.substring(url.lastIndexOf('/')));
         }
 
         JedisPoolConfig config = new JedisPoolConfig();
@@ -51,6 +54,7 @@ public class RedisConnection {
         config.setMaxIdle(maxIdel);
         config.setMaxWaitMillis(-1);
 
+        LqLogUtil.info("redis init...:url:"+url+"  timeout:"+timeout+"  maxTotal:"+maxTotal+"  maxIdel:"+maxIdel);
         jedisPool = new JedisPool(config, host, port, timeout, password, db);
     }
 

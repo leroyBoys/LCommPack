@@ -1,12 +1,18 @@
 package com.lgame.mysql.impl;
 
+import com.lgame.core.LQSpringScan;
+import com.lgame.mysql.SqlDataSource;
 import com.lgame.mysql.compiler.ColumInit;
 import com.lgame.mysql.compiler.FieldGetProxy;
-import com.lgame.core.LQSpringScan;
 import com.lgame.mysql.entity.*;
 import com.lgame.util.LqLogUtil;
-import com.lgame.mysql.SqlDataSource;
+import com.lgame.util.LqUtil;
+import com.zaxxer.hikari.HikariConfig;
+import com.zaxxer.hikari.HikariDataSource;
 
+import javax.sql.DataSource;
+import java.lang.reflect.Field;
+import java.lang.reflect.Method;
 import java.sql.*;
 import java.util.*;
 
@@ -14,63 +20,59 @@ import java.util.*;
  * Created by leroy:656515489@qq.com
  * 2017/4/13.
  */
-public class LqJdbcPool implements SqlDataSource {
+public class DataSourceImpl implements SqlDataSource{
     private final static Map<String,JdbcColumsArray> cmd_jdbcColumsArrayCache = new HashMap<>();
-    private SqlDataSource pool;
-    private DataSourceType sourceType = DataSourceType.Druid;
-
-    public LqJdbcPool(Properties properties){
-        initPool(properties);
+    private DataSource dds;
+    protected DataSourceImpl(Properties properties,JDBCInitCache jdbcInitCache){
+        init(properties,jdbcInitCache);
     }
 
-    private void initPool(Properties properties){
-        switch (sourceType){
-            case Druid:
-                pool = properties==null? new DruidDataSourceImpl():new DruidDataSourceImpl(properties);
-                break;
-            case Hikari:
-                pool = properties==null?new HikariDataSourceImpl():new HikariDataSourceImpl(properties);
-                break;
-            case C3P0:
-                pool = properties==null?new C3P0DataSourceImpl():new C3P0DataSourceImpl(properties);
-                break;
-            default:
-                pool = properties==null? new DruidDataSourceImpl():new DruidDataSourceImpl(properties);
-                break;
+    private void init(Properties properties,JDBCInitCache jdbcInitCache){
+        StringBuilder sb = new StringBuilder(100);
+        try {
+            String classDatascource = properties.getProperty("type","com.alibaba.druid.pool.DruidDataSource");
+            JDBCInitCache.MethodCache methodCache = jdbcInitCache.getMethodCache(classDatascource);
+            dds = (DataSource) methodCache.cls.newInstance();
+
+            sb.append("init db...type:").append(classDatascource);
+
+            for (Enumeration<?> e = properties.keys(); e.hasMoreElements() ;) {
+                Object ko = e.nextElement();
+                if (!(ko instanceof String)) {
+                    continue;
+                }
+
+                String k = (String) ko;
+                String v = properties.get(k).toString();
+                Method method = methodCache.methodMap.get(k);
+                if(method == null){
+                    LqLogUtil.warn(k+" not find  match");
+                    continue;
+                }
+
+                try {
+                    Class<?>[] classes = method.getParameterTypes();
+                    method.invoke(dds,SqlTypeToJava.get(classes[0]).formtDataFromDb(v));
+
+                    sb.append(",").append(k).append("=").append(v);
+                }catch (Exception ex){
+                    LqLogUtil.error(k+"  "+v+"  error");
+                    ex.printStackTrace();
+                }
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
         }
-    }
 
-    public LqJdbcPool(DataSourceType sourceType){
-        this.sourceType = sourceType;
-        initPool(null);
-    }
-
-    public LqJdbcPool(DataSourceType sourceType, Properties properties){
-        this.sourceType = sourceType;
-        initPool(properties);
+        LqLogUtil.info(sb.toString());
     }
 
     @Override
     public Connection getConnection() throws SQLException {
-        return pool.getConnection();
+        return dds.getConnection();
     }
 
-    /*public void Execute(String cmd, Object... p) {
-      //  LqLogUtil.log("cmd:" + cmd);
-        Connection cn = null;
-        PreparedStatement ps = null;
-        try {
-            cn = getConnection();
-            ps = cn.prepareStatement(cmd);
-            SetParameter(ps, p);
-            ps.execute();
-        } catch (Exception e) {
-            LqLogUtil.error(this.getClass(),e);
-        } finally {
-            this.close(ps, cn);
-        }
-    }
-*/
     public boolean ExecuteUpdate(String cmd, Object[] p) {
         Connection cn = null;
         PreparedStatement ps = null;
@@ -80,7 +82,7 @@ public class LqJdbcPool implements SqlDataSource {
             SetParameter(ps, p);
             return ps.executeUpdate() > 0;
         } catch (Exception e) {
-            LqLogUtil.error(cmd+(p==null?"":Arrays.toString(p)),e);
+            LqLogUtil.error(cmd+(p==null?"": Arrays.toString(p)),e);
         } finally {
             this.close(ps, cn);
         }
@@ -305,7 +307,7 @@ public class LqJdbcPool implements SqlDataSource {
      * @return
      */
     public Object ExecuteQueryOnlyOneValue(String cmd, Object... p) {
- //       LqLogUtil.log("cmd:" + cmd);
+        //       LqLogUtil.log("cmd:" + cmd);
         Connection cn = null;
         PreparedStatement ps = null;
         ResultSet rs = null;
@@ -352,7 +354,7 @@ public class LqJdbcPool implements SqlDataSource {
         }
 
         if(relationFieldNames.isEmpty()){
-           return new JdbcColumsArray(array);
+            return new JdbcColumsArray(array);
         }
 
         Set<String> cols = new HashSet<>(array.length);
@@ -520,9 +522,5 @@ public class LqJdbcPool implements SqlDataSource {
 
     public int getDefaultLimitCount() {
         return 5000;
-    }
-
-    public enum DataSourceType{
-        Druid,Hikari,C3P0
     }
 }

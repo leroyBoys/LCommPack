@@ -3,6 +3,7 @@ package com.lgame.mysql.impl;
 import com.lgame.util.LqUtil;
 import com.mchange.v2.c3p0.DataSources;
 import com.lgame.mysql.SqlDataSource;
+import com.mchange.v2.c3p0.jboss.C3P0PooledDataSource;
 
 import javax.sql.DataSource;
 import java.sql.Connection;

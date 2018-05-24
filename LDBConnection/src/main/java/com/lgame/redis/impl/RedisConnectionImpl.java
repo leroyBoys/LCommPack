@@ -1,7 +1,7 @@
 package com.lgame.redis.impl;
 
 import com.lgame.core.LqTimeCacheManager;
-import com.lgame.mysql.compiler.ScanEntitysTool;
+import com.lgame.core.LQSpringScan;
 import com.lgame.redis.entity.RedisKey;
 import com.lgame.util.LqLogUtil;
 import com.lgame.util.LqUtil;
@@ -23,8 +23,8 @@ public class RedisConnectionImpl extends RedisConnection {
      * @param maxTotal
      * @param maxIdel
      */
-    public RedisConnectionImpl(String url, int timeout, int maxTotal, int maxIdel){
-        super(url,timeout,maxTotal,maxIdel);
+    public RedisConnectionImpl(String url, int timeout, int maxTotal, int maxIdel,long maxWaitMillis){
+        super(url,timeout,maxTotal,maxIdel,maxWaitMillis);
     }
 
     /**
@@ -35,7 +35,7 @@ public class RedisConnectionImpl extends RedisConnection {
     }
 
     public <T> T query(Class<T> cls,Object uniqueId){
-        DBTable table = ScanEntitysTool.instance.getDBTable(cls);
+        DBTable table = LQSpringScan.instance.getDBTable(cls);
         if(table == null){
             LqLogUtil.error(cls.getName()+" not config redis ");
             return null;
@@ -45,7 +45,7 @@ public class RedisConnectionImpl extends RedisConnection {
     }
 
     public void save(Object obj){
-        DBTable table = ScanEntitysTool.instance.getDBTable(obj.getClass());
+        DBTable table = LQSpringScan.instance.getDBTable(obj.getClass());
         if(table == null){
             LqLogUtil.error(obj.getClass().getName()+" not config redis ");
             return;
