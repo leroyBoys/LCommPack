@@ -31,12 +31,18 @@ redis
               redisSave:存入redis时候是否存入（只对Type=map类型有效）
 
 配置表
-    支持一主多备
+    支持一主多备 以及集群配置（根据node获得相关链接）
         私有参数>公共参数
-    均以datasource.dbtype开头，注dbtype目前支持db,redis
-    master配置:datasource.db.master.name=tome datasource.db.master.01.name=tome 等格式
-    slave配置:datasource.db.slave.name=tome   datasource.db.slave.01.name=tome  等格式
-    datasource.db.type=引用数据源类完全限定名如：com.alibaba.druid.pool.DruidDataSource
+    注datasource.db.type=引用数据源类完全限定名如：com.alibaba.druid.pool.DruidDataSource
+    第一位：固定值datasource，表示数据源
+    第二位：dbType 目前支持db,redis
+    第三位:node 节点名称或者序号，一个唯一标示，可省略（标示所有通用）
+    第四位:master、slave：主备类型
+    第五位:属性值，根据采用的数据库连接池自行定义
+    例如：
+    master配置:datasource.db.name=tome datasource.db.master.name=tome datasource.db.01.master.name=tome
+    slave配置: datasource.db.name=tome datasource.db.slave.name=tome   datasource.db.01.slave_01.name=tome
+
 
 第三方jar包
 jedis.2.9.0

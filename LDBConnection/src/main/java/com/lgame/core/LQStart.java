@@ -1,6 +1,8 @@
 package com.lgame.core;
 
+import com.lgame.entity.NodeManger;
 import com.lgame.mysql.compiler.ScanEntitysTool;
+import com.lgame.mysql.impl.JDBCInitCache;
 import com.lgame.mysql.impl.JDBCManager;
 import com.lgame.redis.impl.RedisConnectionManager;
 
@@ -28,14 +30,14 @@ public class LQStart {
         }
     }
 ///*redis.master.01.name  redis.01.master.mame
-    public static void initConnectionManager(Properties properties){
+    public static void initConnectionManager(Properties properties) throws Exception {
         Map<String,MasterSlaveGlobalConfig> globalConfigMap = new HashMap<>();
         for(String dbType:dbTypeArray){
             globalConfigMap.put(dbType,new MasterSlaveGlobalConfig(dbType));
         }
+        JDBCInitCache jdbcInitCache = new JDBCInitCache();
 
-
-        Map<String,MasterSlaveConfig> configMap = new HashMap<>();
+        Map<String,MasterSlaveConfig> node_configMap = new HashMap<>();
         for (Enumeration<?> e = properties.keys(); e.hasMoreElements() ;) {
             Object ko = e.nextElement();
             if (!(ko instanceof String)) {
@@ -49,69 +51,53 @@ public class LQStart {
                continue;
             }
 
-            if(k.indexOf("master") >= 0){
-                String masterKey = masterKey(k);
-                if(masterKey.endsWith("master")){
-                    globalConfigMap.get(getDbType(masterKey)).addMaster(propertiesKey(k),v);
-                    continue;
-                }
+            String[] array = k.split("\\.");
+            if(array.length < 3){
+                System.err.println("数据格式配置错误:"+k);
+                continue;
+            }
 
-                String msConfigKey = masterKey.replaceFirst("master","-");
-                MasterSlaveConfig masterSlaveConfig= configMap.get(msConfigKey);
-                if(masterSlaveConfig == null){
-                    masterSlaveConfig = new MasterSlaveConfig(getDbType(msConfigKey));
-                    configMap.put(msConfigKey,masterSlaveConfig);
+            String dbType = getDbType(array[1]);
+
+            if(array.length == 3){
+                globalConfigMap.get(dbType).addMaster(propertiesKey(k),v);
+                globalConfigMap.get(dbType).addSlave(propertiesKey(k),v);
+                continue;
+            }
+
+            if(array.length == 4){
+                if(array[2].equals("master")){
+                    globalConfigMap.get(dbType).addMaster(propertiesKey(k),v);
+                }else {
+                    globalConfigMap.get(dbType).addSlave(propertiesKey(k),v);
                 }
+                continue;
+            }
+
+            String node = array[2];
+            MasterSlaveConfig masterSlaveConfig= node_configMap.get(node);
+            if(masterSlaveConfig == null){
+                masterSlaveConfig = new MasterSlaveConfig(dbType);
+                node_configMap.put(node,masterSlaveConfig);
+            }
+
+            if(array[3].equals("master")){
                 masterSlaveConfig.addMaster(propertiesKey(k),v);
-            }else if(k.indexOf("slave") >= 0){
-
-                String key = k.replaceFirst("slave","-");
-                int splitLength = key.split("\\.").length;
-                if(splitLength <4){
-                    System.err.println("数据格式配置错误:"+k);
-                    continue;
-                }else if(splitLength==4){//slave 公共
-                    globalConfigMap.get(getDbType(key)).addSlave(propertiesKey(k),v);
-                    continue;
-                }
-
-                String uniqueKey = masterKey(k);
-                String msConfigKey = key.substring(0,key.indexOf(".",key.indexOf("-")+2));
-                MasterSlaveConfig masterSlaveConfig= configMap.get(msConfigKey);
-                if(masterSlaveConfig == null){
-                    masterSlaveConfig = new MasterSlaveConfig(getDbType(msConfigKey));
-                    configMap.put(msConfigKey,masterSlaveConfig);
-                }
-
-                masterSlaveConfig.addSlave(uniqueKey,propertiesKey(k),v);
             }else {
-                String dbType = dbTypeArray[dbTypeArray.length-1];
-                for(String dt:dbTypeArray){
-                    if(k.contains(dt)){
-                        dbType = dt;
-                        break;
-                    }
-                }
-
-                MasterSlaveGlobalConfig globalConfig= globalConfigMap.get(dbType);
-                if(globalConfig == null){
-                    globalConfig = new MasterSlaveGlobalConfig(dbType);
-                    globalConfigMap.put(dbType,globalConfig);
-                }
-                globalConfig.addMaster(propertiesKey(k),v);
-                globalConfig.addSlave(propertiesKey(k),v);
+                masterSlaveConfig.addSlave(array[3],propertiesKey(k),v);
             }
         }
 
-        if(configMap.isEmpty()){
+        if(node_configMap.isEmpty()){
             System.err.println("error:配置数据源格式错误，为初始化数据源");
             return;
         }
 
         Set<String> dbTypes = new HashSet<>();
-        for(MasterSlaveConfig masterSlaveConfig:configMap.values()){
+        for(Map.Entry<String,MasterSlaveConfig> entry:node_configMap.entrySet()){
+            MasterSlaveConfig masterSlaveConfig = entry.getValue();
             MasterSlaveGlobalConfig config = globalConfigMap.get(masterSlaveConfig.getDbType());
-            inintDataSourceManger(masterSlaveConfig.getDbType(),config.getMaster(masterSlaveConfig.getMaster()),config.getSlave(masterSlaveConfig.getSlaves()));
+            inintDataSourceManger(masterSlaveConfig.getDbType(),jdbcInitCache,entry.getKey(),config.getMaster(masterSlaveConfig.getMaster()),config.getSlave(masterSlaveConfig.getSlaves()));
             dbTypes.add(masterSlaveConfig.getDbType());
         }
 
@@ -120,26 +106,30 @@ public class LQStart {
                continue;
            }
             MasterSlaveGlobalConfig config = globalConfigMap.get(dbType);
-            inintDataSourceManger(dbType,config.getMaster(null),null);
+            inintDataSourceManger(dbType,jdbcInitCache,null,config.getMaster(null),null);
         }
     }
 
-    private static void inintDataSourceManger(String dbType,Properties master,Properties... slaves){
+    private static void inintDataSourceManger(String dbType,JDBCInitCache jdbcInitCache,String nodeName,Properties master,Properties... slaves) throws Exception {
+
+       NodeManger nodeManger = null;
        if(dbType.equals("redis")){
-           if(slaves == null){
-               initRedisConnectionManager(master);
-           }else {
-               initRedisConnectionManager(master,slaves);
+           if(redisConnectionManager == null){
+               redisConnectionManager =  new RedisConnectionManager();
            }
+           nodeManger = redisConnectionManager;
+
        }else if(dbType.equals("db")){
-           if(slaves == null){
-               initJdbcConnectionManager(master);
-           }else {
-               initJdbcConnectionManager(master,slaves);
+           if(jdbcManager == null){
+               jdbcManager =  new JDBCManager();
            }
+           nodeManger = jdbcManager;
        }else {
            System.out.println("warn: not find match dbType:"+dbType);
+           return;
        }
+
+        nodeManger.initProperties(jdbcInitCache,nodeName,master,slaves);
     }
 
     private static String getDbType(String str){
@@ -161,34 +151,6 @@ public class LQStart {
 
     private static String propertiesKey(String configKey){
         return configKey.substring(configKey.lastIndexOf(".")+1);
-    }
-
-    private static void initRedisConnectionManager(Properties masterConfig, Properties... slavesConfig){
-        if(redisConnectionManager != null){
-            return;
-        }
-
-        synchronized (ScanEntitysTool.class){
-            if(redisConnectionManager != null){
-                return;
-            }
-            redisConnectionManager = new RedisConnectionManager(masterConfig, slavesConfig);
-        }
-        return;
-    }
-
-    private static void initJdbcConnectionManager(Properties masterConfig, Properties... slavesConfig){
-        if(jdbcManager != null){
-            return;
-        }
-
-        synchronized (ScanEntitysTool.class){
-            if(jdbcManager != null){
-                return;
-            }
-            jdbcManager = new JDBCManager(masterConfig, slavesConfig);
-        }
-        return;
     }
 
     public static RedisConnectionManager getRedisConnectionManager(){

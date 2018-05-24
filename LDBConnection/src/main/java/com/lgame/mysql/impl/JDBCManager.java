@@ -1,49 +1,22 @@
 package com.lgame.mysql.impl;
 
+import com.lgame.entity.NodeManger;
+
 import java.util.Properties;
-import java.util.Random;
 
 /**
  * Created by leroy:656515489@qq.com
- * 2018/5/23.
+ * 2018/5/24.
  */
-public class JDBCManager {
-    private final Random random = new Random();
-    private DataSourceImpl master;
-    private DataSourceImpl[] slaves;
+public class JDBCManager extends NodeManger<DataSourceImpl> {
 
-    public JDBCManager(Properties masterConfig, Properties... slavesConfig) {
-        JDBCInitCache jdbcInitCache = new JDBCInitCache();
-
-        master = initRedisConnection(masterConfig,jdbcInitCache);
-        if (slavesConfig == null || slavesConfig.length == 0) {
-            return;
-        }
-
-        slaves = new DataSourceImpl[slavesConfig.length];
-        for (int i = 0; i < slavesConfig.length; i++) {
-            slaves[i] = initRedisConnection(slavesConfig[i],jdbcInitCache);
-        }
+    @Override
+    protected DataSourceImpl initRedisConnection(JDBCInitCache jdbcInitCache, Properties properties) {
+        return new DataSourceImpl(properties,jdbcInitCache);
     }
 
-    private DataSourceImpl initRedisConnection(Properties config,JDBCInitCache jdbcInitCache) {
-        return new DataSourceImpl(config,jdbcInitCache);
+    @Override
+    public DataSourceImpl[] createArray(int size) {
+        return new DataSourceImpl[size];
     }
-
-    public DataSourceImpl getMaster() {
-        return master;
-    }
-
-    public DataSourceImpl getRandomSlave() {
-        if (slaves == null) {
-            return master;
-        }
-
-        if (slaves.length == 1) {
-            return slaves[0];
-        }
-
-        return slaves[random.nextInt(slaves.length)];
-    }
-
 }

@@ -1,31 +1,18 @@
 package com.lgame.redis.impl;
 
+import com.lgame.entity.NodeManger;
+import com.lgame.mysql.impl.JDBCInitCache;
+
 import java.util.Properties;
 import java.util.Random;
 
 /**
  * Created by Administrator on 2017/4/15.
  */
-public class RedisConnectionManager {
-    private final Random random = new Random();
-    private RedisConnectionImpl master;
-    private RedisConnectionImpl[] slaves;
+public class RedisConnectionManager extends NodeManger<RedisConnectionImpl>{
 
-    public RedisConnectionManager(Properties masterConfig, Properties... slavesConfig){
-        master = initRedisConnection(masterConfig);
-        if(slavesConfig==null || slavesConfig.length == 0){
-            slaves = new RedisConnectionImpl[1];
-            slaves[0] = master;
-            return;
-        }
-
-        slaves = new RedisConnectionImpl[slavesConfig.length];
-        for(int i=0;i<slavesConfig.length;i++){
-            slaves[i] = initRedisConnection(slavesConfig[i]);
-        }
-    }
-
-    private RedisConnectionImpl initRedisConnection(Properties config){
+    @Override
+    protected RedisConnectionImpl initRedisConnection(JDBCInitCache jdbcInitCache, Properties config) {
         int timeOut = 5000;
         int maxTotal = 3000;
         int maxIdel = 1500;
@@ -45,23 +32,11 @@ public class RedisConnectionManager {
         if(config.getProperty("maxWaitMillis") != null){
             maxWaitMillis = Long.valueOf(config.getProperty("maxWaitMillis"));
         }
-
         return new RedisConnectionImpl(config.getProperty("url"),timeOut,maxTotal,maxIdel,maxWaitMillis);
     }
 
-    public RedisConnectionImpl getMaster() {
-        return master;
-    }
-
-    public RedisConnectionImpl getRandomSlave() {
-        if(slaves.length == 1){
-            return slaves[0];
-        }
-
-        return slaves[random.nextInt(slaves.length)];
-    }
-
-    public RedisConnectionImpl[] getSlaves() {
-        return slaves;
+    @Override
+    public RedisConnectionImpl[] createArray(int size) {
+        return new RedisConnectionImpl[size];
     }
 }
