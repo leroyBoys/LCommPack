@@ -4,6 +4,7 @@ import com.lgame.entity.*;
 import com.lgame.mysql.compiler.ScanEntitysTool;
 import com.lgame.mysql.impl.JDBCManager;
 import com.lgame.redis.impl.RedisConnectionManager;
+import com.lgame.util.LqLogUtil;
 import com.lgame.util.LqUtil;
 
 import java.lang.ref.WeakReference;
@@ -15,10 +16,7 @@ import java.util.*;
  */
 public class LQStart {
     private static WeakReference<StartInitCache> tmpCache = new WeakReference<>(new StartInitCache());
-
     public static ScanEntitysTool instance;
-    private static RedisConnectionManager redisConnectionManager;
-    private static JDBCManager jdbcManager;
 
     public static StartInitCache getMethodCache(){
         StartInitCache startInitCache = tmpCache.get();
@@ -43,9 +41,9 @@ public class LQStart {
     }
 
     public static void init(Properties properties) throws Exception {
-        Map<String,MasterSlaveGlobalConfig> globalConfigMap = new HashMap<>();
+        Map<DBType,MasterSlaveGlobalConfig> globalConfigMap = new HashMap<>();
         for(DBType dbType:DBType.values()){
-            globalConfigMap.put(dbType.name(),new MasterSlaveGlobalConfig(dbType.name()));
+            globalConfigMap.put(dbType,new MasterSlaveGlobalConfig(dbType));
         }
         StartInitCache startInitCache = getMethodCache();
 
@@ -69,7 +67,11 @@ public class LQStart {
                 continue;
             }
 
-            String dbType = getDbType(array[1]);
+            DBType dbType = DBType.valueOf(array[1]);
+            if(dbType == null){
+                LqLogUtil.warn("warn: not find match dbType:"+array[1]);
+                continue;
+            }
 
             if(array.length == 3){
                 globalConfigMap.get(dbType).addMaster(propertiesKey(k),v);
@@ -105,10 +107,10 @@ public class LQStart {
             return;
         }
 
-        startInitCache.setGlobalConfigMap(globalConfigMap);
-        startInitCache.setNode_configMap(node_configMap);
+        startInitCache.getGlobalConfigMap().putAll(globalConfigMap);
+        startInitCache.getNode_configMap().putAll(node_configMap);
 
-        Set<String> dbTypes = new HashSet<>();
+        Set<DBType> dbTypes = new HashSet<>();
         for(Map.Entry<String,MasterSlaveConfig> entry:node_configMap.entrySet()){
             MasterSlaveConfig masterSlaveConfig = entry.getValue();
             MasterSlaveGlobalConfig config = globalConfigMap.get(masterSlaveConfig.getDbType());
@@ -116,24 +118,15 @@ public class LQStart {
             dbTypes.add(masterSlaveConfig.getDbType());
         }
 
-        for(DBType dbTypeEnum:DBType.values()){
-            String dbType = dbTypeEnum.name();
+        for(DBType dbType:DBType.values()){
            if(dbTypes.contains(dbType)){
                continue;
            }
-            MasterSlaveGlobalConfig config = globalConfigMap.get(dbType);
-            inintDataSourceManger(dbType,null,config.getMaster(null),null);
+            inintDataSourceManger(dbType,null,globalConfigMap.get(dbType).getMaster(null),null);
         }
     }
 
     private static Properties getNewProperties(DBType dbType,LQNewNode newNode,LQConnConfig connConfig,boolean isMaster){
-        if(dbType == DBType.db){
-        }else if(dbType == DBType.redis){
-        }else {
-            System.out.println("not config manager for dbType:"+dbType);
-            return null;
-        }
-
         StartInitCache startInitCache = getMethodCache();
         MasterSlaveGlobalConfig masterSlaveGlobalConfig = startInitCache.getGlobalConfigMap().get(dbType);
 
@@ -186,52 +179,19 @@ public class LQStart {
             for(int i = 0;i<slaves.length;i++){
                 properties[i] = getNewProperties(dbType,newNode,slaves[i],false);
             }
-            inintDataSourceManger(dbType.name(),newNode==null?null:newNode.getNewNodeName(),masterProperties,properties);
+            inintDataSourceManger(dbType,newNode==null?null:newNode.getNewNodeName(),masterProperties,properties);
             return;
         }
 
-        inintDataSourceManger(dbType.name(),newNode==null?null:newNode.getNewNodeName(),masterProperties);
+        inintDataSourceManger(dbType,newNode==null?null:newNode.getNewNodeName(),masterProperties);
     }
 
-    private static void inintDataSourceManger(String dbType,String nodeName,Properties master,Properties... slaves) throws Exception {
+    private static void inintDataSourceManger(DBType dbType,String nodeName,Properties master,Properties... slaves) throws Exception {
         if(master == null){
             return;
         }
 
-       NodeManger nodeManger = null;
-       if(dbType.equals("redis")){
-           if(redisConnectionManager == null){
-               redisConnectionManager =  new RedisConnectionManager();
-           }
-           nodeManger = redisConnectionManager;
-
-       }else if(dbType.equals("db")){
-           if(jdbcManager == null){
-               jdbcManager =  new JDBCManager();
-           }
-           nodeManger = jdbcManager;
-       }else {
-           System.out.println("warn: not find match dbType:"+dbType);
-           return;
-       }
-
-        nodeManger.initProperties(nodeName,master,slaves);
-    }
-
-    private static String getDbType(String str){
-        DBType dbType = DBType.valueOf(str);
-        if(dbType == null){
-            dbType = DBType.db;
-        }
-        return dbType.name();
-    }
-
-    private static String masterKey(String configKey){
-        int idex = configKey.lastIndexOf(".");
-        if(idex == -1){
-            return configKey;
-        }
-        return configKey.substring(0,idex);
+        dbType.getNodeManger().initProperties(nodeName,master,slaves);
     }
 
     private static String propertiesKey(String configKey){
@@ -239,10 +199,10 @@ public class LQStart {
     }
 
     public static RedisConnectionManager getRedisConnectionManager(){
-        return redisConnectionManager;
+        return (RedisConnectionManager) DBType.redis.getNodeManger();
     }
 
     public static JDBCManager getJdbcManager() {
-        return jdbcManager;
+        return (JDBCManager) DBType.db.getNodeManger();
     }
 }

@@ -25,13 +25,17 @@ public class LQDataSource implements SqlDataSource{
     }
 
     private void init(Properties properties){
+        if(!checkNeedConnect(properties)){
+            return;
+        }
+
         StringBuilder sb = new StringBuilder(100);
         try {
             String classDatascource = properties.getProperty("type","com.alibaba.druid.pool.DruidDataSource");
             StartInitCache.MethodCache methodCache = LQStart.getMethodCache().getMethodCache(classDatascource);
             dds = (DataSource) methodCache.cls.newInstance();
 
-            sb.append("init db...type:").append(classDatascource);
+            sb.append(classDatascource);
             for (Enumeration<?> e = properties.keys(); e.hasMoreElements() ;) {
                 Object ko = e.nextElement();
                 if (!(ko instanceof String)) {
@@ -42,7 +46,7 @@ public class LQDataSource implements SqlDataSource{
                 String v = properties.get(k).toString();
                 Method method = methodCache.methodMap.get(k);
                 if(method == null){
-                    LqLogUtil.warn(k+" not find  match");
+                 //   LqLogUtil.warn(k+" not find  match");
                     continue;
                 }
 
@@ -56,17 +60,45 @@ public class LQDataSource implements SqlDataSource{
                     ex.printStackTrace();
                 }
             }
-
         } catch (Exception e) {
             e.printStackTrace();
         }
 
-        LqLogUtil.info(sb.toString());
+        if(!testConnection()){
+            return;
+        }
+        LqLogUtil.info("create suc connection:"+sb.toString());
     }
 
     @Override
     public Connection getConnection() throws SQLException {
         return dds.getConnection();
+    }
+
+    private boolean checkNeedConnect(Properties properties){
+        int count = 3;
+        for(Object obj:properties.keySet()){
+            if (!(obj instanceof String)) {
+                continue;
+            }
+            String str = ((String) obj).toLowerCase();
+            if(str.matches("(.*)(name|password|url)(.*)")){
+                count--;
+            }
+        }
+        return count<=0;
+    }
+
+    private boolean testConnection(){
+        Connection cn = null;
+        try {
+            cn = dds.getConnection();
+            return true;
+        } catch (Exception e) {
+        } finally {
+            this.close(null, cn, null);
+        }
+        return false;
     }
 
     public boolean ExecuteUpdate(String cmd, Object... p) {

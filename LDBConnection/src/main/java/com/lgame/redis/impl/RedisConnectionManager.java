@@ -7,10 +7,10 @@ import java.util.Properties;
 /**
  * Created by Administrator on 2017/4/15.
  */
-public class RedisConnectionManager extends NodeManger<RedisConnectionImpl>{
+public class RedisConnectionManager extends NodeManger<LQRedisConnection>{
 
     @Override
-    protected RedisConnectionImpl initRedisConnection( Properties config) {
+    protected LQRedisConnection initRedisConnection(Properties config) {
         int timeOut = 5000;
         int maxTotal = 3000;
         int maxIdel = 1500;
@@ -30,11 +30,11 @@ public class RedisConnectionManager extends NodeManger<RedisConnectionImpl>{
         if(config.getProperty("maxWaitMillis") != null){
             maxWaitMillis = Long.valueOf(config.getProperty("maxWaitMillis"));
         }
-        return new RedisConnectionImpl(config.getProperty("url"),timeOut,maxTotal,maxIdel,maxWaitMillis);
+        return new LQRedisConnection(config.getProperty("url"),timeOut,maxTotal,maxIdel,maxWaitMillis);
     }
 
     @Override
-    public RedisConnectionImpl[] createArray(int size) {
-        return new RedisConnectionImpl[size];
+    public LQRedisConnection[] createArray(int size) {
+        return new LQRedisConnection[size];
     }
 }

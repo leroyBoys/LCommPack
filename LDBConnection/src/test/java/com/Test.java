@@ -14,12 +14,13 @@ import java.util.List;
  * 2018/5/16.
  */
 public class Test {
-    static WeakReference<String> sr = new WeakReference<String>(new String("hello"));
-    @org.junit.Test
+
     public void mai(){
 
+        String str ="Ssdfsdxx";
+        System.out.println(str.matches("(.*)(dd|sds|Ssd)(.*)"));
     }
-
+    @org.junit.Test
     public void test() throws Exception {
         LQStart.scan("com");
 

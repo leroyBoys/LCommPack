@@ -15,7 +15,7 @@ import java.util.Map;
  * Created by leroy:656515489@qq.com
  * 2017/4/11.
  */
-public class RedisConnectionImpl extends RedisConnection {
+public class LQRedisConnection extends RedisConnection {
     /**
      *
      * @param url:redis://db@119.254.166.136:6379/pwd
@@ -23,14 +23,14 @@ public class RedisConnectionImpl extends RedisConnection {
      * @param maxTotal
      * @param maxIdel
      */
-    public RedisConnectionImpl(String url, int timeout, int maxTotal, int maxIdel,long maxWaitMillis){
+    public LQRedisConnection(String url, int timeout, int maxTotal, int maxIdel, long maxWaitMillis){
         super(url,timeout,maxTotal,maxIdel,maxWaitMillis);
     }
 
     /**
      * @param url:redis://db@119.254.166.136:6379/pwd
      */
-    public RedisConnectionImpl(String url){
+    public LQRedisConnection(String url){
        super(url);
     }
 

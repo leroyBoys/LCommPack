@@ -6,7 +6,7 @@ import com.dyuproject.protostuff.Schema;
 import com.dyuproject.protostuff.runtime.RuntimeSchema;
 import com.lgame.core.LqTimeCacheManager;
 import com.lgame.mysql.entity.DBTable;
-import com.lgame.redis.impl.RedisConnectionImpl;
+import com.lgame.redis.impl.LQRedisConnection;
 import com.lgame.util.LqUtil;
 
 /**
@@ -20,7 +20,7 @@ public class ByteRedisSerializer extends RedisSerializer {
     }
 
     @Override
-    public void serializer(RedisConnectionImpl redisConnection, DBTable table, Object entity) {
+    public void serializer(LQRedisConnection redisConnection, DBTable table, Object entity) {
          byte[] bytes = ProtostuffIOUtil.toByteArray(entity, schema, LinkedBuffer.allocate(LinkedBuffer.DEFAULT_BUFFER_SIZE));
 
         String key = table.redisKey(table.getRedisKeyGetInace().formatToDbData(entity));
@@ -45,7 +45,7 @@ public class ByteRedisSerializer extends RedisSerializer {
     }
 
     @Override
-    public Object mergeFrom(RedisConnectionImpl redisConnection,DBTable table,Class instance,Object uniqueId) {
+    public Object mergeFrom(LQRedisConnection redisConnection, DBTable table, Class instance, Object uniqueId) {
         String key = table.redisKey(uniqueId);
         try {
             byte[] keys = LqUtil.hex2byte(key);

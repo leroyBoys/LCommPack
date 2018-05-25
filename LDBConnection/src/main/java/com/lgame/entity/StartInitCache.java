@@ -13,7 +13,7 @@ import java.util.Map;
  */
 public class StartInitCache {
     private Map<String,MethodCache> methodCacheMap = new HashMap<>();
-    private Map<String,MasterSlaveGlobalConfig> globalConfigMap = new HashMap<>();
+    private Map<DBType,MasterSlaveGlobalConfig> globalConfigMap = new HashMap<>();
     private  Map<String,MasterSlaveConfig> node_configMap = new HashMap<>();
 
     public MethodCache getMethodCache(String classSourceName) throws ClassNotFoundException {
@@ -44,11 +44,11 @@ public class StartInitCache {
         return methodCache;
     }
 
-    public Map<String, MasterSlaveGlobalConfig> getGlobalConfigMap() {
+    public Map<DBType, MasterSlaveGlobalConfig> getGlobalConfigMap() {
         return globalConfigMap;
     }
 
-    public void setGlobalConfigMap(Map<String, MasterSlaveGlobalConfig> globalConfigMap) {
+    public void setGlobalConfigMap(Map<DBType, MasterSlaveGlobalConfig> globalConfigMap) {
         this.globalConfigMap = globalConfigMap;
     }
 

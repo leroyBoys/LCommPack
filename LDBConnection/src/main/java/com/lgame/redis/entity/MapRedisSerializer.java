@@ -3,7 +3,7 @@ package com.lgame.redis.entity;
 import com.lgame.core.LqTimeCacheManager;
 import com.lgame.mysql.compiler.FieldGetProxy;
 import com.lgame.mysql.entity.DBTable;
-import com.lgame.redis.impl.RedisConnectionImpl;
+import com.lgame.redis.impl.LQRedisConnection;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -21,7 +21,7 @@ public class MapRedisSerializer extends RedisSerializer{
     }
 
     @Override
-    public void serializer(RedisConnectionImpl redisConnection, DBTable table, Object entity) {
+    public void serializer(LQRedisConnection redisConnection, DBTable table, Object entity) {
 
         String keys = table.redisKey(table.getRedisKeyGetInace().formatToDbData(entity));
         try {
@@ -53,7 +53,7 @@ public class MapRedisSerializer extends RedisSerializer{
     }
 
     @Override
-    public Object mergeFrom(RedisConnectionImpl redisConnection,DBTable table,Class instance,Object uniqueId) {
+    public Object mergeFrom(LQRedisConnection redisConnection, DBTable table, Class instance, Object uniqueId) {
         try {
             String keys = table.redisKey(uniqueId);
             Map<String, String> map = redisConnection.hgetAll(keys);

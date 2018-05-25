@@ -1,5 +1,6 @@
 package com.lgame.core;
 
+import com.lgame.entity.DBType;
 import com.lgame.util.LqUtil;
 
 import java.util.HashMap;
@@ -11,7 +12,7 @@ import java.util.Properties;
  * 2018/5/23.
  */
 public class MasterSlaveGlobalConfig {
-    private String dbType;
+    private DBType dbType;
     private Map<String,String> master = new HashMap<>();
     private Map<String,String> slave = new HashMap<>();
 
@@ -23,7 +24,7 @@ public class MasterSlaveGlobalConfig {
         return slave;
     }
 
-    public MasterSlaveGlobalConfig(String dbType) {
+    public MasterSlaveGlobalConfig(DBType dbType) {
         this.dbType =dbType;
     }
 
