@@ -7,7 +7,7 @@ import java.util.Random;
  * Created by leroy:656515489@qq.com
  * 2018/5/24.
  */
-class Node<T> {
+class Node<T extends LQConntion> {
     private static Random random = new Random();
     private T master;
     private T[] slaves;

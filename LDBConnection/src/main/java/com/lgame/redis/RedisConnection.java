@@ -1,5 +1,6 @@
 package com.lgame.redis;
 
+import com.lgame.entity.LQConntion;
 import com.lgame.util.LqLogUtil;
 import com.lgame.util.LqUtil;
 import redis.clients.jedis.*;
@@ -10,7 +11,8 @@ import java.util.*;
  * Created by leroy:656515489@qq.com
  * 2017/4/11.
  */
-public class RedisConnection {
+public class RedisConnection implements LQConntion {
+    private String url;
     private JedisPool jedisPool;
 
     /**
@@ -38,7 +40,6 @@ public class RedisConnection {
         if (!secondArray[0].trim().isEmpty()) {
             db = Integer.valueOf(secondArray[0]);
         }
-
         String[] threeArray = secondArray[1].split(":");
         String host = threeArray[0];
         int port = Integer.valueOf(threeArray[1].split("/")[0]);
@@ -53,7 +54,7 @@ public class RedisConnection {
         config.setMaxIdle(maxIdel);
         config.setMaxWaitMillis(-1);
 
-
+        this.url = url;
         jedisPool = new JedisPool(config, host, port, timeout, password, db);
         if(!testConnection()){
             LqLogUtil.info("redis fail connection:url:"+url+"  timeout:"+timeout+"  maxTotal:"+maxTotal+"  maxIdel:"+maxIdel);
@@ -1814,5 +1815,10 @@ public class RedisConnection {
 
     private void logException(Exception e) {
         e.printStackTrace();
+    }
+
+    @Override
+    public String getName() {
+        return url;
     }
 }

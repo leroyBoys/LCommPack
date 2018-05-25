@@ -1,6 +1,7 @@
 package com.lgame.mysql.impl;
 
 import com.lgame.core.LQStart;
+import com.lgame.entity.LQConntion;
 import com.lgame.entity.StartInitCache;
 import com.lgame.mysql.SqlDataSource;
 import com.lgame.mysql.compiler.ColumInit;
@@ -17,7 +18,8 @@ import java.util.*;
  * Created by leroy:656515489@qq.com
  * 2017/4/13.
  */
-public class LQDataSource implements SqlDataSource{
+public class LQDataSource implements SqlDataSource,LQConntion{
+    private String url;
     private final static Map<String,JdbcColumsArray> cmd_jdbcColumsArrayCache = new HashMap<>();
     private DataSource dds;
     protected LQDataSource(Properties properties){
@@ -75,6 +77,11 @@ public class LQDataSource implements SqlDataSource{
         return dds.getConnection();
     }
 
+    @Override
+    public String getName() {
+        return this.url;
+    }
+
     private boolean checkNeedConnect(Properties properties){
         int count = 3;
         for(Object obj:properties.keySet()){
@@ -84,6 +91,9 @@ public class LQDataSource implements SqlDataSource{
             String str = ((String) obj).toLowerCase();
             if(str.matches("(.*)(name|password|url)(.*)")){
                 count--;
+                if(str.endsWith("url")){
+                    this.url = (String)obj;
+                }
             }
         }
         return count<=0;
@@ -551,4 +561,5 @@ public class LQDataSource implements SqlDataSource{
     public int getDefaultLimitCount() {
         return 5000;
     }
+
 }

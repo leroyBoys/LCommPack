@@ -8,7 +8,7 @@ import java.util.Properties;
  * Created by leroy:656515489@qq.com
  * 2018/5/24.
  */
-public abstract class NodeManger<T> {
+public abstract class NodeManger<T extends LQConntion> {
     private Node<T> node;
     private String tmpNodeName;
     private Map<String,Node<T>> nodeMap = new HashMap<>();
