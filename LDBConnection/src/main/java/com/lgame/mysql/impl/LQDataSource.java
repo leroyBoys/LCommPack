@@ -69,7 +69,7 @@ public class LQDataSource implements SqlDataSource,LQConntion{
         if(!testConnection()){
             return;
         }
-        LqLogUtil.info("create suc connection:"+sb.toString());
+        LqLogUtil.info("db succ connection:"+sb.toString());
     }
 
     @Override

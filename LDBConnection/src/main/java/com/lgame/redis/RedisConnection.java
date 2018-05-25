@@ -57,7 +57,7 @@ public class RedisConnection implements LQConntion {
         this.url = url;
         jedisPool = new JedisPool(config, host, port, timeout, password, db);
         if(!testConnection()){
-            LqLogUtil.info("redis fail connection:url:"+url+"  timeout:"+timeout+"  maxTotal:"+maxTotal+"  maxIdel:"+maxIdel);
+            LqLogUtil.error("redis fail connection:url:"+url+"  timeout:"+timeout+"  maxTotal:"+maxTotal+"  maxIdel:"+maxIdel);
         }else {
             LqLogUtil.info("redis succ connection:url:"+url+"  timeout:"+timeout+"  maxTotal:"+maxTotal+"  maxIdel:"+maxIdel);
         }
