@@ -2,7 +2,6 @@ package com.lgame.redis;
 
 import com.lgame.util.LqLogUtil;
 import com.lgame.util.LqUtil;
-import com.mchange.v2.log.LogUtils;
 import redis.clients.jedis.*;
 
 import java.util.*;
@@ -46,7 +45,7 @@ public class RedisConnection {
 
         String password = null;
         if (threeArray[1].split("/").length > 1) {
-            password = LqUtil.trimToNull(url.substring(url.lastIndexOf('/')));
+            password = LqUtil.trimToNull(url.substring(url.lastIndexOf('/')+1));
         }
 
         JedisPoolConfig config = new JedisPoolConfig();
@@ -54,8 +53,26 @@ public class RedisConnection {
         config.setMaxIdle(maxIdel);
         config.setMaxWaitMillis(-1);
 
-        LqLogUtil.info("redis init...:url:"+url+"  timeout:"+timeout+"  maxTotal:"+maxTotal+"  maxIdel:"+maxIdel);
+
         jedisPool = new JedisPool(config, host, port, timeout, password, db);
+        if(!testConnection()){
+            LqLogUtil.info("redis fail connection:url:"+url+"  timeout:"+timeout+"  maxTotal:"+maxTotal+"  maxIdel:"+maxIdel);
+        }else {
+            LqLogUtil.info("redis succ connection:url:"+url+"  timeout:"+timeout+"  maxTotal:"+maxTotal+"  maxIdel:"+maxIdel);
+        }
+    }
+
+    private boolean testConnection(){
+        Jedis jedis = null;
+        try {
+            jedis = jedisPool.getResource();
+            return true;
+        } catch (Exception e) {
+            logException(e);
+        } finally {
+            returnResource(jedisPool, jedis);
+        }
+        return false;
     }
 
     /**

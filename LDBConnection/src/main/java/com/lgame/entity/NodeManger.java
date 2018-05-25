@@ -10,16 +10,18 @@ import java.util.Properties;
  */
 public abstract class NodeManger<T> {
     private Node<T> node;
+    private String tmpNodeName;
     private Map<String,Node<T>> nodeMap = new HashMap<>();
 
     public void initProperties(String nodeName,Properties masterConfig, Properties... slavesConfig) throws Exception {
 
         if(nodeName == null){
-            if(node != null){
+            if(node != null && this.tmpNodeName == null){
                 return;
             }
             node = Node.class.newInstance();
             node.initProperties(this,masterConfig,slavesConfig);
+            this.tmpNodeName = null;
             return;
         }
 
@@ -33,6 +35,7 @@ public abstract class NodeManger<T> {
 
         if(nodeMap.isEmpty()){
             node = nodeData;
+            this.tmpNodeName = nodeName;
         }
 
         nodeMap.put(nodeName,nodeData);
