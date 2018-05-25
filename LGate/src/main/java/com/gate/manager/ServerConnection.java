@@ -77,11 +77,6 @@ public class ServerConnection extends GameServer implements Runnable {
         }
     }
 
-    @Override
-    protected ServerConnection createNew() {
-        return new ServerConnection();
-    }
-
     public void send(Object obj){
         serverMonitor.session.write(obj);
     }

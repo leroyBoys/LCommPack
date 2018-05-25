@@ -1,10 +1,13 @@
 package com.gate.manager;
 
 import com.gate.action.dao.mysql.ServerService;
+import com.lgame.core.LQStart;
+import com.lgame.entity.DBType;
+import com.lgame.entity.LQConnConfig;
+import com.lgame.entity.LQNewNode;
 import com.lgame.module.*;
-import com.lgame.mysql.impl.JdbcTemplate;
+import com.lgame.mysql.impl.LQDataSource;
 import com.lgame.util.comm.StringTool;
-import com.lgame.util.file.PropertiesTool;
 import com.lsocket.core.ICommon;
 
 import java.util.List;
@@ -28,20 +31,14 @@ public class DBServiceManager extends ICommon {
         return dbServiceManager;
     }
 
-    private JdbcTemplate commUserPool;//用户中心数据连接池
-    private JdbcTemplate commGamePool;//游戏数据连接池
+    private LQDataSource commUserPool;//用户中心数据连接池
+    private LQDataSource commGamePool;//游戏数据连接池
     private GameServer gameServer;
     private ServerGroup serverGroup;
     private ServerService serverService;
 
-    private Properties getProperties(JdbcTemplate.DataSourceType sourceType){
-        if(sourceType == JdbcTemplate.DataSourceType.Druid){
-            return PropertiesTool.loadProperty("druid_db.properties");
-        }
-        return PropertiesTool.loadProperty("hikari_db.properties");
-    }
 
-    private Properties resetProper(Properties dbProper) {
+    private LQConnConfig.LQDBConnConfig resetProper(Properties dbProper) {
         dbProper.setProperty("username",serverGroup.getSqlUserName());
         dbProper.setProperty("password",serverGroup.getSqlPwd());
         if(StringTool.isNotNull(dbProper.getProperty("jdbcUrl"))){
@@ -49,16 +46,14 @@ public class DBServiceManager extends ICommon {
         }else {
             dbProper.setProperty("url",serverGroup.getSqlUrl());
         }
-        return dbProper;
+        return new LQConnConfig.LQDBConnConfig(serverGroup.getSqlUrl(),serverGroup.getSqlUserName(),serverGroup.getSqlPwd());
     }
 
-    private void loadConfig(Properties properties){
-        JdbcTemplate.DataSourceType sourceType = JdbcTemplate.DataSourceType.valueOf(properties.getProperty("server.dbtype"));
-        if(sourceType == null){
-            throw new RuntimeException(properties.getProperty("server.dbtype")+" can not find in DataSourceType");
-        }
-        Properties dbProper = getProperties(sourceType);
-        commUserPool = new JdbcTemplate(sourceType,dbProper);
+    private void loadConfig(Properties properties) throws Exception {
+        LQStart.scan("com.lgame");
+
+        LQStart.init(properties);
+        commUserPool = LQStart.getJdbcManager().getMaster();
 
         serverService = new ServerService(commUserPool);
         gameServer = serverService.getServerById(Integer.valueOf(properties.getProperty("server.id")));
@@ -74,12 +69,16 @@ public class DBServiceManager extends ICommon {
             throw new RuntimeException("can not find goupNum:"+gameServer.getGroupNum() + " in serverGroup db");
         }
 
-        dbProper = resetProper(dbProper);
-        commGamePool = new JdbcTemplate(sourceType,dbProper);
+        LQStart.addNewDataSource(DBType.db,new LQNewNode(null,"server"),resetProper(properties));
+        commGamePool = LQStart.getJdbcManager().getMaster("server");
     }
 
     protected void initService(){
-        loadConfig(properties);
+        try {
+            loadConfig(properties);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
         // RedisConnectionManager redisConnectionManager = new RedisConnectionManager(properties);
     }
 
@@ -94,11 +93,11 @@ public class DBServiceManager extends ICommon {
         return dbServiceManager;
     }
 
-    public JdbcTemplate getCommUserPool() {
+    public LQDataSource getCommUserPool() {
         return commUserPool;
     }
 
-    public JdbcTemplate getCommGamePool() {
+    public LQDataSource getCommGamePool() {
         return commGamePool;
     }
 

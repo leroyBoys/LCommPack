@@ -1,6 +1,8 @@
 package com;
 
-import com.lgame.mysql.impl.JdbcTemplate;
+
+import com.lgame.core.LQStart;
+import com.lgame.mysql.impl.LQDataSource;
 
 import java.util.Vector;
 import java.util.concurrent.CountDownLatch;
@@ -25,13 +27,13 @@ public class ThreadTestDemo {
         final String sql = "DELETE from `tbl_player` where id = ?";
         final String sql2 = "insert into `tbl_player`(id,d_time) values (?,?)";
       //  final SqlPool sqlPool = new SqlPool(SqlPool.DataSourceType.Hikari);
-       final JdbcTemplate jdbcTemplate = new JdbcTemplate(JdbcTemplate.DataSourceType.Druid);
+       final LQDataSource jdbcTemplate = LQStart.getJdbcManager().getMaster();
         runTest(threads, new MainThread() {
             @Override
             public void run(final Integer id) {
                 try {
-                    jdbcTemplate.Execute(sql,id);
-                    System.out.println(jdbcTemplate.Insert(sql2,id,"2014-10-10")+" id:"+id);
+                    jdbcTemplate.ExecuteUpdate(sql,id);
+                    System.out.println(jdbcTemplate.ExecuteInsert(sql2,id,"2014-10-10")+" id:"+id);
                    /*  ps.executeUpdate(sql,id);
                     ps.executeUpdate(sql2,id,id);*/
                     _num22.incrementAndGet();

@@ -3,15 +3,13 @@ package com;
 import com.lgame.module.GameServer;
 import com.lgame.mysql.compiler.ColumInit;
 import com.lgame.mysql.compiler.FieldGetProxy;
-import com.lgame.mysql.compiler.ScanEntitysTool;
-import com.lgame.mysql.impl.LqJdbcPool;
+import com.lgame.core.LQStart;
+import com.lgame.mysql.impl.LQDataSource;
 import com.lgame.redis.impl.RedisConnectionImpl;
 import com.lgame.util.LqLogUtil;
 import com.lgame.util.LqUtil;
 import com.lgame.util.json.JsonUtil;
 import com.test.TestData;
-import com.test.TestEnum;
-import com.test.TestEnum2;
 
 import java.lang.reflect.Method;
 import java.util.HashMap;
@@ -89,7 +87,7 @@ public class MainTest {
 
 
 
-        ScanEntitysTool.instance("com.pro");
+        LQStart.scan("com.pro");
 
        // map = mapRedisSerializer.serializer_single(products);
 
@@ -113,24 +111,13 @@ public class MainTest {
 
     }
 
-    private void dbTest() throws Exception {
-        ScanEntitysTool.instance("com.test");
-        String sql = "SELECT * FROM `test_data`";
-        LqJdbcPool db = new LqJdbcPool(LqJdbcPool.DataSourceType.Hikari,LqUtil.loadProperty("hikari_db.properties"));
-        List<TestData> datas = db.ExecuteQueryList(TestData.class,sql);
-        TestData data = datas.get(1);
-        data.setName("逗你玩");
-        data.setTestEnum(TestEnum.Name);
-        data.setTestEnum2(TestEnum2.More);
-        db.ExecuteEntity(data);
-    }
-
 
     public static void testJdkReflect() throws Exception {
 
-        ScanEntitysTool.instance("com");
+        LQStart.scan("com");
         String sql = "SELECT test_data.* ,test1.`id` AS tid,test1.`name` AS tname FROM `test_data` RIGHT JOIN test1 ON test_data.`id` = test1.`id`\n";
-        LqJdbcPool db = new LqJdbcPool(LqJdbcPool.DataSourceType.Hikari,LqUtil.loadProperty("hikari_db.properties"));
+        LQStart.init(LqUtil.loadProperty("hikari_db.properties"));
+        LQDataSource db = LQStart.getJdbcManager().getMaster();
    //     RedisConnectionImpl redisConnectionManager = new RedisConnectionImpl("redis://0@127.0.0.1:6379");
        RedisConnectionImpl redisConnectionManager = new RedisConnectionImpl("redis://0@192.168.11.128:3307/123456");
   //      RedisConnectionImpl redisConnectionManager = new RedisConnectionImpl("redis://0@192.168.11.133:63781/123456");
@@ -248,12 +235,13 @@ public class MainTest {
 
 
     private void tttProx() throws Exception {
-        ScanEntitysTool.instance("com.module");
+        LQStart.init(LqUtil.loadProperty("hikari_db.properties"));
+        LQDataSource db = LQStart.getJdbcManager().getMaster();
 
         long sum = 0;
         Class<?> c = GameServer.class;
-        FieldGetProxy.FieldGet fieldGet = ScanEntitysTool.instance.getDBTable(c).getColumGetMap().get("id");
-        ColumInit columInit = ScanEntitysTool.instance.getDBTable(c).getColumInit("id");
+        FieldGetProxy.FieldGet fieldGet = LQStart.instance.getDBTable(c).getColumGetMap().get("id");
+        ColumInit columInit = LQStart.instance.getDBTable(c).getColumInit("id");
 
         long now = System.currentTimeMillis();
         for(int i = 0; i<size; ++i){
@@ -336,25 +324,6 @@ public class MainTest {
             sum += o.getId();
         }
         System.out.println("========555===db耗时"+(System.currentTimeMillis() - now) + "ms，和是" +sum);*/
-
-    }
-
-    private void tttDB() throws Exception {
-        LqJdbcPool db = new LqJdbcPool(LqUtil.loadProperty("druid_db.properties"));
-
-        long sum = 0;
-
-        long now = System.currentTimeMillis();
-        for(int i = 0; i<5000; ++i){
-            Object obj = db.ExecuteQueryOnlyOneValue("select id from test1");
-            if(i < 2){
-                System.out.println(obj);
-            }
-            GameServer o = new GameServer();
-            o.setId(i);
-            sum += o.getId();
-        }
-        System.out.println("===========db耗时"+(System.currentTimeMillis() - now) + "ms，和是" +sum);
 
     }
 
