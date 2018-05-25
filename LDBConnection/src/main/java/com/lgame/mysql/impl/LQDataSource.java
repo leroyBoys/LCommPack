@@ -1,6 +1,7 @@
 package com.lgame.mysql.impl;
 
 import com.lgame.core.LQStart;
+import com.lgame.entity.StartInitCache;
 import com.lgame.mysql.SqlDataSource;
 import com.lgame.mysql.compiler.ColumInit;
 import com.lgame.mysql.compiler.FieldGetProxy;
@@ -16,22 +17,21 @@ import java.util.*;
  * Created by leroy:656515489@qq.com
  * 2017/4/13.
  */
-public class DataSourceImpl implements SqlDataSource{
+public class LQDataSource implements SqlDataSource{
     private final static Map<String,JdbcColumsArray> cmd_jdbcColumsArrayCache = new HashMap<>();
     private DataSource dds;
-    protected DataSourceImpl(Properties properties,JDBCInitCache jdbcInitCache){
-        init(properties,jdbcInitCache);
+    protected LQDataSource(Properties properties){
+        init(properties);
     }
 
-    private void init(Properties properties,JDBCInitCache jdbcInitCache){
+    private void init(Properties properties){
         StringBuilder sb = new StringBuilder(100);
         try {
             String classDatascource = properties.getProperty("type","com.alibaba.druid.pool.DruidDataSource");
-            JDBCInitCache.MethodCache methodCache = jdbcInitCache.getMethodCache(classDatascource);
+            StartInitCache.MethodCache methodCache = LQStart.getMethodCache().getMethodCache(classDatascource);
             dds = (DataSource) methodCache.cls.newInstance();
 
             sb.append("init db...type:").append(classDatascource);
-
             for (Enumeration<?> e = properties.keys(); e.hasMoreElements() ;) {
                 Object ko = e.nextElement();
                 if (!(ko instanceof String)) {
@@ -69,7 +69,7 @@ public class DataSourceImpl implements SqlDataSource{
         return dds.getConnection();
     }
 
-    public boolean ExecuteUpdate(String cmd, Object[] p) {
+    public boolean ExecuteUpdate(String cmd, Object... p) {
         Connection cn = null;
         PreparedStatement ps = null;
         try {
@@ -169,7 +169,7 @@ public class DataSourceImpl implements SqlDataSource{
             cn.commit();
             return true;
         } catch (Exception e) {
-            LqLogUtil.error(DataSourceImpl.class,e);
+            LqLogUtil.error(LQDataSource.class,e);
         } finally {
             this.close(ps, cn);
         }

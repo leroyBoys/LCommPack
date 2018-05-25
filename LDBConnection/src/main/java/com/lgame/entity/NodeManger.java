@@ -1,7 +1,5 @@
 package com.lgame.entity;
 
-import com.lgame.mysql.impl.JDBCInitCache;
-
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
@@ -14,14 +12,14 @@ public abstract class NodeManger<T> {
     private Node<T> node;
     private Map<String,Node<T>> nodeMap = new HashMap<>();
 
-    public void initProperties(JDBCInitCache jdbcInitCache,String nodeName,Properties masterConfig, Properties... slavesConfig) throws Exception {
+    public void initProperties(String nodeName,Properties masterConfig, Properties... slavesConfig) throws Exception {
 
         if(nodeName == null){
             if(node != null){
                 return;
             }
             node = Node.class.newInstance();
-            node.initProperties(this,jdbcInitCache,masterConfig,slavesConfig);
+            node.initProperties(this,masterConfig,slavesConfig);
             return;
         }
 
@@ -31,7 +29,7 @@ public abstract class NodeManger<T> {
         }
 
         nodeData = Node.class.newInstance();
-        nodeData.initProperties(this,jdbcInitCache,masterConfig,slavesConfig);
+        nodeData.initProperties(this,masterConfig,slavesConfig);
 
         if(nodeMap.isEmpty()){
             node = nodeData;
@@ -40,7 +38,7 @@ public abstract class NodeManger<T> {
         nodeMap.put(nodeName,nodeData);
     }
 
-    protected abstract T initRedisConnection(JDBCInitCache jdbcInitCache,Properties properties);
+    protected abstract T initRedisConnection(Properties properties);
 
     public T getMaster() {
         return node.getMaster();

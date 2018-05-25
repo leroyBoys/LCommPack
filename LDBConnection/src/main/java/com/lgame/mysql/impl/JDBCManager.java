@@ -8,15 +8,15 @@ import java.util.Properties;
  * Created by leroy:656515489@qq.com
  * 2018/5/24.
  */
-public class JDBCManager extends NodeManger<DataSourceImpl> {
+public class JDBCManager extends NodeManger<LQDataSource> {
 
     @Override
-    protected DataSourceImpl initRedisConnection(JDBCInitCache jdbcInitCache, Properties properties) {
-        return new DataSourceImpl(properties,jdbcInitCache);
+    protected LQDataSource initRedisConnection(Properties properties) {
+        return new LQDataSource(properties);
     }
 
     @Override
-    public DataSourceImpl[] createArray(int size) {
-        return new DataSourceImpl[size];
+    public LQDataSource[] createArray(int size) {
+        return new LQDataSource[size];
     }
 }

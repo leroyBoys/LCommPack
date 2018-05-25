@@ -2,11 +2,11 @@ package com;
 
 
 import com.lgame.core.LQStart;
-import com.lgame.mysql.impl.JDBCManager;
-import com.lgame.mysql.impl.DataSourceImpl;
+import com.lgame.mysql.impl.LQDataSource;
 import com.lgame.util.LqUtil;
 import com.test.TestData;
 
+import java.lang.ref.WeakReference;
 import java.util.List;
 
 /**
@@ -14,19 +14,19 @@ import java.util.List;
  * 2018/5/16.
  */
 public class Test {
-
-
+    static WeakReference<String> sr = new WeakReference<String>(new String("hello"));
+    @org.junit.Test
     public void mai(){
 
     }
-    @org.junit.Test
+
     public void test() throws Exception {
         LQStart.scan("com");
 
-        LQStart.initConnectionManager(LqUtil.loadProperty("db.properties"));
+        LQStart.init(LqUtil.loadProperty("db.properties"));
 
     //    LqJdbcPool jdbcPool = new LqJdbcPool(LqJdbcPool.DataSourceType.Hikari, LqUtil.loadProperty("hikari_db.properties"));
-        DataSourceImpl jdbcPool = LQStart.getJdbcManager().getMaster();
+        LQDataSource jdbcPool = LQStart.getJdbcManager().getMaster();
         String sql = "SELECT test_data.* ,test1.`id` AS tid,test1.`name` AS tname FROM `test_data` RIGHT JOIN test1 ON test_data.`id` = test1.`id`";
 
 

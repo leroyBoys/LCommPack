@@ -1,10 +1,8 @@
 package com.lgame.redis.impl;
 
 import com.lgame.entity.NodeManger;
-import com.lgame.mysql.impl.JDBCInitCache;
 
 import java.util.Properties;
-import java.util.Random;
 
 /**
  * Created by Administrator on 2017/4/15.
@@ -12,7 +10,7 @@ import java.util.Random;
 public class RedisConnectionManager extends NodeManger<RedisConnectionImpl>{
 
     @Override
-    protected RedisConnectionImpl initRedisConnection(JDBCInitCache jdbcInitCache, Properties config) {
+    protected RedisConnectionImpl initRedisConnection( Properties config) {
         int timeOut = 5000;
         int maxTotal = 3000;
         int maxIdel = 1500;

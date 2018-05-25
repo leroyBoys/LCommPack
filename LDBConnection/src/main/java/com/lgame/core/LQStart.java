@@ -1,11 +1,12 @@
 package com.lgame.core;
 
-import com.lgame.entity.NodeManger;
+import com.lgame.entity.*;
 import com.lgame.mysql.compiler.ScanEntitysTool;
-import com.lgame.mysql.impl.JDBCInitCache;
 import com.lgame.mysql.impl.JDBCManager;
 import com.lgame.redis.impl.RedisConnectionManager;
+import com.lgame.util.LqUtil;
 
+import java.lang.ref.WeakReference;
 import java.util.*;
 
 /**
@@ -13,10 +14,21 @@ import java.util.*;
  * 2018/5/2.
  */
 public class LQStart {
-    private final static String[] dbTypeArray = new String[]{"redis","db"};
+    private static WeakReference<StartInitCache> tmpCache = new WeakReference<>(new StartInitCache());
+
     public static ScanEntitysTool instance;
     private static RedisConnectionManager redisConnectionManager;
     private static JDBCManager jdbcManager;
+
+    public static StartInitCache getMethodCache(){
+        StartInitCache startInitCache = tmpCache.get();
+        if(startInitCache != null){
+            return startInitCache;
+        }
+        startInitCache = new StartInitCache();
+        tmpCache = new WeakReference<>(startInitCache);
+        return startInitCache;
+    }
 
     public static void scan(String... packs) throws Exception {
         if(instance != null){
@@ -29,13 +41,13 @@ public class LQStart {
             instance = new ScanEntitysTool(packs);
         }
     }
-///*redis.master.01.name  redis.01.master.mame
-    public static void initConnectionManager(Properties properties) throws Exception {
+
+    public static void init(Properties properties) throws Exception {
         Map<String,MasterSlaveGlobalConfig> globalConfigMap = new HashMap<>();
-        for(String dbType:dbTypeArray){
-            globalConfigMap.put(dbType,new MasterSlaveGlobalConfig(dbType));
+        for(DBType dbType:DBType.values()){
+            globalConfigMap.put(dbType.name(),new MasterSlaveGlobalConfig(dbType.name()));
         }
-        JDBCInitCache jdbcInitCache = new JDBCInitCache();
+        StartInitCache startInitCache = getMethodCache();
 
         Map<String,MasterSlaveConfig> node_configMap = new HashMap<>();
         for (Enumeration<?> e = properties.keys(); e.hasMoreElements() ;) {
@@ -93,24 +105,98 @@ public class LQStart {
             return;
         }
 
+        startInitCache.setGlobalConfigMap(globalConfigMap);
+        startInitCache.setNode_configMap(node_configMap);
+
         Set<String> dbTypes = new HashSet<>();
         for(Map.Entry<String,MasterSlaveConfig> entry:node_configMap.entrySet()){
             MasterSlaveConfig masterSlaveConfig = entry.getValue();
             MasterSlaveGlobalConfig config = globalConfigMap.get(masterSlaveConfig.getDbType());
-            inintDataSourceManger(masterSlaveConfig.getDbType(),jdbcInitCache,entry.getKey(),config.getMaster(masterSlaveConfig.getMaster()),config.getSlave(masterSlaveConfig.getSlaves()));
+            inintDataSourceManger(masterSlaveConfig.getDbType(),entry.getKey(),config.getMaster(masterSlaveConfig.getMaster()),config.getSlave(masterSlaveConfig.getSlaves()));
             dbTypes.add(masterSlaveConfig.getDbType());
         }
 
-        for(String dbType:dbTypeArray){
+        for(DBType dbTypeEnum:DBType.values()){
+            String dbType = dbTypeEnum.name();
            if(dbTypes.contains(dbType)){
                continue;
            }
             MasterSlaveGlobalConfig config = globalConfigMap.get(dbType);
-            inintDataSourceManger(dbType,jdbcInitCache,null,config.getMaster(null),null);
+            inintDataSourceManger(dbType,null,config.getMaster(null),null);
         }
     }
 
-    private static void inintDataSourceManger(String dbType,JDBCInitCache jdbcInitCache,String nodeName,Properties master,Properties... slaves) throws Exception {
+    private static Properties getNewProperties(DBType dbType,LQNewNode newNode,LQConnConfig connConfig,boolean isMaster){
+        if(dbType == DBType.db){
+        }else if(dbType == DBType.redis){
+        }else {
+            System.out.println("not config manager for dbType:"+dbType);
+            return null;
+        }
+
+        StartInitCache startInitCache = getMethodCache();
+        MasterSlaveGlobalConfig masterSlaveGlobalConfig = startInitCache.getGlobalConfigMap().get(dbType);
+
+        Map<String,String> globlmap = new HashMap<>(50);
+        if(masterSlaveGlobalConfig != null){
+            Map<String,String> map = null;
+            if(isMaster){
+                globlmap = masterSlaveGlobalConfig.getMaster();
+            }else {
+                globlmap = masterSlaveGlobalConfig.getSlave();
+            }
+            globlmap.putAll(map);
+        }
+
+        if(newNode != null && newNode.getReadNodeName() != null){
+            MasterSlaveConfig masterSlaveConfig = startInitCache.getNode_configMap().get(newNode.getReadNodeName());
+            if(masterSlaveConfig != null){
+                Map<String,String> map = null;
+                if(isMaster){
+                    map = masterSlaveConfig.getMaster();
+                }else {
+                    map = masterSlaveConfig.getSlaves().isEmpty()?masterSlaveConfig.getMaster():masterSlaveConfig.getSlaves().values().iterator().next();
+                }
+                globlmap.putAll(map);
+            }
+        }
+        if(dbType == DBType.db){
+            LQConnConfig.LQDBConnConfig lqRedisConnConfig = (LQConnConfig.LQDBConnConfig) connConfig;
+            globlmap.put("url",lqRedisConnConfig.getUrl());
+            globlmap.put("jdbcUrl",lqRedisConnConfig.getUrl());
+            globlmap.put("username",lqRedisConnConfig.getUserName());
+            globlmap.put("user",lqRedisConnConfig.getUserName());
+            globlmap.put("password",lqRedisConnConfig.getPassword());
+        }else if(dbType == DBType.redis){
+            LQConnConfig.LQRedisConnConfig lqRedisConnConfig = (LQConnConfig.LQRedisConnConfig) connConfig;
+            globlmap.put("url",lqRedisConnConfig.getUrl());
+        }
+        return LqUtil.createProperties(globlmap);
+    }
+
+    public static void addNewDataSource(DBType dbType,LQConnConfig master, LQConnConfig... slaves) throws Exception {
+        addNewDataSource(dbType,null,master,slaves);
+    }
+
+    public static void addNewDataSource(DBType dbType, LQNewNode newNode, LQConnConfig master, LQConnConfig... slaves) throws Exception {
+        Properties masterProperties = getNewProperties(dbType,newNode,master,true);
+
+        if(slaves != null && slaves.length>0){
+            Properties[] properties = new Properties[slaves.length];
+            for(int i = 0;i<slaves.length;i++){
+                properties[i] = getNewProperties(dbType,newNode,slaves[i],false);
+            }
+            inintDataSourceManger(dbType.name(),newNode==null?null:newNode.getNewNodeName(),masterProperties,properties);
+            return;
+        }
+
+        inintDataSourceManger(dbType.name(),newNode==null?null:newNode.getNewNodeName(),masterProperties);
+    }
+
+    private static void inintDataSourceManger(String dbType,String nodeName,Properties master,Properties... slaves) throws Exception {
+        if(master == null){
+            return;
+        }
 
        NodeManger nodeManger = null;
        if(dbType.equals("redis")){
@@ -129,16 +215,15 @@ public class LQStart {
            return;
        }
 
-        nodeManger.initProperties(jdbcInitCache,nodeName,master,slaves);
+        nodeManger.initProperties(nodeName,master,slaves);
     }
 
     private static String getDbType(String str){
-        for(String dbType:dbTypeArray){
-            if(str.contains(dbType)){
-                return dbType;
-            }
+        DBType dbType = DBType.valueOf(str);
+        if(dbType == null){
+            dbType = DBType.db;
         }
-        return dbTypeArray[dbTypeArray.length-1];
+        return dbType.name();
     }
 
     private static String masterKey(String configKey){

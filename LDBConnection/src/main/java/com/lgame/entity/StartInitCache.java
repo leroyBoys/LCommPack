@@ -1,4 +1,7 @@
-package com.lgame.mysql.impl;
+package com.lgame.entity;
+
+import com.lgame.core.MasterSlaveConfig;
+import com.lgame.core.MasterSlaveGlobalConfig;
 
 import java.lang.reflect.Method;
 import java.util.HashMap;
@@ -8,8 +11,10 @@ import java.util.Map;
  * Created by leroy:656515489@qq.com
  * 2018/5/24.
  */
-public class JDBCInitCache {
+public class StartInitCache {
     private Map<String,MethodCache> methodCacheMap = new HashMap<>();
+    private Map<String,MasterSlaveGlobalConfig> globalConfigMap = new HashMap<>();
+    private  Map<String,MasterSlaveConfig> node_configMap = new HashMap<>();
 
     public MethodCache getMethodCache(String classSourceName) throws ClassNotFoundException {
         MethodCache methodCache = methodCacheMap.get(classSourceName);
@@ -39,9 +44,24 @@ public class JDBCInitCache {
         return methodCache;
     }
 
+    public Map<String, MasterSlaveGlobalConfig> getGlobalConfigMap() {
+        return globalConfigMap;
+    }
 
-    class MethodCache{
-        Class cls;
-        Map<String,Method> methodMap = new HashMap<>();
+    public void setGlobalConfigMap(Map<String, MasterSlaveGlobalConfig> globalConfigMap) {
+        this.globalConfigMap = globalConfigMap;
+    }
+
+    public Map<String, MasterSlaveConfig> getNode_configMap() {
+        return node_configMap;
+    }
+
+    public void setNode_configMap(Map<String, MasterSlaveConfig> node_configMap) {
+        this.node_configMap = node_configMap;
+    }
+
+    public class MethodCache{
+        public Class cls;
+        public Map<String,Method> methodMap = new HashMap<>();
     }
 }

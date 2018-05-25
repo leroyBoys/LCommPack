@@ -6,6 +6,7 @@ import java.io.InputStream;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.Map;
 import java.util.Properties;
 
 /**
@@ -150,5 +151,45 @@ public class LqUtil {
             }
         }
         return p;
+    }
+
+    public static Properties createProperties(Map<String,String> map){
+        if(map == null || map.isEmpty()){
+            return null;
+        }
+
+        Properties properties = new Properties();
+
+        if(map != null && !map.isEmpty()){
+            for(Map.Entry<String,String> entry:map.entrySet()){
+                properties.setProperty(entry.getKey(),entry.getValue());
+            }
+        }
+
+        return properties;
+    }
+
+    public static Properties createProperties(Map<String,String> map, Map<String,String> globalMap){
+        if((map == null || map.isEmpty()) && globalMap.isEmpty()){
+            return null;
+        }
+
+        Properties properties = new Properties();
+
+        if(map != null && !map.isEmpty()){
+            for(Map.Entry<String,String> entry:map.entrySet()){
+                properties.setProperty(entry.getKey(),entry.getValue());
+            }
+        }
+
+        if(!globalMap.isEmpty()){
+            for(Map.Entry<String,String> entry:globalMap.entrySet()){
+                if(properties.containsKey(entry.getKey())){
+                    continue;
+                }
+                properties.setProperty(entry.getKey(),entry.getValue());
+            }
+        }
+        return properties;
     }
 }

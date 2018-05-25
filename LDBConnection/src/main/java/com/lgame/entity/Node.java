@@ -1,9 +1,5 @@
 package com.lgame.entity;
 
-import com.lgame.mysql.impl.JDBCInitCache;
-
-import java.lang.reflect.Array;
-import java.lang.reflect.ParameterizedType;
 import java.util.Properties;
 import java.util.Random;
 
@@ -16,17 +12,17 @@ class Node<T> {
     private T master;
     private T[] slaves;
 
-    public void initProperties(NodeManger<T> nodeManger,JDBCInitCache jdbcInitCache, Properties masterConfig, Properties... slavesConfig){
-        master = nodeManger.initRedisConnection(jdbcInitCache,masterConfig);
+    public void initProperties(NodeManger<T> nodeManger, Properties masterConfig, Properties... slavesConfig){
+        master = nodeManger.initRedisConnection(masterConfig);
         if (slavesConfig == null || slavesConfig.length == 0) {
             slaves = nodeManger.createArray(1);
             slaves[0] = master;
             return;
         }
 
-        slaves = nodeManger.createArray(1);
+        slaves = nodeManger.createArray(slavesConfig.length);
         for (int i = 0; i < slavesConfig.length; i++) {
-            slaves[i] = nodeManger.initRedisConnection(jdbcInitCache,slavesConfig[i]);
+            slaves[i] = nodeManger.initRedisConnection(slavesConfig[i]);
         }
         return;
     }

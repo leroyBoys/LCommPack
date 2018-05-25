@@ -1,5 +1,7 @@
 package com.lgame.core;
 
+import com.lgame.util.LqUtil;
+
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
@@ -12,6 +14,14 @@ public class MasterSlaveGlobalConfig {
     private String dbType;
     private Map<String,String> master = new HashMap<>();
     private Map<String,String> slave = new HashMap<>();
+
+    public Map<String, String> getMaster() {
+        return master;
+    }
+
+    public Map<String, String> getSlave() {
+        return slave;
+    }
 
     public MasterSlaveGlobalConfig(String dbType) {
         this.dbType =dbType;
@@ -26,7 +36,7 @@ public class MasterSlaveGlobalConfig {
     }
 
     public Properties getMaster(Map<String,String> masterMap) {
-        return createProperties(masterMap,master);
+        return LqUtil.createProperties(masterMap,master);
     }
 
     public Properties[] getSlave(Map<String,Map<String,String>> slaves) {
@@ -34,38 +44,15 @@ public class MasterSlaveGlobalConfig {
             if(master.isEmpty()){
                 return null;
             }
-            return new Properties[]{createProperties(null,slave)};
+            return new Properties[]{LqUtil.createProperties(null,slave)};
         }
 
         Properties[] arary = new Properties[slaves.size()];
         int i = 0;
         for(Map<String,String> map:slaves.values()){
-            arary[i++] = createProperties(map,slave);
+            arary[i++] = LqUtil.createProperties(map,slave);
         }
         return arary;
     }
 
-    private static Properties createProperties(Map<String,String> map,Map<String,String> globalMap){
-        if((map == null || map.isEmpty()) && globalMap.isEmpty()){
-            return null;
-        }
-
-        Properties properties = new Properties();
-
-        if(map != null && !map.isEmpty()){
-            for(Map.Entry<String,String> entry:map.entrySet()){
-                properties.setProperty(entry.getKey(),entry.getValue());
-            }
-        }
-
-        if(!globalMap.isEmpty()){
-            for(Map.Entry<String,String> entry:globalMap.entrySet()){
-                if(properties.containsKey(entry.getKey())){
-                    continue;
-                }
-                properties.setProperty(entry.getKey(),entry.getValue());
-            }
-        }
-        return properties;
-    }
 }
