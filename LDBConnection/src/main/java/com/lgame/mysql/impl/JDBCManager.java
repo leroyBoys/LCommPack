@@ -1,5 +1,6 @@
 package com.lgame.mysql.impl;
 
+import com.lgame.entity.Node;
 import com.lgame.entity.NodeManger;
 
 import java.util.Properties;
@@ -11,12 +12,8 @@ import java.util.Properties;
 public class JDBCManager extends NodeManger<LQDataSource> {
 
     @Override
-    protected LQDataSource initRedisConnection(Properties properties) {
-        return new LQDataSource(properties);
+    protected Node<LQDataSource> intanceNode(boolean slowSlaveOn) {
+        return new JdbcNode(slowSlaveOn);
     }
 
-    @Override
-    public LQDataSource[] createArray(int size) {
-        return new LQDataSource[size];
-    }
 }

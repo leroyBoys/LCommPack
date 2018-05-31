@@ -1,11 +1,14 @@
 package com.lgame.redis;
 
 import com.lgame.entity.LQConntion;
+import com.lgame.redis.entity.RedisMasterInfo;
 import com.lgame.util.LqLogUtil;
 import com.lgame.util.LqUtil;
 import redis.clients.jedis.*;
 
-import java.util.*;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 /**
  * Created by leroy:656515489@qq.com
@@ -13,6 +16,7 @@ import java.util.*;
  */
 public class RedisConnection implements LQConntion {
     private String url;
+    private boolean isConnectioned;
     private JedisPool jedisPool;
 
     /**
@@ -30,6 +34,10 @@ public class RedisConnection implements LQConntion {
      */
     public RedisConnection(String url) {
         init(url, 5000, 3000, 1500,-1l);
+    }
+
+    @Override
+    public void reLoad() {
     }
 
     private void init(String url, int timeout, int maxTotal, int maxIdel,long maxWaitMillis) {
@@ -54,12 +62,13 @@ public class RedisConnection implements LQConntion {
         config.setMaxIdle(maxIdel);
         config.setMaxWaitMillis(-1);
 
-        this.url = url;
+        this.url = host+":"+port;
         jedisPool = new JedisPool(config, host, port, timeout, password, db);
         if(!testConnection()){
             LqLogUtil.error("redis fail connection:url:"+url+"  timeout:"+timeout+"  maxTotal:"+maxTotal+"  maxIdel:"+maxIdel);
         }else {
             LqLogUtil.info("redis succ connection:url:"+url+"  timeout:"+timeout+"  maxTotal:"+maxTotal+"  maxIdel:"+maxIdel);
+            isConnectioned = true;
         }
     }
 
@@ -74,6 +83,35 @@ public class RedisConnection implements LQConntion {
             returnResource(jedisPool, jedis);
         }
         return false;
+    }
+
+    public List<String> sentinelGetMasterAddrByName(String host,int port,String masterName){
+        Jedis jedis = new Jedis(host,port);
+        List<String> masterHost = null;
+        try {
+            masterHost = jedis.sentinelGetMasterAddrByName(masterName);
+            return masterHost;
+        } catch (Exception e) {
+            logException(e);
+        } finally {
+            returnResource(jedisPool, jedis);
+        }
+        return masterHost;
+    }
+
+    private List<String> sentinelGetMasterAddrByName22(String masterName){
+        Jedis jedis = null;
+        List<String> masterHost = null;
+        try {
+            jedis = jedisPool.getResource();
+            masterHost = jedis.sentinelGetMasterAddrByName(masterName);
+            return masterHost;
+        } catch (Exception e) {
+            logException(e);
+        } finally {
+            returnResource(jedisPool, jedis);
+        }
+        return masterHost;
     }
 
     /**
@@ -580,6 +618,47 @@ public class RedisConnection implements LQConntion {
             returnResource(jedisPool, jedis);
         }
         return res;
+    }
+
+    public String info(String section){
+        Jedis jedis = null;
+        try {
+            jedis = jedisPool.getResource();
+            return jedis.info("Replication");
+        } catch (Exception e) {
+            logException(e);
+        } finally {
+            returnResource(jedisPool, jedis);
+        }
+        return null;
+    }
+
+    public void subscribe(JedisPubSub jedisPubSub,String... channel){
+        Jedis jedis = null;
+        try {
+            jedis = jedisPool.getResource();
+            jedis.subscribe(jedisPubSub, channel);
+        } catch (Exception e) {
+            logException(e);
+        } finally {
+            returnResource(jedisPool, jedis);
+        }
+    }
+
+    public void publish(String channel,String msg){
+        Jedis jedis = null;
+        try {
+            jedis = jedisPool.getResource();
+            jedis.publish(channel,msg);
+        } catch (Exception e) {
+            logException(e);
+        } finally {
+            returnResource(jedisPool, jedis);
+        }
+    }
+
+    public RedisMasterInfo masterSlaveInfo(){
+        return new RedisMasterInfo(info("Replication"));
     }
 
     public String hmset(byte[] key, Map<byte[], byte[]> hash) {
@@ -1818,7 +1897,17 @@ public class RedisConnection implements LQConntion {
     }
 
     @Override
-    public String getName() {
+    public String getKey() {
         return url;
+    }
+
+    @Override
+    public boolean connctioned() {
+        return isConnectioned;
+    }
+
+    @Override
+    public void setConnetioned(boolean isConnectioned) {
+        this.isConnectioned = isConnectioned;
     }
 }

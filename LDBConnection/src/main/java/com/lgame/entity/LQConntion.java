@@ -5,5 +5,8 @@ package com.lgame.entity;
  * 2018/5/25.
  */
 public interface LQConntion {
-    String getName();
+    String getKey();
+    boolean connctioned();
+    void setConnetioned(boolean isConnectioned);
+    void reLoad();
 }

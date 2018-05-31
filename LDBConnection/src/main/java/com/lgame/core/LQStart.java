@@ -14,9 +14,14 @@ import java.util.*;
  * Created by leroy:656515489@qq.com
  * 2018/5/2.
  */
-public class LQStart {
+public class LQStart extends Thread{
     private static WeakReference<StartInitCache> tmpCache = new WeakReference<>(new StartInitCache());
     public static ScanEntitysTool instance;
+    public final static Set<Node> needCheckNodes = new HashSet<>();
+    public final static LQStart loopCheck = new LQStart();
+    static {
+        loopCheck.start();
+    }
 
     public static StartInitCache getMethodCache(){
         StartInitCache startInitCache = tmpCache.get();
@@ -97,8 +102,10 @@ public class LQStart {
 
             if(array[3].equals("master")){
                 masterSlaveConfig.addMaster(propertiesKey(k),v);
-            }else {
+            }else if(array[3].startsWith("slave")){
                 masterSlaveConfig.addSlave(array[3],propertiesKey(k),v);
+            }else  {
+                masterSlaveConfig.setListeners(v);
             }
         }
 
@@ -114,7 +121,7 @@ public class LQStart {
         for(Map.Entry<String,MasterSlaveConfig> entry:node_configMap.entrySet()){
             MasterSlaveConfig masterSlaveConfig = entry.getValue();
             MasterSlaveGlobalConfig config = globalConfigMap.get(masterSlaveConfig.getDbType());
-            inintDataSourceManger(masterSlaveConfig.getDbType(),entry.getKey(),config.getMaster(masterSlaveConfig.getMaster()),config.getSlave(masterSlaveConfig.getSlaves()));
+            inintDataSourceManger(masterSlaveConfig.getDbType(),entry.getKey(),masterSlaveConfig.getListeners(),config.getMaster(masterSlaveConfig.getMaster()),config.getSlave(masterSlaveConfig.getSlaves()));
             dbTypes.add(masterSlaveConfig.getDbType());
         }
 
@@ -122,7 +129,7 @@ public class LQStart {
            if(dbTypes.contains(dbType)){
                continue;
            }
-            inintDataSourceManger(dbType,null,globalConfigMap.get(dbType).getMaster(null),null);
+            inintDataSourceManger(dbType,null,null,globalConfigMap.get(dbType).getMaster(null),null);
         }
     }
 
@@ -168,10 +175,10 @@ public class LQStart {
     }
 
     public static void addNewDataSource(DBType dbType,LQConnConfig master, LQConnConfig... slaves) throws Exception {
-        addNewDataSource(dbType,null,master,slaves);
+        addNewDataSource(dbType,null,null,master,slaves);
     }
 
-    public static void addNewDataSource(DBType dbType, LQNewNode newNode, LQConnConfig master, LQConnConfig... slaves) throws Exception {
+    public static void addNewDataSource(DBType dbType,String listeners, LQNewNode newNode, LQConnConfig master, LQConnConfig... slaves) throws Exception {
         Properties masterProperties = getNewProperties(dbType,newNode,master,true);
 
         if(slaves != null && slaves.length>0){
@@ -179,19 +186,29 @@ public class LQStart {
             for(int i = 0;i<slaves.length;i++){
                 properties[i] = getNewProperties(dbType,newNode,slaves[i],false);
             }
-            inintDataSourceManger(dbType,newNode==null?null:newNode.getNewNodeName(),masterProperties,properties);
+            inintDataSourceManger(dbType,newNode==null?null:newNode.getNewNodeName(),listeners,masterProperties,properties);
             return;
         }
 
-        inintDataSourceManger(dbType,newNode==null?null:newNode.getNewNodeName(),masterProperties);
+        inintDataSourceManger(dbType,newNode==null?null:newNode.getNewNodeName(),listeners,masterProperties);
     }
 
-    private static void inintDataSourceManger(DBType dbType,String nodeName,Properties master,Properties... slaves) throws Exception {
-        if(master == null){
-            return;
-        }
+    private static void inintDataSourceManger(DBType dbType,String nodeName,String listeners,Properties master,Properties... slaves) throws Exception {
+        inintDataSourceManger(dbType,nodeName,false,listeners,master,slaves);
+    }
 
-        dbType.getNodeManger().initProperties(nodeName,master,slaves);
+    /**
+     *
+     * @param dbType
+     * @param nodeName
+     * @param slowSlaveOn 慢查询是否开启
+     * @param listeners
+     * @param master
+     * @param slaves
+     * @throws Exception
+     */
+    private static void inintDataSourceManger(DBType dbType,String nodeName,boolean slowSlaveOn,String listeners,Properties master,Properties... slaves) throws Exception {
+        dbType.getNodeManger().initProperties(nodeName,slowSlaveOn,listeners,master,slaves);
     }
 
     private static String propertiesKey(String configKey){
@@ -204,5 +221,34 @@ public class LQStart {
 
     public static JDBCManager getJdbcManager() {
         return (JDBCManager) DBType.db.getNodeManger();
+    }
+
+    @Override
+    public void run() {
+        while (true){
+            synchronized (needCheckNodes){
+                if(!needCheckNodes.isEmpty()){
+                    Iterator<Node> iterator = needCheckNodes.iterator();
+                    while (iterator.hasNext()){
+                        Node node = iterator.next();
+                        if(!node.loopCheck()){
+                            iterator.remove();
+                        }
+                    }
+                }
+            }
+
+            try {
+                Thread.sleep(3000);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    public static void addNeedCheckNode(Node node){
+        synchronized (needCheckNodes){
+            needCheckNodes.add(node);
+        }
     }
 }

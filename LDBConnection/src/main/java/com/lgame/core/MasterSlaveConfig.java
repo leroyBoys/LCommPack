@@ -2,8 +2,7 @@ package com.lgame.core;
 
 import com.lgame.entity.DBType;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 /**
  * Created by leroy:656515489@qq.com
@@ -14,6 +13,7 @@ public class MasterSlaveConfig {
     private Map<String,String> master = new HashMap<>();
 
     private Map<String,Map<String,String>> slaves = new HashMap<>();
+    private String listeners;
 
     public MasterSlaveConfig(DBType dbType) {
         this.dbType = dbType;
@@ -42,5 +42,13 @@ public class MasterSlaveConfig {
 
     public Map<String, Map<String, String>> getSlaves() {
         return slaves;
+    }
+
+    public String getListeners() {
+        return listeners;
+    }
+
+    public void setListeners(String listeners) {
+        this.listeners = listeners;
     }
 }

@@ -22,8 +22,14 @@ public class LQDataSource implements SqlDataSource,LQConntion{
     private String url;
     private final static Map<String,JdbcColumsArray> cmd_jdbcColumsArrayCache = new HashMap<>();
     private DataSource dds;
+    private boolean isConnectioned;
     protected LQDataSource(Properties properties){
         init(properties);
+    }
+
+    @Override
+    public void reLoad() {
+
     }
 
     private void init(Properties properties){
@@ -70,6 +76,7 @@ public class LQDataSource implements SqlDataSource,LQConntion{
             return;
         }
         LqLogUtil.info("db succ connection:"+sb.toString());
+        isConnectioned = true;
     }
 
     @Override
@@ -78,9 +85,20 @@ public class LQDataSource implements SqlDataSource,LQConntion{
     }
 
     @Override
-    public String getName() {
+    public String getKey() {
         return this.url;
     }
+
+    @Override
+    public boolean connctioned() {
+        return isConnectioned;
+    }
+
+    @Override
+    public void setConnetioned(boolean isConnectioned) {
+        this.isConnectioned = isConnectioned;
+    }
+
 
     private boolean checkNeedConnect(Properties properties){
         int count = 3;

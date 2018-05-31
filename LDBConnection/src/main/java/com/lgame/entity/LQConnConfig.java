@@ -8,9 +8,18 @@ public interface LQConnConfig {
 
     public static class LQRedisConnConfig implements LQConnConfig{
         private String url;
+        private String listeners;
 
         public String getUrl() {
             return url;
+        }
+
+        public String getListeners() {
+            return listeners;
+        }
+
+        public void setListeners(String listeners) {
+            this.listeners = listeners;
         }
 
         public LQRedisConnConfig(String url) {

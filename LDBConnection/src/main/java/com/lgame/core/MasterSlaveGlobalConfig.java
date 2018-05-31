@@ -3,9 +3,7 @@ package com.lgame.core;
 import com.lgame.entity.DBType;
 import com.lgame.util.LqUtil;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Properties;
+import java.util.*;
 
 /**
  * Created by leroy:656515489@qq.com

@@ -27,6 +27,7 @@ public class LQRedisConnection extends RedisConnection {
         super(url,timeout,maxTotal,maxIdel,maxWaitMillis);
     }
 
+
     /**
      * @param url:redis://db@119.254.166.136:6379/pwd
      */
