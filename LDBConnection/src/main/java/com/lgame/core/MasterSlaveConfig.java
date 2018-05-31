@@ -14,6 +14,7 @@ public class MasterSlaveConfig {
 
     private Map<String,Map<String,String>> slaves = new HashMap<>();
     private String listeners;
+    private boolean slowOpen;
 
     public MasterSlaveConfig(DBType dbType) {
         this.dbType = dbType;
@@ -34,6 +35,14 @@ public class MasterSlaveConfig {
 
     public DBType getDbType() {
         return dbType;
+    }
+
+    public boolean isSlowOpen() {
+        return slowOpen;
+    }
+
+    public void setSlowOpen(boolean slowOpen) {
+        this.slowOpen = slowOpen;
     }
 
     public Map<String, String> getMaster() {

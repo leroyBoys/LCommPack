@@ -37,7 +37,12 @@ redis
     第一位：固定值datasource，表示数据源
     第二位：dbType 目前支持db,redis
     第三位:node 节点名称或者序号，一个唯一标示，可省略（标示所有通用）
-    第四位:master、slave：主备类型
+    第四位:master、slave、global类型;
+           master：主节点
+           slave或者slave_01,slave_one:slave节点
+           global：该节点公共配置
+                  global.slowOpen:true/false是否开启慢查询（默认关闭），开启的话可以使用getSlowSlave（）操作速度比较慢的查询
+                  global.sentinels:ip:port集合（用于故障监控和切换主从使用，如果没有则故障不能保证快速切换正确服务器和恢复错误服务器），如：192.168.11.129:26379,192.168.11.129:36379,192.168.11.129:46379
     第五位:属性值，根据采用的数据库连接池自行定义
     例如：
     master配置:datasource.db.name=tome datasource.db.master.name=tome datasource.db.01.master.name=tome

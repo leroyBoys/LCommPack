@@ -104,8 +104,10 @@ public class LQStart extends Thread{
                 masterSlaveConfig.addMaster(propertiesKey(k),v);
             }else if(array[3].startsWith("slave")){
                 masterSlaveConfig.addSlave(array[3],propertiesKey(k),v);
-            }else  {
+            }else if(array[4].startsWith("sentinel")){
                 masterSlaveConfig.setListeners(v);
+            }else if(array[4].startsWith("slowopen")){
+                masterSlaveConfig.setSlowOpen(array[4].toLowerCase().equals("true")?true:false);
             }
         }
 
@@ -121,7 +123,7 @@ public class LQStart extends Thread{
         for(Map.Entry<String,MasterSlaveConfig> entry:node_configMap.entrySet()){
             MasterSlaveConfig masterSlaveConfig = entry.getValue();
             MasterSlaveGlobalConfig config = globalConfigMap.get(masterSlaveConfig.getDbType());
-            inintDataSourceManger(masterSlaveConfig.getDbType(),entry.getKey(),masterSlaveConfig.getListeners(),config.getMaster(masterSlaveConfig.getMaster()),config.getSlave(masterSlaveConfig.getSlaves()));
+            inintDataSourceManger(masterSlaveConfig.getDbType(),entry.getKey(),masterSlaveConfig.isSlowOpen(),masterSlaveConfig.getListeners(),config.getMaster(masterSlaveConfig.getMaster()),config.getSlave(masterSlaveConfig.getSlaves()));
             dbTypes.add(masterSlaveConfig.getDbType());
         }
 
@@ -129,7 +131,7 @@ public class LQStart extends Thread{
            if(dbTypes.contains(dbType)){
                continue;
            }
-            inintDataSourceManger(dbType,null,null,globalConfigMap.get(dbType).getMaster(null),null);
+            inintDataSourceManger(dbType,null,false,null,globalConfigMap.get(dbType).getMaster(null));
         }
     }
 
@@ -175,26 +177,24 @@ public class LQStart extends Thread{
     }
 
     public static void addNewDataSource(DBType dbType,LQConnConfig master, LQConnConfig... slaves) throws Exception {
-        addNewDataSource(dbType,null,null,master,slaves);
+        addNewDataSource(dbType,null,master,slaves);
     }
 
-    public static void addNewDataSource(DBType dbType,String listeners, LQNewNode newNode, LQConnConfig master, LQConnConfig... slaves) throws Exception {
+    public static void addNewDataSource(DBType dbType, LQNewNode newNode, LQConnConfig master, LQConnConfig... slaves) throws Exception {
         Properties masterProperties = getNewProperties(dbType,newNode,master,true);
-
+        Properties[] properties = null;
         if(slaves != null && slaves.length>0){
-            Properties[] properties = new Properties[slaves.length];
+            properties = new Properties[slaves.length];
             for(int i = 0;i<slaves.length;i++){
                 properties[i] = getNewProperties(dbType,newNode,slaves[i],false);
             }
-            inintDataSourceManger(dbType,newNode==null?null:newNode.getNewNodeName(),listeners,masterProperties,properties);
-            return;
         }
 
-        inintDataSourceManger(dbType,newNode==null?null:newNode.getNewNodeName(),listeners,masterProperties);
-    }
-
-    private static void inintDataSourceManger(DBType dbType,String nodeName,String listeners,Properties master,Properties... slaves) throws Exception {
-        inintDataSourceManger(dbType,nodeName,false,listeners,master,slaves);
+        if(newNode == null){
+            inintDataSourceManger(dbType,null,false,null,masterProperties,properties);
+        }else {
+            inintDataSourceManger(dbType,newNode.getNewNodeName(),newNode.isSlowOpen(),newNode.getSentinels(),masterProperties);
+        }
     }
 
     /**
