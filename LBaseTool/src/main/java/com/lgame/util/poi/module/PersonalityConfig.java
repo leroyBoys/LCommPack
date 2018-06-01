@@ -20,7 +20,7 @@ public abstract class PersonalityConfig {
     }
 
     public final Map<String,String> checkModifyRowData(Map<String,String> rowData){
-        Map<String,String> rowData2 = modifyRowData(rowData);
+        Map<String,String> rowData2 = modifyDbData(rowData);
         if(rowData2 == null||rowData2.isEmpty()){
             return rowData;
         }
@@ -40,7 +40,7 @@ public abstract class PersonalityConfig {
      * @param rowData
      * @return
      */
-    public abstract Map<String,String> modifyRowData(Map<String,String> rowData);
+    public abstract Map<String,String> modifyDbData(Map<String,String> rowData);
 
     /**
      * 对原columArray修改，返回null表示不修改
