@@ -9,10 +9,7 @@ import com.lgame.util.poi.even.EvenExcelReader;
 import com.lgame.util.poi.interfac.DbEntity;
 import com.lgame.util.poi.interfac.DbService;
 import com.lgame.util.poi.interfac.PoiReader;
-import com.lgame.util.poi.module.DefaultDbEntity;
-import com.lgame.util.poi.module.DefaultRowListener;
-import com.lgame.util.poi.module.ExcelConfig;
-import com.lgame.util.poi.module.ExcelDbData;
+import com.lgame.util.poi.module.*;
 import com.lgame.util.poi.user.UserExcelReader;
 
 import java.io.File;
@@ -61,7 +58,7 @@ public class ExcelHelper {
             public boolean insertBatchs(String tableName, List<Map<String, String>> list, String[] strings, int i) {
                 return false;
             }
-        },"D:\\shop.xls","D:\\test.xls",excelColumConverterMap);
+        },"D:\\shop.xls","D:\\test.xls",null);
 
 
     }
@@ -86,12 +83,12 @@ public class ExcelHelper {
      *
      * @param dbService 数据库操作接口
      * @param fileName 读取的excel
-     * @param excelColumConverterMap 根据数据库列名做相应的格式化
+     * @param personalityConfig 特殊化配置
      * @return
      * @throws AppException
      */
-    public static ExcelProcess importDBFromExcel(DbService dbService, String fileName,Map<String,ExcelConfig.ExcelColumConverter> excelColumConverterMap) throws AppException {
-        return importDBFromExcel(dbService,new DefaultDbEntity(),fileName,null,excelColumConverterMap);
+    public static ExcelProcess importDBFromExcel(DbService dbService, String fileName,PersonalityConfig personalityConfig) throws AppException {
+        return importDBFromExcel(dbService,new DefaultDbEntity(),fileName,null,personalityConfig);
     }
 
     /**
@@ -99,12 +96,12 @@ public class ExcelHelper {
      * @param dbService 数据库操作接口
      * @param fileName 读取的excel
      * @param excelTmpFileName db配置映射 excel
-     * @param excelColumConverterMap 根据数据库列名做相应的格式化
+     * @param personalityConfig 特殊化配置
      * @return
      * @throws AppException
      */
-    public static ExcelProcess importDBFromExcel(DbService dbService, String fileName, String excelTmpFileName,Map<String,ExcelConfig.ExcelColumConverter> excelColumConverterMap) throws AppException {
-        return importDBFromExcel(dbService,new DefaultDbEntity(),fileName,excelTmpFileName,excelColumConverterMap);
+    public static ExcelProcess importDBFromExcel(DbService dbService, String fileName, String excelTmpFileName, PersonalityConfig personalityConfig) throws AppException {
+        return importDBFromExcel(dbService,new DefaultDbEntity(),fileName,excelTmpFileName,personalityConfig);
     }
 
     /**
@@ -113,12 +110,12 @@ public class ExcelHelper {
      * @param dbEntity 对应的数据库类（可使用null，自动生成）
      * @param fileName 读取的excel
      * @param excelTmpFileName db配置映射 excel
-     * @param excelColumConverterMap 根据数据库列名做相应的格式化
+     * @param personalityConfig 特殊化配置
      * @return
      * @throws AppException
      */
-    public static synchronized ExcelProcess importDBFromExcel(DbService dbService,DbEntity dbEntity, String fileName, String excelTmpFileName,Map<String,ExcelConfig.ExcelColumConverter> excelColumConverterMap) throws AppException{
-        return importDBFromExcel(dbService,null,dbEntity,fileName,excelTmpFileName,excelColumConverterMap);
+    public static synchronized ExcelProcess importDBFromExcel(DbService dbService,DbEntity dbEntity, String fileName, String excelTmpFileName,PersonalityConfig personalityConfig) throws AppException{
+        return importDBFromExcel(dbService,null,dbEntity,fileName,excelTmpFileName,personalityConfig);
     }
 
     /**
@@ -128,11 +125,11 @@ public class ExcelHelper {
      * @param dbEntity 对应的数据库类（可使用null，自动生成）
      * @param fileName 读取的excel
      * @param excelTmpFileName db配置映射 excel
-     * @param excelColumConverterMap 根据数据库列名做相应的格式化
+     * @param personalityConfig 特殊化配置
      * @return
      * @throws AppException
      */
-    private static synchronized ExcelProcess importDBFromExcel(DbService dbService, ExcelConfig config, DbEntity dbEntity, String fileName, String excelTmpFileName,Map<String,ExcelConfig.ExcelColumConverter> excelColumConverterMap) throws AppException {
+    private static synchronized ExcelProcess importDBFromExcel(DbService dbService, ExcelConfig config, DbEntity dbEntity, String fileName, String excelTmpFileName,PersonalityConfig personalityConfig) throws AppException {
         if(!validateExcel(fileName)){
             throw new AppException("文件名不是excel格式"+fileName);
         }
@@ -171,11 +168,14 @@ public class ExcelHelper {
         excelProcess = new ExcelProcess();
         excelProcessMap.put(fileName,excelProcess);
         PoiReader finalPoiReader = poiReader;
-        if(excelColumConverterMap != null) config.setExcelColumConverterMap(excelColumConverterMap);
+        if(personalityConfig != null){
+            config.setExcelColumConverterMap(personalityConfig.getExcelColumConverterMap());
+            config.setColumArray(personalityConfig.checkModifyColumArray(config.getColumArray()));
+        }
         ExcelConfig finalConfig = config;
         ExcelProcess finalExcelProcess = excelProcess;
         new Thread(
-                () -> finalExcelProcess.excute(dbService, finalConfig,dbEntity,fileName,excelTmpFileName,finalPoiReader)
+                () -> finalExcelProcess.excute(dbService, finalConfig,dbEntity,fileName,excelTmpFileName,finalPoiReader,personalityConfig)
         ).start();
 
         return excelProcess;

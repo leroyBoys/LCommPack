@@ -1,6 +1,7 @@
 package com.lgame.util.poi.interfac;
 
 import com.lgame.util.poi.module.ExcelConfig;
+import com.lgame.util.poi.module.PersonalityConfig;
 
 import java.util.Map;
 
@@ -15,7 +16,7 @@ public interface DbEntity {
      * @param dataEntity
      * @return
      */
-    public DbEntity Instance(int row, Map<String,String> dataEntity, ExcelConfig config);
+    public DbEntity Instance(int row, Map<String,String> dataEntity, ExcelConfig config,PersonalityConfig personalityConfig);
     public void setNew(boolean isNew);
     public boolean isNew();
     public int getRow();

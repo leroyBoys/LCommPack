@@ -26,9 +26,12 @@ public class DefaultDbEntity implements DbEntity {
     }
 
     @Override
-    public DbEntity Instance(int row, Map<String, String> dataEntity, ExcelConfig config) {
+    public DbEntity Instance(int row, Map<String, String> dataEntity, ExcelConfig config,PersonalityConfig personalityConfig) {
         DefaultDbEntity defaultExcelData = new DefaultDbEntity();
         defaultExcelData.setTableName(config.getTableName());
+        if(personalityConfig != null){
+            dataEntity = personalityConfig.checkModifyRowData(dataEntity);
+        }
         defaultExcelData.setDataEntity(dataEntity);
         defaultExcelData.setUniqueColumName(config.getIdColumName());
         defaultExcelData.setRow(row);

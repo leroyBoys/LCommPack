@@ -6,6 +6,7 @@ import com.lgame.util.poi.interfac.*;
 import com.lgame.util.poi.module.DefaultRowListener;
 import com.lgame.util.poi.module.ExcelConfig;
 import com.lgame.util.poi.module.ExcelDbData;
+import com.lgame.util.poi.module.PersonalityConfig;
 import com.lgame.util.thread.BaseThreadPools;
 import com.lgame.util.thread.TaskIndieThread;
 
@@ -60,7 +61,7 @@ public class ExcelProcess {
     }
 
     Map<String,DbEntity> tmpMap = new HashMap<>();
-    public void excute(DbService dbService, ExcelConfig config, DbEntity dbEntity, String fileName, String excelTmpFileName, PoiReader reader){
+    public void excute(DbService dbService, ExcelConfig config, DbEntity dbEntity, String fileName, String excelTmpFileName, PoiReader reader,PersonalityConfig personalityConfig){
 
         DataCheckService dataCheckService = config.isCheckColumValueRight()? new DataCheckService():new DataCheckService.DataNoCheckService();
         RowListener listener = new DefaultRowListener(){
@@ -110,7 +111,7 @@ public class ExcelProcess {
                             return true;
                         }
 
-                        DbEntity entity = dbEntity.Instance(rowNum,map,config);
+                        DbEntity entity = dbEntity.Instance(rowNum,map,config,personalityConfig);
                         if(uniqueKeys.contains(entity.getUniqueId())){
                             dataAllCount--;
                             repeateContainsMap.put(entity.getUniqueId(),entity);
