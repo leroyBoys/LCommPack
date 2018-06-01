@@ -24,31 +24,46 @@ import java.util.*;
  */
 public class ExcelHelper {
     private final static int maxSize = 1;
-    public final static Map<String,ExcelProcess> excelProcessMap = new HashMap<>();
+    protected final static Map<String,ExcelProcess> excelProcessMap = new HashMap<>();
 
     public static void main(String[] args) throws Exception {
-        importDBFromExcel(new DbService() {
+        Map<String, ExcelConfig.ExcelColumConverter> excelColumConverterMap = new HashMap<>();
+        excelColumConverterMap.put("type",new ExcelConfig.ExcelColumConverter(){
+            @Override
+            public String converter(String value) {
+                if("天猫".equals(value)){
+                    value="11";
+                }else {
+                    value="12";
+                }
+
+                return super.converter(value);
+            }
+        });
+
+        ExcelHelper.importDBFromExcel(new DbService() {
             @Override
             public List<String> queryExistIds(String sql) {
                 return null;
             }
 
             @Override
-            public boolean excute(String sql) {
+            public boolean excute(String s) {
                 return false;
             }
 
             @Override
-            public boolean excute(List<String> sqls) {
-                System.out.println("=--->"+sqls.size());
+            public boolean excute(List<String> list) {
                 return false;
             }
 
             @Override
-            public boolean insertBatchs(String tableName, List<Map<String, String>> datas, String[] columNames, int commitLimitCount) {
+            public boolean insertBatchs(String tableName, List<Map<String, String>> list, String[] strings, int i) {
                 return false;
             }
-        },"D:/w.xlsx");
+        },"D:\\shop.xls","D:\\test.xls",excelColumConverterMap);
+
+
     }
 
     public static ExcelProcess importDBFromExcel(DbService dbService, String fileName) throws AppException {
@@ -58,15 +73,52 @@ public class ExcelHelper {
     /**
      *
      * @param dbService 数据库操作接口
-     * @param config db配置（从excelTmpFileName或者config sheet读取的内容）
+     * @param fileName 读取的excel
+     * @param excelTmpFileName  db配置映射 excel
+     * @return
+     * @throws AppException
+     */
+    public static ExcelProcess importDBFromExcel(DbService dbService, String fileName, String excelTmpFileName) throws AppException {
+        return importDBFromExcel(dbService,new DefaultDbEntity(),fileName,excelTmpFileName,null);
+    }
+
+    /**
+     *
+     * @param dbService 数据库操作接口
+     * @param fileName 读取的excel
+     * @param excelColumConverterMap 根据数据库列名做相应的格式化
+     * @return
+     * @throws AppException
+     */
+    public static ExcelProcess importDBFromExcel(DbService dbService, String fileName,Map<String,ExcelConfig.ExcelColumConverter> excelColumConverterMap) throws AppException {
+        return importDBFromExcel(dbService,new DefaultDbEntity(),fileName,null,excelColumConverterMap);
+    }
+
+    /**
+     *
+     * @param dbService 数据库操作接口
      * @param fileName 读取的excel
      * @param excelTmpFileName db配置映射 excel
      * @param excelColumConverterMap 根据数据库列名做相应的格式化
      * @return
      * @throws AppException
      */
-    public static ExcelProcess importDBFromExcel(DbService dbService, ExcelConfig config, String fileName, String excelTmpFileName,Map<String,ExcelConfig.ExcelColumConverter> excelColumConverterMap) throws AppException {
-        return importDBFromExcel(dbService,config, new DefaultDbEntity(),fileName,excelTmpFileName,excelColumConverterMap);
+    public static ExcelProcess importDBFromExcel(DbService dbService, String fileName, String excelTmpFileName,Map<String,ExcelConfig.ExcelColumConverter> excelColumConverterMap) throws AppException {
+        return importDBFromExcel(dbService,new DefaultDbEntity(),fileName,excelTmpFileName,excelColumConverterMap);
+    }
+
+    /**
+     *
+     * @param dbService 数据库操作接口
+     * @param dbEntity 对应的数据库类（可使用null，自动生成）
+     * @param fileName 读取的excel
+     * @param excelTmpFileName db配置映射 excel
+     * @param excelColumConverterMap 根据数据库列名做相应的格式化
+     * @return
+     * @throws AppException
+     */
+    public static synchronized ExcelProcess importDBFromExcel(DbService dbService,DbEntity dbEntity, String fileName, String excelTmpFileName,Map<String,ExcelConfig.ExcelColumConverter> excelColumConverterMap) throws AppException{
+        return importDBFromExcel(dbService,null,dbEntity,fileName,excelTmpFileName,excelColumConverterMap);
     }
 
     /**
@@ -80,7 +132,7 @@ public class ExcelHelper {
      * @return
      * @throws AppException
      */
-    public static synchronized ExcelProcess importDBFromExcel(DbService dbService, ExcelConfig config, DbEntity dbEntity, String fileName, String excelTmpFileName,Map<String,ExcelConfig.ExcelColumConverter> excelColumConverterMap) throws AppException {
+    private static synchronized ExcelProcess importDBFromExcel(DbService dbService, ExcelConfig config, DbEntity dbEntity, String fileName, String excelTmpFileName,Map<String,ExcelConfig.ExcelColumConverter> excelColumConverterMap) throws AppException {
         if(!validateExcel(fileName)){
             throw new AppException("文件名不是excel格式"+fileName);
         }
@@ -91,13 +143,13 @@ public class ExcelHelper {
 
         PrintTool.outTime("1","loadHead");
 
-        ExcelConfig autoTempConfig = getAutoExcelTempConfig(fileName,excelColumConverterMap);
+        ExcelConfig autoTempConfig = getAutoExcelTempConfig(fileName);
         if(autoTempConfig != null){
             config = autoTempConfig;
         }
 
         if(config == null){
-            config = getExcelTempConfig(excelTmpFileName,excelColumConverterMap);
+            config = getExcelTempConfig(excelTmpFileName);
         }
 
         if(config == null){
@@ -135,7 +187,7 @@ public class ExcelHelper {
      * @param tempFileName
      * @return
      */
-    public static ExcelConfig getExcelTempConfig(String tempFileName,Map<String,ExcelConfig.ExcelColumConverter> excelColumConverterMap){
+    public static ExcelConfig getExcelTempConfig(String tempFileName){
         if(StringTool.isEmpty(tempFileName)){
             return null;
         }
@@ -154,16 +206,15 @@ public class ExcelHelper {
             return null;
         }
 
-        return initExcelTempConfig(tempFileName,readList,excelColumConverterMap);
+        return initExcelTempConfig(tempFileName,readList);
     }
 
     /**
      *
      * @param fileName
-     * @param excelColumConverterMap 根据数据库列名做相应的格式化
      * @return
      */
-    static ExcelConfig getAutoExcelTempConfig(String fileName,Map<String,ExcelConfig.ExcelColumConverter> excelColumConverterMap){
+    static ExcelConfig getAutoExcelTempConfig(String fileName){
         List<String[]> readList =  new LinkedList<>();
         new EvenExcelReader().read(fileName,ExcelConfig.sheetName,new DefaultRowListener(){
             @Override
@@ -177,17 +228,16 @@ public class ExcelHelper {
             return null;
         }
 
-        return initExcelTempConfig(fileName,readList,excelColumConverterMap);
+        return initExcelTempConfig(fileName,readList);
     }
 
     /**
      *
      * @param fileName
      * @param readList
-     * @param excelColumConverterMap 根据数据库列名做相应的格式化
      * @return
      */
-    private static ExcelConfig initExcelTempConfig(String fileName,List<String[]> readList,Map<String,ExcelConfig.ExcelColumConverter> excelColumConverterMap){
+    private static ExcelConfig initExcelTempConfig(String fileName,List<String[]> readList){
         if(readList.isEmpty()){
             return null;
         }
@@ -195,7 +245,6 @@ public class ExcelHelper {
         String[] headDescv = readList.get(0);
         ExcelConfig tempConfig = new ExcelConfig();
         try {
-            tempConfig.setExcelColumConverterMap(excelColumConverterMap);
             tempConfig.setConfigHeadRow(headDescv);
         }catch (Exception e){
             throw new TransformationException(fileName+"模板数据第一行数据不正确:"+ JsonUtil.getJsonFromBean(headDescv)+"  "+e.getMessage());
@@ -243,7 +292,7 @@ public class ExcelHelper {
     }
 
 
-    public static String getHeadDesc(String desc){
+    protected static String getHeadDesc(String desc){
         return desc.replaceAll("\\([^}]*\\)","");
     }
 
@@ -253,7 +302,7 @@ public class ExcelHelper {
      * @参数：@return
      * @返回值：boolean
      */
-    public static boolean validateExcel(String fileName) {
+    private static boolean validateExcel(String fileName) {
         /**
          * 检查文件名是否为空或者是否是Excel格式的文件
          */

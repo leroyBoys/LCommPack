@@ -63,7 +63,6 @@ public class ExcelProcess {
     public void excute(DbService dbService, ExcelConfig config, DbEntity dbEntity, String fileName, String excelTmpFileName, PoiReader reader){
 
         DataCheckService dataCheckService = config.isCheckColumValueRight()? new DataCheckService():new DataCheckService.DataNoCheckService();
-
         RowListener listener = new DefaultRowListener(){
             @Override
             public boolean read(String[] row, int rowNum) {
