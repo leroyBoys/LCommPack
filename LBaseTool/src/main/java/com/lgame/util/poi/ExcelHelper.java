@@ -45,7 +45,7 @@ public class ExcelHelper {
             }
 
             @Override
-            public boolean insertBatchs(String tableName, List<Map<String, String>> datas, String[] columNames, String[] columValues, int commitLimitCount) {
+            public boolean insertBatchs(String tableName, List<Map<String, String>> datas, String[] columNames, int commitLimitCount) {
                 return false;
             }
         },"D:/w.xlsx");

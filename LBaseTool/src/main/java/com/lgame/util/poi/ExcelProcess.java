@@ -269,7 +269,7 @@ public class ExcelProcess {
             }
             try {
                 if(!insertMapList.isEmpty()){
-                    if(!dbService.insertBatchs(config.getTableName(),insertMapList,config.getColumArray(),config.getColumArray(),0)){
+                    if(!dbService.insertBatchs(config.getTableName(),insertMapList,config.getColumArray(),insertMapList.size())){
                         Map<String,DbEntity> map = new HashMap<>();
                         List<String> insertSqls = new ArrayList<>();
                         for(DbEntity data:tmpMap.values()){

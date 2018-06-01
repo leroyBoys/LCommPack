@@ -10,5 +10,5 @@ public interface DbService {
     public List<String> queryExistIds(String sql);
     public boolean excute(String sql);
     public boolean excute(List<String> sqls);
-    public boolean insertBatchs(String tableName, List<Map<String,String>> datas, String[] columNames, String[] columValues, int commitLimitCount);
+    public boolean insertBatchs(String tableName, List<Map<String,String>> datas, String[] columNames, int commitLimitCount);
 }
