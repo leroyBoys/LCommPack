@@ -38,14 +38,25 @@ public class StringTool {
      * @return
      */
     public static boolean isNotNull(String str) {
-        if (str != null && !"".equals(str) && !str.equals("null")) {
+        if (!isEmpty(str) && !str.equals("null")) {
             return true;
         }
         return false;
     }
 
     public static boolean isEmpty(String str) {
-        return str == null || str.trim().isEmpty();
+        return str == null || str.isEmpty() || !containsText(str);
+    }
+
+    private static boolean containsText(String str){
+        int strLen = str.length();
+
+        for(int i = 0; i < strLen; ++i) {
+            if(!Character.isWhitespace(str.charAt(i))) {
+                return true;
+            }
+        }
+        return false;
     }
 
     /**
