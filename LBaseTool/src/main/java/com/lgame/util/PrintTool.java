@@ -39,6 +39,14 @@ public class PrintTool {
         }
     }
 
+    public static void outTime(int maxCount,ForThread forThread){
+        outTime("__ss","outTime start");
+        for(int i = 0;i<maxCount;i++){
+            forThread.run();
+        }
+        outTime("__ss","outTime over");
+    }
+
     public static String getException(Exception e) {
         StringBuilder bs = new StringBuilder();
         StackTraceElement[] a = e.getStackTrace();
@@ -75,5 +83,9 @@ public class PrintTool {
     public static void error(Class info,Exception e){
         e.printStackTrace();
         //System.out.println(info);
+    }
+
+    public static interface ForThread{
+        void run();
     }
 }
