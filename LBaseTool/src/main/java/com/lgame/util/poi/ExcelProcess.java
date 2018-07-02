@@ -231,15 +231,15 @@ public class ExcelProcess {
         }
     }
 
-    private void _importDBFromExcel(final int rowNum,final Map<String, DbEntity> tmpMap,final DbService dbService,final ExcelConfig config) {
+    private void _importDBFromExcel(final int rowNum,final Map<String, DbEntity> _tmpMap,final DbService dbService,final ExcelConfig config) {
 
         addTask(objects -> {
-            final int all = tmpMap.size();
+            final int all = _tmpMap.size();
             int update = 0;
             StringBuilder sql = new StringBuilder();
             if(config.isCheckDbBeforeUpdate()){
                 sql.append("select ").append(config.getIdColumName()).append("  from  ").append(config.getTableName());
-                sql.append("  where ").append(config.getIdColumName()).append("  in(").append(StringTool.getStringFromCollection(tmpMap.keySet())).append(")");
+                sql.append("  where ").append(config.getIdColumName()).append("  in(").append(StringTool.getStringFromCollection(_tmpMap.keySet())).append(")");
                 List<String> uniqueIds = null;
                 try {
                     uniqueIds = dbService.queryExistIds(sql.toString());
@@ -252,7 +252,7 @@ public class ExcelProcess {
                 }
                 if(uniqueIds != null && !uniqueIds.isEmpty()){
                     for(String uniqueId:uniqueIds){
-                        tmpMap.get(uniqueId).setNew(false);
+                        _tmpMap.get(uniqueId).setNew(false);
                         update++;
                     }
                 }
@@ -260,7 +260,7 @@ public class ExcelProcess {
 
             List<String> updateSqls = new ArrayList<>(update);
             List<Map<String,String>> insertMapList = new ArrayList<>(all-update);
-            for(DbEntity data:tmpMap.values()){
+            for(DbEntity data:_tmpMap.values()){
                 if(data.isNew()){
                     insertMapList.add(data.getDataEntity());
                     continue;
@@ -272,7 +272,7 @@ public class ExcelProcess {
                     if(!dbService.insertBatchs(config.getTableName(),insertMapList,config.getColumArray(),insertMapList.size())){
                         Map<String,DbEntity> map = new HashMap<>();
                         List<String> insertSqls = new ArrayList<>();
-                        for(DbEntity data:tmpMap.values()){
+                        for(DbEntity data:_tmpMap.values()){
                             if(data.isNew()){
                                 map.put(data.getUpdateSql(), data);
                                 insertSqls.add(data.getUpdateSql());
@@ -286,7 +286,7 @@ public class ExcelProcess {
 
                 if(!updateSqls.isEmpty()){
                     if(!dbService.excute(updateSqls)){
-                        updateExceuteWithOutError(getSqlMapLine(tmpMap,update),updateSqls,dbService,sucUpdateCount);
+                        updateExceuteWithOutError(getSqlMapLine(_tmpMap,update),updateSqls,dbService,sucUpdateCount);
                     }else {
                         sucUpdateCount.getAndAdd(update);
                     }
@@ -352,6 +352,9 @@ public class ExcelProcess {
     }
 
     private void updateExceuteWithOutError(Map<String,DbEntity> tmpMap,List<String> updateSqls, DbService dbService) {
+        if(tmpMap == null || tmpMap.isEmpty()){
+            return;
+        }
 
         final int size = updateSqls.size()>>1;
         if(size < 10){
