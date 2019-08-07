@@ -20,7 +20,7 @@ import java.util.*;
  * 2018/4/20.
  */
 public class ExcelHelper {
-    private final static int maxSize = 1;
+    private final static int maxSize = 1024*1024*1;
     protected final static Map<String,ExcelProcess> excelProcessMap = new HashMap<>();
 
     public static void main(String[] args) throws Exception {
@@ -161,6 +161,7 @@ public class ExcelHelper {
         }
 
         PoiReader poiReader = new UserExcelReader();
+        System.out.println(file.length());
         if(file.length()>maxSize){
             poiReader = new EvenExcelReader();
         }
