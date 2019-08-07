@@ -1813,6 +1813,33 @@ public class RedisConnection implements LQConntion {
         return null;
     }
 
+    /**
+     * Set the string value as value of the key. The string can't be longer than 1073741824 bytes (1
+     * GB).
+     * @param key
+     * @param value
+     * @param nxxx NX|XX, NX -- Only set the key if it does not already exist. XX -- Only set the key
+     *          if it already exist.
+     * @param expx EX|PX, expire time units: EX = seconds; PX = milliseconds
+     * @param time expire time in the units of <code>expx</code>
+     * @return Status code reply
+     */
+    public String set(final String key, final String value, final String nxxx, final String expx,
+                      final long time) {
+        Jedis jedis = null;
+        try {
+            jedis = jedisPool.getResource();
+            return jedis.set(key,value,nxxx,expx
+            ,time);
+        } catch (Exception e) {
+            logException(e);
+        } finally {
+            returnResource(jedisPool, jedis);
+        }
+        return null;
+    }
+
+
     public byte[] get(byte[] key) {
         Jedis jedis = null;
         try {
