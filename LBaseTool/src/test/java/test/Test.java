@@ -18,8 +18,8 @@ import java.util.concurrent.LinkedBlockingQueue;
  */
 public class Test {
     public static void main(String[] args) throws InterruptedException {
-        String str = "asdfosdfsfsasfdsdfaaasdsa";
-        System.out.println(str.replace('a','='));
+        String s = "12313";
+        System.out.println(s.substring(0,s.length()-1));
 
        /* while (new File("D:\\info.txt").exists()){
             MemDisk.getMemLastInfo();

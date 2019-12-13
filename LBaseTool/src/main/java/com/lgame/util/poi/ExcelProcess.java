@@ -9,6 +9,7 @@ import com.lgame.util.poi.module.ExcelDbData;
 import com.lgame.util.poi.module.PersonalityConfig;
 import com.lgame.util.thread.BaseThreadPools;
 import com.lgame.util.thread.TaskIndieThread;
+import org.apache.poi.hssf.util.CellReference;
 
 import java.util.*;
 import java.util.concurrent.BlockingQueue;
@@ -92,7 +93,7 @@ public class ExcelProcess {
                                 if(errorMsg == null){
                                     errorMsg = new StringBuilder(rowNum+":");
                                 }
-                                errorMsg.append(i+1).append(",");
+                                errorMsg.append(i+1).append("(").append(CellReference.convertNumToColString(i)).append(")").append("列,");
                                 continue;
                             }
                             map.put(excelDbData.getColumName(),excelDbData.getValue(value));

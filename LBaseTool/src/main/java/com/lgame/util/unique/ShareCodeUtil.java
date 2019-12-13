@@ -79,7 +79,6 @@ public class ShareCodeUtil {
     }
 
     public static long codeToId(String s) {
-
         int system = binLen;
         char[] buf = new char[s.length()];
         s.getChars(0, s.length(), buf, 0);
@@ -97,5 +96,12 @@ public class ShareCodeUtil {
             }
         }
         return num;
+    }
+
+    public static void main(String[] ar){
+        String abc = "abcdef";
+        System.out.println(abc.substring(0,2));
+        System.out.println(abc.substring(2,4));
+        System.out.println(ShareCodeUtil.toSerialCode(Long.MAX_VALUE));
     }
 }
