@@ -102,7 +102,7 @@ public class DefaultDbEntity implements DbEntity {
                 sql.append(" , ");
             }
             sql.append(str).append("=");
-            if(obj.get(str).equals("null")){
+            if("null".equals(obj.get(str))){
                 sql.append("null");
             }else{
                 sql.append("'").append(obj.get(str)).append("'");
@@ -135,7 +135,7 @@ public class DefaultDbEntity implements DbEntity {
                 values.append(" , ");
             }
             names.append("`").append(str).append("`");
-            if(obj.get(str).equals("null")){
+            if("null".equals(obj.get(str))){
                 values.append("null");
             }else{
                 values.append("'").append(obj.get(str)).append("'");

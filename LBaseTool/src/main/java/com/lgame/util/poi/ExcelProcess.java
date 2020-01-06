@@ -88,7 +88,7 @@ public class ExcelProcess {
                                 continue;
                             }
 
-                            value = dataCheckService.getValue(excelDbData.getDataTypeEnum(),row[i].trim());
+                            value = dataCheckService.getValue(excelDbData.getDataTypeEnum(),row[i] == null?null:row[i].trim());
                             if(ExcelDbData.isError(value)){
                                 if(errorMsg == null){
                                     errorMsg = new StringBuilder(rowNum+":");
